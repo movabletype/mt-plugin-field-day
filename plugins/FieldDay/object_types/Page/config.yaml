@@ -1,0 +1,7 @@
+object_type: page
+class: FieldDay::ObjectType::Page
+object_class: MT::Page
+plural: pages
+has_blog_id: 1
+edit_template: edit_entry
+list_template: list_author

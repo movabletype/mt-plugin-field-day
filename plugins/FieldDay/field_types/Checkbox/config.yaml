@@ -1,0 +1,3 @@
+field_type: Checkbox
+class: FieldDay::FieldType::Checkbox
+label: Checkbox

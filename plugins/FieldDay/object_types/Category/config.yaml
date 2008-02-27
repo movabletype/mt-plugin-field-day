@@ -1,0 +1,6 @@
+object_type: category
+class: FieldDay::ObjectType::Category
+object_class: MT::Category
+plural: categories
+has_blog_id: 1
+edit_template: edit_category

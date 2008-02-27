@@ -1,0 +1,6 @@
+object_type: blog
+class: FieldDay::ObjectType::Blog
+object_class: MT::Blog
+plural: blogs
+has_blog_id: 0
+edit_template: cfg_prefs
