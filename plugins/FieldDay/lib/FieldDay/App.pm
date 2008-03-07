@@ -13,6 +13,9 @@ sub cfg_fields {
 	my $class = shift;
 	my ($plugin, $app) = @_;
 	my $ot = FieldDay::YAML->object_type($app->param('_type'));
+	if ($ot->{'object_mt_type'}) {
+		$app->param('setting_object_mt_type', $ot->{'object_mt_type'});
+	}
 	require FieldDay::FieldType;
 	my $options_tmpls = FieldDay::FieldType::type_tmpls($plugin, $app, 'options');
 	require FieldDay::Setting;
@@ -99,7 +102,7 @@ sub group_loop {
 		my $data = $group->data;
 		push(@loop, {
 			'group' => $group->id,
-			'label'=> $data->{'label'},
+			'label'=> $data->{'label'} || $group->name,
 			'selected' => ($selected && ($selected == $group->id)) ? 1 : 0
 		});
 	}
@@ -110,6 +113,9 @@ sub cfg_groups {
 	my $class = shift;
 	my ($plugin, $app) = @_;
 	my $ot = FieldDay::YAML->object_type($app->param('_type'));
+	if ($ot->{'object_mt_type'}) {
+		$app->param('setting_object_mt_type', $ot->{'object_mt_type'});
+	}
 	require FieldDay::Setting;
 	my $options = {
 		'label' => '',
@@ -157,6 +163,7 @@ sub cfg_groups {
 		'params' => {
 			'content_nav_loop' => content_nav_loop('groups'),
 			'setting_object_type' => $ot->{'object_type'},
+			'setting_object_mt_type' => $ot->{'object_mt_type'},
 			'setting_object_type_uc' => ucfirst($ot->{'object_type'}),
 			'setting_type_fields' => 1,
 			'setting_label' => 'Field Group',

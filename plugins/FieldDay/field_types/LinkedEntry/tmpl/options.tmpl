@@ -17,3 +17,25 @@
 	<input type="text" name="<mt:var name="field">_category_ids" value="<mt:var name="category_ids">" />
 </mtapp:setting>
 
+<mtapp:setting
+	id="<mt:var name="field">_lastn"
+	label="Limit to Most Recent"
+	content_class="field-content-text">
+	<input type="text" name="<mt:var name="field">_lastn" value="<mt:var name="lastn">" class="tiny-width" />
+</mtapp:setting>
+
+<mtapp:setting
+	id="<mt:var name="field">_published"
+	label="Published Only"
+	content_class="field-content-text">
+	<input type="checkbox" name="<mt:var name="field">_published"<mt:if name="published"> checked="checked"</mt:if> />
+</mtapp:setting>
+
+<!--
+<mtapp:setting
+	id="<mt:var name="field">_search"
+	label="Title Search"
+	content_class="field-content-text">
+	<input type="checkbox" name="<mt:var name="field">_search"<mt:if name="search"> checked="checked"</mt:if> />
+</mtapp:setting>
+-->

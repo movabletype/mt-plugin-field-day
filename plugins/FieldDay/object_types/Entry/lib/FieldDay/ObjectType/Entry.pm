@@ -24,7 +24,7 @@ sub load_terms {
 	my $class = shift;
 	my ($ctx, $args) = @_;
 	return {
-		'status' => 2,
+		'status' => MT::Entry::RELEASE(),
 		$ctx->stash('blog') ? ('blog_id' => $ctx->stash('blog')->id) : (),
 	};
 }

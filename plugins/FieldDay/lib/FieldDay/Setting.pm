@@ -13,7 +13,7 @@ __PACKAGE__->install_properties({
 		'blog_id' => 'integer default 0',
 		'type' => 'string(15) not null',
 		'name' => 'string(75) not null',
-		'object_type' => 'string(15) not null',
+		'object_type' => 'string(15)',
 		'order' => 'integer',
 		'data' => 'blob'
 	},

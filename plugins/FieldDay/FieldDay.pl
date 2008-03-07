@@ -5,7 +5,7 @@ use Data::Dumper;
 
 use vars qw( $VERSION $SCHEMA_VERSION );
 $VERSION = '1.0a1';
-$SCHEMA_VERSION = '0.13';
+$SCHEMA_VERSION = '0.14';
 
 use base qw( MT::Plugin );
 
@@ -118,7 +118,7 @@ sub init_object_types {
 			}
 		}
 			# page actions
-		$page_actions->{$use_type} = {
+		$page_actions->{$ot->{'object_type'}} = {
 			'configure_fields' => {
 				'label' => 'Configure Fields',
 				'code' => sub { mode_dispatch('cfg_fields', @_, $ot) },
@@ -128,10 +128,10 @@ sub init_object_types {
 			}
 		};
 			# menus
-		$menus->{"prefs:fd_$use_type"} = {
+		$menus->{"prefs:fd_$ot->{'object_type'}"} = {
 			'label' => ucfirst($key) . ' Fields',
 			'mode' => "fd_cfg_fields",
-			'args' => { '_type' => $use_type },
+			'args' => { '_type' => $ot->{'object_type'} },
 			'order' => $order,
 			$ot->{'has_blog_id'}
 				? ('permission' => 'administer_blog',

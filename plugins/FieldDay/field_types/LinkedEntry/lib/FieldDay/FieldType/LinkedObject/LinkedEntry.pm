@@ -9,9 +9,10 @@ sub tags {
 	return {
 		'per_type' => {
 			'block' => {
-				'LinkedEntries' => sub { __PACKAGE__->hdlr_LinkedObjects(@_) },
-				'LinkingEntries' => sub { __PACKAGE__->hdlr_LinkingObjects(@_) },
-				'IfLinkingEntries?' => sub { __PACKAGE__->hdlr_IfLinkingObjects(@_) },
+				'LinkedEntries' => sub { __PACKAGE__->hdlr_LinkedObjects('entry', @_) },
+				'IfLinkedEntries?' => sub { __PACKAGE__->hdlr_LinkedObjects('entry', @_) },
+				'LinkingEntries' => sub { __PACKAGE__->hdlr_LinkingObjects('entry', @_) },
+				'IfLinkingEntries?' => sub { __PACKAGE__->hdlr_LinkingObjects('entry', @_) },
 			},
 		},
 	};
@@ -21,6 +22,9 @@ sub options {
 	return {
 		'linked_blog_id' => undef,
 		'category_ids' => undef,
+		'lastn' => undef,
+		'search' => undef,
+		'published' => 1,
 	};
 }
 
@@ -45,7 +49,22 @@ sub load_objects {
 	my $terms = {
 		 blog_id => $param->{'linked_blog_id'},
 	};
+	if ($param->{'published'}) {
+		$terms->{'status'} = MT::Entry::RELEASE();
+	}
 	my $args = {};
+	if ($param->{'lastn'}) {
+		$args = {
+			'sort' => 'authored_on',
+			'direction' => 'descend',
+			'limit' => $param->{'lastn'},
+		};
+	} else {
+		$args = {
+			'sort' => 'title',
+			'direction' => 'ascend',
+		};
+	}
 	if ($param->{'category_ids'}) {
 		my $cat_ids = [ split(/,/, $param->{'category_ids'}) ];
 		require MT::Placement;
