@@ -32,9 +32,6 @@ sub init_registry {
 		'object_types' => {
 			'fdsetting' => 'FieldDay::Setting',
 			'fdvalue' => 'FieldDay::Value',
-			'entry' => {
-				'testing' => 'integer',
-			},
 		},
 		'init_request' => \&init_request,
 		'callbacks' => $callbacks,
