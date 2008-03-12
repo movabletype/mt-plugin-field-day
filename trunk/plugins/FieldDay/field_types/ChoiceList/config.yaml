@@ -1,3 +1,0 @@
-field_type: ChoiceList
-class: FieldDay::FieldType::ChoiceList
-abstract: 1

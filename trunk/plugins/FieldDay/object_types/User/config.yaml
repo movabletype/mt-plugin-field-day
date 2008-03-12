@@ -1,8 +1,0 @@
-object_type: user
-object_mt_type: author
-class: FieldDay::ObjectType::User
-object_class: MT::Author
-plural: users
-has_blog_id: 0
-edit_template: edit_author
-list_template: list_author

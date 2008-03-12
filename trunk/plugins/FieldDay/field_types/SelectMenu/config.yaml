@@ -1,3 +1,0 @@
-field_type: SelectMenu
-class: FieldDay::FieldType::ChoiceList::SelectMenu
-label: Select Menu

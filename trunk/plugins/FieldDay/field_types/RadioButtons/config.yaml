@@ -1,3 +1,0 @@
-field_type: RadioButtons
-class: FieldDay::FieldType::ChoiceList::RadioButtons
-label: Radio Buttons

@@ -1,3 +1,0 @@
-field_type: LinkedUser
-class: FieldDay::FieldType::LinkedObject::LinkedUser
-label: Linked User

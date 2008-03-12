@@ -1,7 +1,0 @@
-object_type: folder
-class: FieldDay::ObjectType::Folder
-object_class: MT::Folder
-object_datasource: category
-plural: folders
-has_blog_id: 1
-edit_template: edit_folder

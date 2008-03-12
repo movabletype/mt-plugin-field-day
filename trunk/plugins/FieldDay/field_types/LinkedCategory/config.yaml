@@ -1,3 +1,0 @@
-field_type: LinkedCategory
-class: FieldDay::FieldType::LinkedObject::LinkedCategory
-label: Linked Category

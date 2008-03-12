@@ -1,9 +1,0 @@
-<mtapp:setting
-	id="<mt:var name="field">"
-	label="<mt:var name="label">"
-    label_class="<mt:if name="label_above">top-label<mt:else>left-label</mt:else></mt:if>"
-	>
-	<div class="textarea-wrapper"<mt:if name="width">style="width:<mt:var name="width">px;"</mt:if>>
-		<input name="<mt:var name="field">" id="<mt:var name="field">" <mt:if name="width">style="width:<mt:var name="width">px;"<mt:else>class="full-width short"</mt:else></mt:if> tabindex="<mt:var name="tabindex">" value="<$mt:var name="value" escape="html"$>" mt:watch-change="1" autocomplete="off"<mt:if name="length">maxlength="<mt:var name="length">"</mt:if> />
-	</div>
-</mtapp:setting>

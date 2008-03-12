@@ -1,5 +1,0 @@
-object_type: system
-class: FieldDay::ObjectType::System
-plural: system
-has_blog_id: 0
-edit_template: cfg_system_general

@@ -1,3 +1,0 @@
-field_type: LinkedBlog
-class: FieldDay::FieldType::LinkedObject::LinkedBlog
-label: Linked Blog

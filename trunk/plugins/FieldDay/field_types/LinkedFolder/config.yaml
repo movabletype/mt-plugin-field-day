@@ -1,3 +1,0 @@
-field_type: LinkedFolder
-class: FieldDay::FieldType::LinkedObject::LinkedFolder
-label: Linked Folder
