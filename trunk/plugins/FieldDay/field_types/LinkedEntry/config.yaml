@@ -1,0 +1,3 @@
+field_type: LinkedEntry
+class: FieldDay::FieldType::LinkedObject::LinkedEntry
+label: Linked Entry

@@ -1,0 +1,6 @@
+object_type: template
+class: FieldDay::ObjectType::Template
+object_class: MT::Template
+plural: templates
+has_blog_id: 1
+edit_template: edit_template
