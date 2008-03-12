@@ -146,13 +146,13 @@ sub init_object_types {
 			$pub_tags->{'function'}->{"$uckey$tag"} = sub { pub_tag_dispatch("hdlr_$tag", $key, @_) };
 
 		}
-		for my $tag (qw( Field FieldGroup FieldLoop FieldGroupLoop )) {
+		for my $tag (qw( Field FieldGroup )) {
 			$pub_tags->{'block'}->{"$uckey$tag"} = sub { pub_tag_dispatch("hdlr_$tag", $key, @_) };
 		}
 		for my $tag (qw( IfField IfFieldGroup )) {
 			$pub_tags->{'block'}->{"$uckey$tag?"} = sub { pub_tag_dispatch("hdlr_$tag", $key, @_) };
 		}
-		$pub_tags->{'block'}->{ucfirst($ot->{'plural'}) . 'ByValue'} = sub { pub_tag_dispatch('hdlr_ByValue', $key, @_) };
+		$pub_tags->{'block'}->{$uckey . 'ListByValue'} = sub { pub_tag_dispatch('hdlr_ListByValue', $key, @_) };
 	}
 	my $field_types = types('field');
 	for my $key (keys %$field_types) {

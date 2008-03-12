@@ -2,12 +2,25 @@
 package FieldDay::FieldType::LinkedObject::LinkedPage;
 use strict;
 
-use base qw( FieldDay::FieldType::LinkedObject );
+use base qw( FieldDay::FieldType::LinkedObject::LinkedEntry );
+
+sub tags {
+	return {
+		'per_type' => {
+			'block' => {
+				'LinkedPages' => sub { __PACKAGE__->hdlr_LinkedObjects('page', @_) },
+				'IfLinkedPages?' => sub { __PACKAGE__->hdlr_LinkedObjects('page', @_) },
+				'LinkingPages' => sub { __PACKAGE__->hdlr_LinkingObjects('page', @_) },
+				'IfLinkingPages?' => sub { __PACKAGE__->hdlr_LinkingObjects('page', @_) },
+			},
+		},
+	};
+}
 
 sub options {
 	return {
 		'linked_blog_id' => undef,
-		'folder_ids' => undef,
+		'published' => 1,
 	};
 }
 
@@ -15,39 +28,24 @@ sub label {
 	return 'Linked Page';
 }
 
-sub render_tmpl_type {
-# the field type that contains the render template, used for subclasses
-	return 'LinkedObject';
-}
-
 sub load_objects {
 	my $class = shift;
 	my ($param) = @_;
+	require MT::Page;
 	require MT::Entry;
 	return () unless ($param->{'linked_blog_id'});
 	my $terms = {
 		 blog_id => $param->{'linked_blog_id'},
 	};
 	my $args = {};
-	if ($param->{'category_ids'}) {
-		my $cat_ids = [ split(/,/, $param->{'folder_ids'}) ];
-		require MT::Placement;
-		$args->{'join'} =  MT::Placement->join_on(
-				'entry_id',
-				{ category_id => $cat_ids,
-				  class => 'folder'
-				},
-				{ unique => 1 }
-			);
+	if ($param->{'published'}) {
+		$terms->{'status'} = MT::Entry::RELEASE();
 	}
-	return MT::Entry->load($terms, $args)
-}
-
-sub object_label {
-	my $class = shift;
-	my ($obj) = @_;
-	require MT::Util;
-	return $obj->title ? MT::Util::remove_html($obj->title) : '[untitled]';
+	my $args = {
+		'sort' => 'title',
+		'direction' => 'ascend',
+	};
+	return MT::Page->load($terms, $args)
 }
 
 1;

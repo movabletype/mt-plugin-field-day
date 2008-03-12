@@ -11,6 +11,11 @@ sub options {
 	};
 }
 
+sub hdlr_FieldKey {
+	my ($ctx, $args) = @_;
+	
+}
+
 sub pre_render {
 # before the field is rendered in the CMS
 	my $class = shift;
@@ -33,7 +38,8 @@ sub pre_render {
 
 sub pre_publish {
 	my $class = shift;
-	my ($value, $field) = @_;
+	my ($ctx, $args, $value, $field) = @_;
+	return $value if ($args->{'show_key'});
 	my $choices = $field->data->{'options'}->{'choices'};
 	my $find = quotemeta($value);
 	for my $choice (split(/\n/, $choices)) {

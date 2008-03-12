@@ -40,7 +40,7 @@ sub require_type {
 	my $meth = $which . '_type';
 	my $yaml = FieldDay::YAML->$meth($key);
 	eval("require $yaml->{'class'};");
-	$app->log($@) if $@;
+	die $@ if $@;
 	return $yaml->{'class'};
 }
 

@@ -4,6 +4,19 @@ use strict;
 
 use base qw( FieldDay::FieldType::LinkedObject );
 
+sub tags {
+	return {
+		'per_type' => {
+			'block' => {
+				'LinkedBlogs' => sub { __PACKAGE__->hdlr_LinkedObjects('blog', @_) },
+				'IfLinkedBlogs?' => sub { __PACKAGE__->hdlr_LinkedObjects('blog', @_) },
+				'LinkingBlogs' => sub { __PACKAGE__->hdlr_LinkingObjects('blog', @_) },
+				'IfLinkingBlogs?' => sub { __PACKAGE__->hdlr_LinkingObjects('blog', @_) },
+			},
+		},
+	};
+}
+
 sub options {
 	return {
 	};
@@ -11,11 +24,6 @@ sub options {
 
 sub label {
 	return 'Linked Blog';
-}
-
-sub render_tmpl_type {
-# the field type that contains the render template, used for subclasses
-	return 'LinkedObject';
 }
 
 sub load_objects {

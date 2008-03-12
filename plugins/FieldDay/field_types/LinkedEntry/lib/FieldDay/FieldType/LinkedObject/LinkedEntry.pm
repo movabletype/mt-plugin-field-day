@@ -36,11 +36,6 @@ sub object_type {
 	return 'entry';
 }
 
-sub render_tmpl_type {
-# the field type that contains the render template, used for subclasses
-	return 'LinkedObject';
-}
-
 sub load_objects {
 	my $class = shift;
 	my ($param) = @_;

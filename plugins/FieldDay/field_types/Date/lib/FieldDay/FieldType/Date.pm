@@ -24,9 +24,22 @@ sub options {
 sub tags {
 	return {
 		'block' => {
-			'DateFormat' => sub { hdlr_date_format(@_) },
+			'FormatDate' => \&hdlr_FormatDate,
 		},
 	};
+}
+
+sub hdlr_FormatDate {
+	my ($ctx, $args, $cond) = @_;
+	defined(my $text = $ctx->stash('builder')->build($ctx,
+		$ctx->stash('tokens'), $cond)) || return $ctx->error($ctx->errstr);
+		# strip whitespace
+	$text =~ s/^\s+//;
+	$text =~ s/\s+$//;
+	return '' unless $text;
+	$args->{'ts'} = $text;
+	require MT::Template::ContextHandlers;
+	return MT::Template::Context::_hdlr_date(@_);
 }
 
 sub html_head {

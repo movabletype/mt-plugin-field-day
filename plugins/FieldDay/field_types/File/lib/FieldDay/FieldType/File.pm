@@ -8,6 +8,16 @@ sub label {
 	return 'File';
 }
 
+sub tags {
+	return {
+		'per_type' => {
+			'function' => {
+				'FileURLPath' => \&hdlr_FileURLPath,
+			},
+		},
+	};
+}
+
 sub options {
 	return {
 		'upload_path' => undef,
@@ -26,6 +36,12 @@ document.getElementById('<mt:var name="object_form_id">').enctype = 'multipart/f
 }
 </script>
 HTML
+}
+
+sub hdlr_FileURLPath {
+	my ($ctx, $args) = @_;
+	my $options = FieldDay::FieldType::field_options('FileURLPath', $ctx, $args);
+	return $options->{'url_path'};
 }
 
 sub pre_render {

@@ -3,7 +3,7 @@ package FieldDay::ObjectType::Folder;
 use strict;
 use Data::Dumper;
 
-use base qw( FieldDay::ObjectType );
+use base qw( FieldDay::ObjectType::Category );
 
 sub insert_before {
 	return qq{<mt:setvarblock name="action_buttons">};

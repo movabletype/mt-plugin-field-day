@@ -1,7 +1,7 @@
 
 package FieldDay::FieldType;
 use strict;
-use FieldDay::YAML qw( types );
+use FieldDay::YAML qw( types object_type );
 use FieldDay::Util qw( require_type mtlog );
 use Data::Dumper;
 
@@ -79,6 +79,7 @@ sub type_tmpls {
 		my $tmpl_dir = $yaml->{'class'}->$meth || $key;
 		my $tmpl_path = "$ft_path/$tmpl_dir/tmpl";
 		my $tmpl = $plugin->load_tmpl("$tmpl_path/$tmpl_type.tmpl");
+		die Dumper($yaml) unless $tmpl;
 		$options{$yaml->{'field_type'}} = $tmpl->text;
 	}
 	return \%options;
@@ -88,5 +89,22 @@ sub tags {
 # any type-specific publishing tags
 }
 
+sub field_options {
+	my ($tag_name, $ctx, $args) = @_;
+	require FieldDay::Setting;
+	my $tag = $ctx->stash('tag');
+	$tag =~ /^(.+)$tag_name/i;
+	my $ot = FieldDay::YAML->object_type(lc($1));
+	my $object_type = $ot->{'object_mt_type'} || $ot->{'object_type'};
+	my %terms = (
+		'type' => 'field',
+		'object_type' => $object_type,
+		'name' => $args->{'field'},
+		$ctx->stash('blog_id') ? ('blog_id' => $ctx->stash('blog_id')) : (),
+	);
+	my $setting = FieldDay::Setting->load(\%terms);
+	return {} unless $setting;
+	return $setting->data->{'options'};
+}
 
 1;

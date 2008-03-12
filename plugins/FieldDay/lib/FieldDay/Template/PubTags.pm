@@ -43,7 +43,6 @@ sub hdlr_FieldGroup {
 	my $class = shift;
 	my ($plugin, $ctx, $args, $cond) = @_;
 	my $fd_data = get_fd_data($plugin, $ctx, $args, $cond);
-	#die Dumper($fd_data);
 	my %instances = $args->{'instances'} ? (map { $_ => 1 } split(/,/, $args->{'instances'})) : ();
 	my $stash_key = obj_stash_key($ctx, $args);
 	my $group_id = $ctx->stash($stash_key . ':group_id');
@@ -146,14 +145,6 @@ sub hdlr_IfField {
 	return 0;
 }
 
-sub hdlr_FieldGroupLoop {
-
-}
-
-sub hdlr_FieldLoop {
-
-}
-
 sub hdlr_FieldValue {
 	my $class = shift;
 	my ($plugin, $ctx, $args, $cond) = @_;
@@ -170,7 +161,7 @@ sub hdlr_FieldValue {
 	my $values = $fd_data->{'values'}->{$field};
 	return '' unless ($values && @$values);
 	my $field_class = require_type(MT->instance, 'field', $fd_data->{'fields_by_name'}->{$field}->data->{'type'});
-	return $field_class->pre_publish($values->[$instance]->value, $fd_data->{'fields_by_name'}->{$field});
+	return $field_class->pre_publish($ctx, $args, $values->[$instance]->value, $fd_data->{'fields_by_name'}->{$field});
 }
 
 sub hdlr_FieldLabel {
@@ -225,19 +216,20 @@ sub hdlr_FieldGroupLabel {
 	return $group->data->{'label'};
 }
 
-sub hdlr_ByValue {
+sub hdlr_ListByValue {
 	my $class = shift;
 	my ($plugin, $ctx, $args, $cond) = @_;
-	my $ot_class = require_type(MT->instance, 'object', $args->{'object_type'});
+	my $tag = $ctx->stash('tag');
+	$tag =~ /^(.+)ListByValue/i;
+	my $object_type = lc($1);
+	my $ot_class = require_type(MT->instance, 'object', $object_type);
 	my $ot = FieldDay::YAML->object_type($args->{'object_type'});
 	require FieldDay::Value;
-	eval("require $ot->{'object_class'};");
-	die $@ if $@;
 	my $terms = $ot_class->load_terms($ctx, $args);
 	my $load_args = {};
 	my $key = $args->{'field'};
 	my $value = $args->{'value'};
-	my $id_col = $args->{'object_type'} . '_id';
+	my $id_col = ($ot->{'object_datasource'} || $ot->{'object_mt_type'} || $object_type) . '_id';
 	$load_args->{join} = FieldDay::Value->join_on(
 		undef,
 		{
