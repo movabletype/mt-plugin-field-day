@@ -41,7 +41,7 @@ sub load_objects {
 	if ($param->{'published'}) {
 		$terms->{'status'} = MT::Entry::RELEASE();
 	}
-	my $args = {
+	$args = {
 		'sort' => 'title',
 		'direction' => 'ascend',
 	};

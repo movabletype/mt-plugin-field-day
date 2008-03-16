@@ -4,7 +4,7 @@ use strict;
 use Data::Dumper;
 
 use vars qw( $VERSION $SCHEMA_VERSION );
-$VERSION = '1.0a2';
+$VERSION = '1.0a3';
 $SCHEMA_VERSION = '0.14';
 
 use base qw( MT::Plugin );
@@ -121,7 +121,7 @@ sub init_object_types {
 				'code' => sub { mode_dispatch('cfg_fields', @_, $ot) },
 				$ot->{'has_blog_id'}
 					? ('permission' => 'administer_blog')
-					: 'system_permission' => 'administer'
+					: ('system_permission' => 'administer')
 			}
 		};
 			# menus
