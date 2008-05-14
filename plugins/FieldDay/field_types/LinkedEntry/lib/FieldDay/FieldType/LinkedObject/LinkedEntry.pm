@@ -40,10 +40,10 @@ sub load_objects {
 	my $class = shift;
 	my ($param) = @_;
 	require MT::Entry;
-	return () unless ($param->{'linked_blog_id'});
-	my $terms = {
-		 blog_id => $param->{'linked_blog_id'},
-	};
+	my $terms = {};
+	if ($param->{'linked_blog_id'}) {
+		$terms->{'blog_id'} = $param->{'linked_blog_id'};
+	}
 	if ($param->{'published'}) {
 		$terms->{'status'} = MT::Entry::RELEASE();
 	}
@@ -78,6 +78,7 @@ sub object_label {
 	my $class = shift;
 	my ($obj) = @_;
 	require MT::Util;
+	require MT::Blog;
 	return $obj->title ? MT::Util::remove_html($obj->title) : '[untitled]';
 }
 

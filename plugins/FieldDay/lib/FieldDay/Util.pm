@@ -17,11 +17,12 @@ sub app_setting_terms {
 		|| $app->param('setting_object_type')
 		|| $app->param('_type');
 	$use_type ||= 'system';
+	my $blog_id = $app->param('blog_id');
 	return {
 		'type' => $setting_type,
-		($app->param('blog_id') && ($app->param('_type') ne 'blog')) ? ('blog_id' => $app->param('blog_id')) : (),
+		($blog_id && ($app->param('_type') ne 'blog')) ? ('blog_id' => $blog_id) : (),
 		'object_type' => $use_type,
-		$name ? ('name' => $name) : ()
+		($name ? ('name' => $name) : ())
 	};
 }
 

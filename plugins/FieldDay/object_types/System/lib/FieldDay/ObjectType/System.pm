@@ -29,6 +29,8 @@ sub callbacks {
 
 sub post_save_config {
 	my ($cb, $obj) = @_;
+	my $mode = MT->instance->param('__mode');
+	return unless ($mode && ($mode eq 'save_cfg_system_general'));
 	$obj->id(undef);
 	return FieldDay::ObjectType->cms_post_save($cb, MT->instance, $obj);
 }

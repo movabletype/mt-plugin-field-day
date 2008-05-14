@@ -44,6 +44,10 @@ sub load_objects {
 	return MT::Author->load({ 'type' => MT::Author::AUTHOR() });
 }
 
+sub has_blog_id {
+	0;
+}
+
 sub object_label {
 	my $class = shift;
 	my ($obj) = @_;

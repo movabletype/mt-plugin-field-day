@@ -4,8 +4,8 @@ use strict;
 use Data::Dumper;
 
 use vars qw( $VERSION $SCHEMA_VERSION );
-$VERSION = '1.0a3';
-$SCHEMA_VERSION = '0.14';
+$VERSION = '1.0b1';
+$SCHEMA_VERSION = '0.1594';
 
 use base qw( MT::Plugin );
 
@@ -52,6 +52,12 @@ sub init_registry {
 				'page_actions' => $page_actions,
 			}
 		},
+		'upgrade_functions' => {
+			'rightfields_to_fieldday' => {
+				'version_limit' => 0.2,
+				'code' => \&do_upgrade,
+			},
+		},
 		'tags' => {
 			'function' => {
 				'fd_cmsfields' => sub { app_tag_dispatch('hdlr_cmsfields', @_) },
@@ -66,15 +72,13 @@ sub init_registry {
 	$component->registry($reg);
 }
 
-my $global_cache = {};
-
 sub init_request {
 	my $app = shift;
-	$global_cache = {};
 }
 
-sub global_cache {
-	return $global_cache;
+sub do_upgrade {
+	require FieldDay::Upgrader;
+	FieldDay::Upgrader::do_upgrade(@_);
 }
 
 sub init_object_types {

@@ -43,7 +43,7 @@ sub pre_render {
 sub pre_publish {
 # before the field value is output on a template
 	my $class = shift;
-	my ($value) = @_;
+	my ($ctx, $args, $value, $field) = @_;
 	return $value;
 }
 

@@ -29,15 +29,28 @@ sub pre_render {
 	my $class = shift;
 	my ($param) = @_;
 	my @object_loop = ();
+	my %blog_ids = ();
 	for my $obj ($class->load_objects($param)) {
 		my $value = $class->object_value($obj);
 		my $label = $class->object_label($obj);
+		my $blog_label;
+		if ($class->has_blog_id) {
+			my $blog = MT::Blog->load($obj->blog_id);
+			$blog_label = ' (' . MT::Util::remove_html($blog->name) . ')';
+			$blog_ids{$obj->blog_id} = 1;
+		}
 		push(@object_loop, {
 			'value' => $value,
 			'selected' => ($param->{'value'} && 
 				($param->{'value'} eq $value)) ? 1 : 0,
-			'label' => $label
+			'label' => $label,
+			'blog_label' => $blog_label,
 		});
+	}
+	if (scalar keys %blog_ids > 1) {
+		for my $row (@object_loop) {
+			$row->{'label'} = $row->{'label'} . $row->{'blog_label'};
+		}
 	}
 	$param->{'object_loop'} = \@object_loop;
 }
@@ -114,7 +127,6 @@ sub hdlr_LinkingObjects {
 			'object_type' => $linking_ot->{'object_mt_type'} || $linking_ot->{'object_type'},
 		}
 	);
-	#die Dumper($terms, $load_args);
 	eval("require $ot->{'object_class'};");
 	die $@ if $@;
 	if ($ctx->stash('tag') =~ /IfLinking/) {
