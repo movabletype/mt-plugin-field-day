@@ -21,6 +21,7 @@ sub hdlr_cmsfields {
 	for my $group_id (sort {
 				$group_orders->{$a} <=> $group_orders->{$b}
 			} keys %$grouped_fields) {
+		#next unless ($groups_by_id->{$group_id});
 		my $group_out = qq{<div id="group-${group_id}-parent">};
 		my $need_instances = 0;
 		my $n = $group_need_ns->{$group_id} || 0;

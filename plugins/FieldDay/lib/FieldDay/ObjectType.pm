@@ -1,7 +1,8 @@
 
 package FieldDay::ObjectType;
 use strict;
-use FieldDay::Util qw( app_setting_terms app_value_terms require_type mtlog );
+use FieldDay::Util qw( app_setting_terms app_value_terms require_type mtlog use_type );
+use FieldDay::YAML qw( types );
 use Data::Dumper;
 
 sub edit_template_param {
@@ -79,6 +80,7 @@ sub cms_post_save {
 	} FieldDay::Setting->load_with_default(app_setting_terms($app, 'group'));
 		# set this in case it's a newly saved object
 	$app->param('id', $obj->id);
+	my $use_type = use_type($app->param('_type'));
 	for my $field (@fields) {
 		my $data = $field->data;
 		my $name = $field->name;
@@ -101,7 +103,7 @@ sub cms_post_save {
 				my $value = $class->pre_save_value($app, $i_name, $obj, $data->{'options'});
 				next unless $value;
 				my $value_obj = FieldDay::Value->new;
-				$value_obj->populate($app, $name, $value, $i);
+				$value_obj->populate($app, $name, $value, $use_type, $i);
 				$value_obj->save || die $value_obj->errstr;
 			}
 		} else {
@@ -112,7 +114,7 @@ sub cms_post_save {
 				$value_obj->set_value($value);
 			} else {
 				$value_obj = FieldDay::Value->new;
-				$value_obj->populate($app, $name, $value);
+				$value_obj->populate($app, $name, $value, $use_type);
 			}
 			$value_obj->save || die $value_obj->errstr;
 		}

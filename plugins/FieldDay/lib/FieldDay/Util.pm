@@ -7,15 +7,15 @@ use Exporter;
 @FieldDay::Util::ISA = qw( Exporter );
 use vars qw( @EXPORT_OK );
 @EXPORT_OK = qw( app_setting_terms app_value_terms 
-				 require_type mtlog load_fields );
+				 require_type mtlog load_fields use_type );
 
-use FieldDay::YAML qw( object_type field_type );
+use FieldDay::YAML qw( object_type field_type types );
 
 sub app_setting_terms {
 	my ($app, $setting_type, $name) = @_;
 	my $use_type = $app->param('setting_object_mt_type')
 		|| $app->param('setting_object_type')
-		|| $app->param('_type');
+		|| use_type($app->param('_type'));
 	$use_type ||= 'system';
 	my $blog_id = $app->param('blog_id');
 	return {
@@ -30,10 +30,26 @@ sub app_value_terms {
 	my ($app, $key) = @_;
 	return {
 		($app->param('blog_id') && ($app->param('_type') ne 'blog')) ? ('blog_id' => $app->param('blog_id')) : (),
-		 'object_type' => $app->param('_type') || 'system',
+		 'object_type' => use_type($app->param('_type')) || 'system',
 		$app->param('id') ? ('object_id' => $app->param('id')) : (),
 		'key' => $key,
 	};
+}
+
+sub use_type {
+	my ($use_type) = @_;
+	if ($use_type) {
+		my $types = types('object');
+		if (!$types->{$use_type}) {
+			for my $key (keys %$types) {
+				if ($types->{$key}->[0]->{'object_mt_type'} eq $use_type) {
+					$use_type = $types->{$key}->[0]->{'object_type'};
+					last;
+				}
+			}
+		}
+	}
+	return $use_type;
 }
 
 sub require_type {

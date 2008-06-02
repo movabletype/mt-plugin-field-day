@@ -3,7 +3,7 @@ package FieldDay::App;
 use strict;
 use Data::Dumper;
 use FieldDay::YAML qw( types object_type field_type );
-use FieldDay::Util qw( app_setting_terms require_type mtlog );
+use FieldDay::Util qw( app_setting_terms require_type mtlog use_type );
 
 sub plugin {
     return MT->component('FieldDay');
@@ -12,10 +12,10 @@ sub plugin {
 sub cfg_fields {
 	my $class = shift;
 	my ($plugin, $app) = @_;
-	my $ot = FieldDay::YAML->object_type($app->param('_type'));
-	if ($ot->{'object_mt_type'}) {
-		$app->param('setting_object_mt_type', $ot->{'object_mt_type'});
-	}
+	my $ot = FieldDay::YAML->object_type(use_type($app->param('_type')));
+	#if ($ot->{'object_mt_type'}) {
+	#	$app->param('setting_object_mt_type', $ot->{'object_mt_type'});
+	#}
 	require FieldDay::FieldType;
 	my $options_tmpls = FieldDay::FieldType::type_tmpls($plugin, $app, 'options');
 	require FieldDay::Setting;
@@ -44,7 +44,7 @@ sub cfg_fields {
 		'type' => 'fdsetting',
 		'template' => $plugin->load_tmpl('list_setting_field.tmpl'),
 		'terms' => {
-			'object_type' => $ot->{'object_mt_type'} || $ot->{'object_type'},
+			'object_type' => $ot->{'object_type'}, #$ot->{'object_mt_type'} || $ot->{'object_type'},
 			$ot->{'has_blog_id'} ? 
 				('blog_id' => ($app->param('blog_id') || 0)) : (),
 			'type' => 'field'
@@ -113,9 +113,9 @@ sub cfg_groups {
 	my $class = shift;
 	my ($plugin, $app) = @_;
 	my $ot = FieldDay::YAML->object_type($app->param('_type'));
-	if ($ot->{'object_mt_type'}) {
-		$app->param('setting_object_mt_type', $ot->{'object_mt_type'});
-	}
+	#if ($ot->{'object_mt_type'}) {
+	#	$app->param('setting_object_mt_type', $ot->{'object_mt_type'});
+	#}
 	require FieldDay::Setting;
 	my $options = {
 		'label' => '',
@@ -137,7 +137,7 @@ sub cfg_groups {
 		'type' => 'fdsetting',
 		'template' => $plugin->load_tmpl('list_setting_group.tmpl'),
 		'terms' => {
-			'object_type' => $ot->{'object_mt_type'} || $ot->{'object_type'},
+			'object_type' => $ot->{'object_type'}, #$ot->{'object_mt_type'} || $ot->{'object_type'},
 			$app->param('blog_id') ? ('blog_id' => $app->param('blog_id')) : (),
 			'type' => 'group'
 		},
@@ -319,7 +319,7 @@ sub default_blog_id {
 	my $ot = FieldDay::YAML->object_type($app->param('_type'));
 	return 0 unless ($app->param('blog_id'));
 	my $setting = FieldDay::Setting->load({
-		'object_type' => $ot->{'object_mt_type'} || $ot->{'object_type'},
+		'object_type' => $ot->{'object_type'}, #$ot->{'object_mt_type'} || $ot->{'object_type'},
 		'type' => 'default',
 	});
 	return $setting ? $setting->blog_id : 0;
@@ -331,7 +331,7 @@ sub populate_setting {
 	$setting->type($setting_type);
 	$setting->blog_id($app->param('blog_id'));
 	my $ot = FieldDay::YAML->object_type($app->param('setting_object_type'));
-	$setting->object_type($ot->{'object_mt_type'} || $ot->{'object_type'});
+	$setting->object_type($ot->{'object_type'}); #$ot->{'object_mt_type'} || $ot->{'object_type'});
 	$setting->name($app->param($row_name . '_name'));
 	$setting->order($app->param($row_name . '_order'));
 	$setting->data($data);

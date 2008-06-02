@@ -30,10 +30,10 @@ __PACKAGE__->install_properties({
 
 sub populate {
 	my $self = shift;
-	my ($app, $key, $value, $instance) = @_;
+	my ($app, $key, $value, $object_type, $instance) = @_;
 	$app->param('blog_id') && $self->blog_id($app->param('blog_id'));
 	$self->object_id($app->param('id') || -1);
-	$self->object_type($app->param('_type') || 'system');
+	$self->object_type($object_type || 'system');
 	$self->key($key);
 	$self->set_value($value);
 	$instance && $self->instance($instance);

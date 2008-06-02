@@ -112,10 +112,12 @@ sub hdlr_LinkingObjects {
 	require FieldDay::Value;
 	my $load_args = {};
 	my $terms = $linking_ot_class->load_terms($ctx, $args);
+	local $ctx->{__stash}{blog_id};
 	if (!$args->{'blog_id'}) {
 		delete $terms->{'blog_id'};
 	} else {
 		$terms->{'blog_id'} = $args->{'blog_id'};
+		$ctx->{__stash}{blog_id} = $args->{'blog_id'};
 	}
 	my $id_col = id_col($linking_ot);
 	$load_args->{join} = FieldDay::Value->join_on(

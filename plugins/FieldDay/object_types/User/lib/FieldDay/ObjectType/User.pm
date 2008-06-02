@@ -17,7 +17,12 @@ sub object_form_id {
 sub stashed_id {
 	my $class = shift;
 	my ($ctx, $args) = @_;
-	return $ctx->stash('author')->id;
+	if ($ctx->stash('author')) {
+		return $ctx->stash('author')->id;
+	}
+	if ($ctx->stash('entry')) {
+		return $ctx->stash('entry')->author_id;
+	}
 }
 
 sub insert_before_html_head {
