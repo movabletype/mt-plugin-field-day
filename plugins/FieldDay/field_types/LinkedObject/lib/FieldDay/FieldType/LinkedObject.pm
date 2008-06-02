@@ -36,6 +36,7 @@ sub pre_render {
 		my $blog_label;
 		if ($class->has_blog_id) {
 			my $blog = MT::Blog->load($obj->blog_id);
+			next unless $blog;
 			$blog_label = ' (' . MT::Util::remove_html($blog->name) . ')';
 			$blog_ids{$obj->blog_id} = 1;
 		}
