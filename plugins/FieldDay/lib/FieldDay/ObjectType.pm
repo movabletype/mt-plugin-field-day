@@ -46,6 +46,8 @@ $html_head
 </mt:setvarblock>
 HTML
 	$$template =~ s/($old)/$html_head$1/;
+	$old = qq{<form .*?name="$form_id".*?"script_url".*?">};
+	$$template =~ s#($old)#$1<input type="hidden" name="fieldday" value="1" />#;
 }
 
 sub insert_before_html_head {
@@ -67,6 +69,10 @@ sub callbacks {
 sub cms_post_save {
 	my $class = shift;
 	my ($cb, $app, $obj) = @_;
+		# if this beacon is not present, FieldDay was not loaded when the
+		# editing template was loaded; we don't want to blow away any
+		# existing data
+	return unless ($app->param('fieldday'));
 	require FieldDay::Setting;
 		# the process of saving data needs to be driven by the field settings
 		# so we don't end up saving any fields that aren't actually defined
@@ -108,7 +114,7 @@ sub cms_post_save {
 			}
 		} else {
 				# no group, don't need to worry about instances or delete existing
-			my $value = $class->pre_save_value($app, $name);
+			my $value = $class->pre_save_value($app, $name, $obj, $data->{'options'});
 			my $value_obj;
 			if ($value_obj = FieldDay::Value->load(app_value_terms($app, $name))) {
 				$value_obj->set_value($value);

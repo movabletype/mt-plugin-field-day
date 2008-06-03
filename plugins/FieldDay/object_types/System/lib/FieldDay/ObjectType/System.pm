@@ -21,6 +21,17 @@ sub stashed_id {
 	return -1;
 }
 
+sub edit_template_source {
+	my $class = shift;
+	my ($cb, $app, $template) = @_;
+	my $old = quotemeta(q{<form action="<mt:var name="script_url">" method="post" onsubmit="return validate(this);">});
+	my $new = q{<form action="<mt:var name="script_url">" method="post" name="cfg_form" id="cfg_form" onsubmit="return validate(this);">
+	<input type="hidden" name="fieldday" value="1" />
+	};
+	$$template =~ s/$old/$new/;
+	$class->SUPER::edit_template_source(@_);
+}
+
 sub callbacks {
 	return {
 		'MT::Config::post_save' => \&post_save_config,
