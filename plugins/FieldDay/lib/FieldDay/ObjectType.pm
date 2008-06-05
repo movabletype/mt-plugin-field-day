@@ -72,7 +72,7 @@ sub cms_post_save {
 		# if this beacon is not present, FieldDay was not loaded when the
 		# editing template was loaded; we don't want to blow away any
 		# existing data
-	return unless ($app->param('fieldday'));
+	return 1 unless ($app->param('fieldday'));
 	require FieldDay::Setting;
 		# the process of saving data needs to be driven by the field settings
 		# so we don't end up saving any fields that aren't actually defined

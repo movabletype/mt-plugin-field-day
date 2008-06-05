@@ -66,7 +66,6 @@ sub load_objects {
 		$args->{'join'} =  MT::Placement->join_on(
 				'entry_id',
 				{ category_id => $cat_ids,
-				  class => 'category',
 				},
 				{ unique => 1 }
 			);

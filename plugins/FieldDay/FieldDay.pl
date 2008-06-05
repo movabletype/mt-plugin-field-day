@@ -4,7 +4,7 @@ use strict;
 use Data::Dumper;
 
 use vars qw( $VERSION $SCHEMA_VERSION );
-$VERSION = '1.0b2';
+$VERSION = '1.0b3';
 $SCHEMA_VERSION = '0.1594';
 
 use base qw( MT::Plugin );
@@ -50,7 +50,11 @@ sub init_registry {
 					} qw( set clear override use )),
 				},
 				'page_actions' => $page_actions,
-			}
+			},
+			'new_search' => {
+				'linked' => sub { MT->app->core_parameters() },
+				'linking' => sub { MT->app->core_parameters() },
+			},
 		},
 		'upgrade_functions' => {
 			'rightfields_to_fieldday' => {
