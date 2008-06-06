@@ -27,6 +27,7 @@ sub core_parameters {
 	$params->{types}->{entry}->{filter_types} = {
 		linking_ids => \&_join_linking_ids,
 		linked_ids => \&_join_linked_ids,
+		category_basename => \&_join_category_basename,
 		%filter_types,
 	};
 	$params;
@@ -76,6 +77,10 @@ sub query_parse {
 sub process_link {
     my $app = shift;
 
+	if (!$app->param('search')) {
+		$app->{search_string} = '%';
+		$app->param('search', '%');
+	}
     my @arguments = $app->search_terms();
     return $app->error($app->errstr) if $app->errstr;
     my $count = 0;
@@ -93,7 +98,7 @@ sub process_link {
 	$app->param('IncludeBlogs', $app->param(ucfirst($app->mode) . 'Blogs'));
 	my $blog_list = $app->create_blog_list;
 	$app->{searchparam}{IncludeBlogs} = $blog_list->{IncludeBlogs};
-	for my $key (qw( searchTerms search category author )) {
+	for my $key (qw( searchTerms search category category_basename author )) {
 		$app->param($key, '');
 	}
 	for my $key ($app->param) {
@@ -145,6 +150,25 @@ sub def_terms {
 sub id_col {
 	my ($ot) = @_;
 	return ($ot->{'object_datasource'} || $ot->{'object_mt_type'} || $ot->{'object_type'}) . '_id'
+}
+
+sub _join_category_basename {
+    my ( $app, $term ) = @_;
+
+    # search for exact match
+    my $terms = [[ { basename => $term->{term} } ]];
+    return unless $terms && @$terms;
+    push @$terms, '-and', {
+        id => \'= placement_category_id',
+        blog_id => \'= entry_blog_id',
+    };
+    require MT::Placement;
+    require MT::Category;
+    return MT::Placement->join_on( undef,
+        { entry_id => \'= entry_id', blog_id => \'= entry_blog_id' },
+        { join => MT::Category->join_on( undef, $terms, {} ),
+          unique => 1 }
+    );
 }
 
 sub _join_linked_ids {
