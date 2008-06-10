@@ -1,0 +1,61 @@
+<mtapp:setting
+	id="<mt:var name="field">_stars"
+	label="Stars"
+	content_class="field-content-text">
+	<input type="text" name="<mt:var name="field">_stars" value="<mt:var name="stars">" class="tiny-width" />
+</mtapp:setting>
+
+<mtapp:setting
+	id="<mt:var name="field">_is_average"
+	label="Is Average"
+	content_class="field-content-text">
+	<input type="checkbox" name="<mt:var name="field">_is_average"<mt:if name="is_average"> checked="checked"</mt:if> onclick="if(this.checked) {getByID('<mt:var name="field">_non_average').style.display='none';getByID('<mt:var name="field">_average').style.display='block';} else {getByID('<mt:var name="field">_non_average').style.display='block';getByID('<mt:var name="field">_average').style.display='none';}"  />
+</mtapp:setting>
+
+<mtapp:setting
+	id="<mt:var name="field">_on_url"
+	label="'On' Image URL"
+	content_class="field-content-text">
+	<input type="text" name="<mt:var name="field">_on_url" value="<mt:var name="on_url">" class="full-width" />
+</mtapp:setting>
+
+<mtapp:setting
+	id="<mt:var name="field">_off_url"
+	label="'Off' Image URL"
+	content_class="field-content-text">
+	<input type="text" name="<mt:var name="field">_off_url" value="<mt:var name="off_url">" class="full-width" />
+</mtapp:setting>
+
+<div id="<mt:var name="field">_average"<mt:unless name="is_average"> style="display:none;"</mt:unless>>
+
+<mtapp:setting
+	id="<mt:var name="field">_half_url"
+	label="'Half' Image URL"
+	content_class="field-content-text">
+	<input type="text" name="<mt:var name="field">_half_url" value="<mt:var name="half_url">" class="full-width" />
+</mtapp:setting>
+
+</div>
+
+<div id="<mt:var name="field">_non_average"<mt:if name="is_average"> style="display:none;"</mt:if>>
+
+<mtapp:setting
+	id="<mt:var name="field">_average_object_type"
+	label="Average Target Object Type"
+	content_class="field-content-text">
+	<select name="<mt:var name="field">_average_object_type"> id="<mt:var name="field">_average_object_type">
+	<option value="">Select</option>
+	<mt:loop name="object_type_loop">
+	<option value="<mt:var name="name">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="name"></option>
+	</mt:loop>
+	</select>
+</mtapp:setting>
+
+<mtapp:setting
+	id="<mt:var name="field">_average_field"
+	label="Average Target Field"
+	content_class="field-content-text">
+	<input type="text" name="<mt:var name="field">_average_field" value="<mt:var name="average_field">" class="full-width" />
+</mtapp:setting>
+
+</div>

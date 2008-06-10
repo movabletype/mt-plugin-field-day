@@ -159,8 +159,14 @@ sub hdlr_FieldValue {
 		$instance = $ctx->stash("$stash_key:instance");
 	}
 	my $values = $fd_data->{'values'}->{$field};
-	return '' unless ($values && @$values && $values->[$instance]);
 	my $field_class = require_type(MT->instance, 'field', $fd_data->{'fields_by_name'}->{$field}->data->{'type'});
+	if (!($values && @$values && $values->[$instance])) {
+		if ($args->{'enter'}) {
+			return $field_class->pre_publish($ctx, $args, undef, $fd_data->{'fields_by_name'}->{$field});
+		} else {
+			return '';
+		}
+	}
 	return $field_class->pre_publish($ctx, $args, $values->[$instance]->value, $fd_data->{'fields_by_name'}->{$field});
 }
 

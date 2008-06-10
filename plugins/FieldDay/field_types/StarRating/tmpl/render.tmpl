@@ -1,0 +1,24 @@
+<mtapp:setting
+	id="<mt:var name="field">"
+	label="<mt:var name="label">"
+    label_class="<mt:if name="label_above">top-label<mt:else>left-label</mt:else></mt:if>"
+	>
+<mt:if name="is_average">
+
+<mt:loop name="star_loop">
+<img src="<mt:var name="img_url">" />
+</mt:loop>
+
+<mt:else>
+<script type="text/javascript">
+field_stars['<mt:var name="field">'] = <mt:var name="stars">;
+star_on_url = '<mt:var name="on_url">';
+star_off_url = '<mt:var name="off_url">';
+</script>
+<mt:loop name="star_loop">
+<img src="<mt:if name="value" ge="$rating"><mt:var name="on_url"><mt:else><mt:var name="off_url"></mt:else></mt:if>" name="<mt:var name="field">_<mt:var name="rating">" id="<mt:var name="field">_<mt:var name="rating">" onmouseover="star_over('<mt:var name="field">', <mt:var name="rating">)" onmouseout="star_out('<mt:var name="field">', <mt:var name="rating">)" onclick="star_click('<mt:var name="field">', <mt:var name="rating">)" />
+</mt:loop>
+</mt:else>
+</mt:if>
+<input type="hidden" name="<mt:var name="field">" id="<mt:var name="field">" value="<mt:var name="value">" />
+</mtapp:setting>

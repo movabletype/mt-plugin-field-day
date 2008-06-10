@@ -54,6 +54,12 @@ sub pre_save_value {
 	return $app->param($field_name);
 }
 
+sub post_save_value {
+# after the CMS saves a value
+	my $class = shift;
+	my ($app, $value_obj, $obj, $field) = @_;
+}
+
 sub pre_display_value {
 # before a template tag displays the field value
 }

@@ -2,7 +2,6 @@
 package FieldDay::ObjectType;
 use strict;
 use FieldDay::Util qw( app_setting_terms app_value_terms require_type mtlog use_type );
-use FieldDay::YAML qw( types );
 use Data::Dumper;
 
 sub edit_template_param {
@@ -69,6 +68,7 @@ sub callbacks {
 sub cms_post_save {
 	my $class = shift;
 	my ($cb, $app, $obj) = @_;
+	
 		# if this beacon is not present, FieldDay was not loaded when the
 		# editing template was loaded; we don't want to blow away any
 		# existing data
@@ -86,7 +86,7 @@ sub cms_post_save {
 	} FieldDay::Setting->load_with_default(app_setting_terms($app, 'group'));
 		# set this in case it's a newly saved object
 	$app->param('id', $obj->id);
-	my $use_type = use_type($app->param('_type'));
+	my $use_type = $app->param('setting_object_type') || use_type($app->param('_type'));
 	for my $field (@fields) {
 		my $data = $field->data;
 		my $name = $field->name;
@@ -111,6 +111,7 @@ sub cms_post_save {
 				my $value_obj = FieldDay::Value->new;
 				$value_obj->populate($app, $name, $value, $use_type, $i);
 				$value_obj->save || die $value_obj->errstr;
+				$class->post_save_value($app, $value_obj, $obj, $field);
 			}
 		} else {
 				# no group, don't need to worry about instances or delete existing
@@ -123,6 +124,7 @@ sub cms_post_save {
 				$value_obj->populate($app, $name, $value, $use_type);
 			}
 			$value_obj->save || die $value_obj->errstr;
+			$class->post_save_value($app, $value_obj, $obj, $field);
 		}
 	}
 	return 1;
