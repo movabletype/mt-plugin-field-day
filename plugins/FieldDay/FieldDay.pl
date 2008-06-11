@@ -4,7 +4,7 @@ use strict;
 use Data::Dumper;
 
 use vars qw( $VERSION $SCHEMA_VERSION );
-$VERSION = '1.0b4';
+$VERSION = '1.0b5';
 $SCHEMA_VERSION = '0.1594';
 
 use base qw( MT::Plugin );
@@ -70,6 +70,9 @@ sub init_registry {
 			},
 			'block' => {
 				%{$pub_tags->{'block'}},
+			},
+			'modifier' => {
+				%{$pub_tags->{'modifier'}},
 			}
 		},
 	};
@@ -92,6 +95,7 @@ sub init_object_types {
 	my $pub_tags = {
 		'function' => {},
 		'block' => {},
+		'modifier' => {},
 	};
 	my $order = 2000;
 	for my $key (sort keys %$object_types) {
@@ -157,7 +161,7 @@ sub init_object_types {
 		for my $tag (qw( IfField IfFieldGroup )) {
 			$pub_tags->{'block'}->{"$uckey$tag?"} = sub { pub_tag_dispatch("hdlr_$tag", $key, @_) };
 		}
-		$pub_tags->{'block'}->{$uckey . 'ListByValue'} = sub { pub_tag_dispatch('hdlr_ListByValue', $key, @_) };
+		$pub_tags->{'block'}->{ucfirst($ot->{'plural'}) . 'ByValue'} = sub { pub_tag_dispatch('hdlr_ByValue', $key, @_) };
 	}
 	my $field_types = types('field');
 	for my $key (keys %$field_types) {
@@ -165,7 +169,7 @@ sub init_object_types {
 		my $tags = $class->tags;
 		if ($tags && $tags->{'per_type'}) {
 			for my $ot_key (keys %$object_types) {
-				for my $tag_type (qw( block function )) {
+				for my $tag_type (qw( block function modifier )) {
 					if ($tags->{'per_type'}->{$tag_type}) {
 						my %add_tags = map { ucfirst($ot_key) . $_ => \&{$tags->{'per_type'}->{$tag_type}->{$_}} }
 							keys %{$tags->{'per_type'}->{$tag_type}};
@@ -174,11 +178,10 @@ sub init_object_types {
 				}
 			}
 		}
-		if ($tags && $tags->{'block'}) {
-			$pub_tags->{'block'} = { %{$pub_tags->{'block'}}, %{$tags->{'block'}} };
-		}
-		if ($tags && $tags->{'function'}) {
-			$pub_tags->{'function'} = { %{$pub_tags->{'function'}}, %{$tags->{'function'}} };
+		for my $tag_type(qw( block function modifier )) {
+			if ($tags && $tags->{$tag_type}) {
+				$pub_tags->{$tag_type} = { %{$pub_tags->{$tag_type}}, %{$tags->{$tag_type}} };
+			}
 		}
 	}
 	return ($cbs, $page_actions, $menus, $pub_tags);

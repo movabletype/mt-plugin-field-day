@@ -40,8 +40,34 @@ sub block_loop {
 	while (my $e = $iter->()) {
 		push (@entries, $e);
 	}
+	my $col = $args->{'sort_by'};
+	if ($col && !MT::Entry->column_def($col) && !MT::Entry->is_meta_column($col)) {
+		my $so = $args->{'sort_order'};
+		local $args->{field} = $col;
+		if ($args->{'numeric'}) {
+			if ($so eq 'descend') {
+				@entries = sort { val($ctx, $args, $b) <=> val($ctx, $args, $a) } @entries;
+			} else {
+				@entries = sort { val($ctx, $args, $a) <=> val($ctx, $args, $b) } @entries;
+			}
+		} else {
+			if ($so eq 'descend') {
+				@entries = sort { val($ctx, $args, $b) cmp val($ctx, $args, $a) } @entries;
+			} else {
+				@entries = sort { val($ctx, $args, $a) cmp val($ctx, $args, $b) } @entries;
+			}
+		}
+	}
 	local $ctx->{__stash}{entries} = \@entries;
 	return _hdlr_entries($ctx, $args, $cond);
+}
+
+sub val {
+	my ($ctx, $args, $e) = @_;
+	local $ctx->{__stash}->{entry} = $e;
+	local $ctx->{__stash}->{entry_id} = $e->id;
+	local $ctx->{__stash}->{blog_id} = $e->blog_id;
+	return $ctx->tag('EntryFieldValue', $args);
 }
 
 sub sort_by {

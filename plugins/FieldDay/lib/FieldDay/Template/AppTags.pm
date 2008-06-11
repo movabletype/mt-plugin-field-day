@@ -31,7 +31,7 @@ sub hdlr_cmsfields {
 		if ($group_id > 0) {
 			$g_data = $groups_by_id->{$group_id}->data;
 		}
-		if ($g_data->{'instances'} > 0) {
+		if ($g_data->{'instances'} && ($g_data->{'instances'} > 0)) {
 			$group_max_instances{$group_id} = $g_data->{'instances'};
 		}
 		$instance_list{$group_id} = [];

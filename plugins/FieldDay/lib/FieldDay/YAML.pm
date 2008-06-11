@@ -21,6 +21,26 @@ sub object_type {
 	return $yamls{'object_types'}->{$type}->[0];
 }
 
+sub object_type_by_plural {
+	my $class = shift;
+	my ($plural) = @_;
+	for my $type (keys %{$yamls{'object_types'}}) {
+		if (lc($yamls{'object_types'}->{$type}->[0]->{'plural'}) eq lc($plural)) {
+			return $yamls{'object_types'}->{$type}->[0];
+		}
+	}
+}
+
+sub object_type_by_class {
+	my $class = shift;
+	my ($object_class) = @_;
+	for my $type (keys %{$yamls{'object_types'}}) {
+		if (lc($yamls{'object_types'}->{$type}->[0]->{'object_class'}) eq lc($object_class)) {
+			return $yamls{'object_types'}->{$type}->[0];
+		}
+	}
+}
+
 sub field_type {
 	my $class = shift;
 	my ($type) = @_;

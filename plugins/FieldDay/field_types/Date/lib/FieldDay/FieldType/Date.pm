@@ -26,7 +26,29 @@ sub tags {
 		'block' => {
 			'FormatDate' => \&hdlr_FormatDate,
 		},
+		'modifier' => {
+			'adjust' => \&hdlr_adjust,
+		},
 	};
+}
+
+sub hdlr_adjust {
+	my ($str, $val, $ctx) = @_;
+	require MT::Util;
+	my $time = MT::Util::ts2epoch($ctx->stash('blog'), $str);
+	return $str unless $time;
+    my %mult = ('s'=>1,
+                 'M' => 60,
+                 'h' => 60*60,
+                 'd' => 60*60*24,
+                 'w' => 60*60*24*7,
+                 'm' => 60*60*24*30,
+                 'y' => 60*60*24*365);
+	my $offset = 0;
+	if ($val =~ /^([+-]?(?:\d+|\d*\.\d*))([sMhdwmy]?)/) {
+        $offset = ($mult{$2} || 1) * $1;
+	}
+	return MT::Util::epoch2ts($ctx->stash('blog'), $time + $offset);
 }
 
 sub hdlr_FormatDate {

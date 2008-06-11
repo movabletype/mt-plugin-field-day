@@ -22,6 +22,7 @@ sub options {
 	return {
 		'linked_blog_id' => undef,
 		'category_ids' => undef,
+		'subcats' => undef,
 		'lastn' => undef,
 		'search' => undef,
 		'published' => 1,
@@ -61,11 +62,21 @@ sub load_objects {
 		};
 	}
 	if ($param->{'category_ids'}) {
-		my $cat_ids = [ split(/,/, $param->{'category_ids'}) ];
+		my %cat_ids = map { $_ => 1 } split(/,/, $param->{'category_ids'});
+		if ($param->{'subcats'}) {
+			require MT::Category;
+			for my $cat_id (keys %cat_ids) {
+				my $cat = MT::Category->load($cat_id);
+				for my $subcat ($cat->_flattened_category_hierarchy) {
+					next unless ref $subcat;
+					$cat_ids{$subcat->id} = 1;
+				}
+			}
+		}
 		require MT::Placement;
 		$args->{'join'} =  MT::Placement->join_on(
 				'entry_id',
-				{ category_id => $cat_ids,
+				{ category_id => [ keys %cat_ids ],
 				},
 				{ unique => 1 }
 			);

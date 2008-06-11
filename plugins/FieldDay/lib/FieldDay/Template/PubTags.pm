@@ -222,27 +222,74 @@ sub hdlr_FieldGroupLabel {
 	return $group->data->{'label'};
 }
 
-sub hdlr_ListByValue {
+sub hdlr_ByValue {
 	my $class = shift;
 	my ($plugin, $ctx, $args, $cond) = @_;
 	my $tag = $ctx->stash('tag');
-	$tag =~ /^(.+)ListByValue/i;
-	my $object_type = lc($1);
+	$tag =~ /^(.+)ByValue/i;
+	my $ot = FieldDay::YAML->object_type_by_plural($1);
+	my $object_type = $ot->{'object_type'};
 	my $ot_class = require_type(MT->instance, 'object', $object_type);
-	my $ot = FieldDay::YAML->object_type($args->{'object_type'});
 	require FieldDay::Value;
 	my $terms = $ot_class->load_terms($ctx, $args);
 	my $load_args = {};
-	my $key = $args->{'field'};
-	my $value = $args->{'value'};
 	my $id_col = ($ot->{'object_datasource'} || $ot->{'object_mt_type'} || $object_type) . '_id';
-	$load_args->{join} = FieldDay::Value->join_on(
-		undef,
-		{
-			object_id        => \"= $id_col", #"
-			key => $key,
-			value => $value,
+	my @keys = grep { /^(eq|ne)/ } keys %$args;
+	my %use_args;
+	for my $key (@keys, qw( gt lt ge le like not_like )) {
+		next unless ($args->{$key});
+		$args->{$key} =~ s/Date([^>]*)>/Date$1 format="%Y%m%d%H%M%S">/ig;
+		my $tmpl = MT::Template->new('type' => 'scalarref', 'source' => \$args->{$key});
+		$tmpl->context($ctx);
+		$use_args{$key} = $tmpl->output;
+	}
+	my $load_args = {};
+	my @terms;
+	my %join_args;
+	my @eq;
+	my @ne;
+	if ($use_args{le} && $use_args{ge}) {
+		push(@terms, '-and', { value => { between => [ $use_args{ge}, $use_args{le} ] } });
+		delete $use_args{le};
+		delete $use_args{ge};
+	} elsif ($use_args{lt} && $use_args{gt}) {
+		push(@terms, '-and', { value => [ $use_args{gt}, $use_args{lt} ] });
+		$join_args{'range'} = { value => 1 };
+		delete $use_args{lt};
+		delete $use_args{gt};
+	}
+	my %ops = (
+		'ge' => '>=',
+		'gt' => '>',
+		'le' => '<=',
+		'lt' => '<',
+	);
+	for my $key (keys %use_args) {
+		if ($key =~ /^eq/) {
+			push(@eq, $use_args{$key});
+		} elsif ($key =~ /^ne/) {
+			push(@ne, $use_args{$key});
+		} elsif ($key =~ /^(ge|gt|le|lt|like|not_like)$/) {
+			my $op = $ops{$key} || $key;
+			push(@terms, '-and', { value => { $op => $use_args{$key} } });
 		}
+	}
+	if (@eq) {
+		push(@terms, '-and', { value => [ @terms ] });
+	}
+	if (@ne) {
+		push(@terms, '-and', { value => { not => [ @terms ] } });
+	}
+	require FieldDay::Value;
+	$load_args->{'join'} = FieldDay::Value->join_on(
+		undef,
+		[{
+			object_id        => \"= $id_col", #"
+			key => $args->{'field'},
+		},
+		@terms
+		],
+		\%join_args
 	);
 	my $iter = $ot->{'object_class'}->load_iter($terms, $load_args);
 	return $ot_class->block_loop($iter, $ctx, $args, $cond);
