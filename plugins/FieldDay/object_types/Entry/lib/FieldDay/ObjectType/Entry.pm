@@ -23,9 +23,15 @@ sub load_terms {
 # specify terms to use when a tag loads objects
 	my $class = shift;
 	my ($ctx, $args) = @_;
+	my %blog_id;
+	if ($args->{'blog_ids'}) {
+		$blog_id{'blog_id'} = [ split(/,/, $args->{'blog_ids'}) ];
+	} elsif ($ctx->stash('blog')) {
+		$blog_id{'blog_id'} = $ctx->stash('blog')->id;
+	}
 	return {
 		'status' => MT::Entry::RELEASE(),
-		$ctx->stash('blog') ? ('blog_id' => $ctx->stash('blog')->id) : (),
+		%blog_id
 	};
 }
 
