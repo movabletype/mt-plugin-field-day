@@ -93,6 +93,7 @@ sub pre_render {
 	my $tabindex = $param->{'tabindex'};
 	$param->{'show_min'} = $param->{'show_hms'};
 	$param->{'show_sec'} = ($param->{'time'} eq 'hhmmss') ? 1 : 0;
+	$param->{'date_order'} ||= 'mdy';
 	for (split(//, $param->{'date_order'})) {
 		$param->{"tabindex_$_"} = ++$tabindex;
 	}

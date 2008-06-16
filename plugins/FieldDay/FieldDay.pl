@@ -4,7 +4,7 @@ use strict;
 use Data::Dumper;
 
 use vars qw( $VERSION $SCHEMA_VERSION );
-$VERSION = '1.0b6.1';
+$VERSION = '1.0b7';
 $SCHEMA_VERSION = '0.1594';
 
 use base qw( MT::Plugin );
@@ -106,7 +106,7 @@ sub init_object_types {
 			# callbacks
 		$cbs->{"cms_post_save.$use_type"} = 
 			sub { callback_dispatch('cms_post_save', $key, $ot, @_) };
-		$cbs->{"post_remove.$use_type"} = 
+		$cbs->{"$ot->{'object_class'}::post_remove"} = 
 			sub { callback_dispatch('post_remove', $key, $ot, @_) };
 		for my $tmpl (qw( edit_template )) { #list_template edit_template )) {
 			for my $type (qw( source param )) {

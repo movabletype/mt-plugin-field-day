@@ -124,10 +124,25 @@ sub cms_post_save {
 				$value_obj->populate($app, $name, $value, $use_type);
 			}
 			$value_obj->save || die $value_obj->errstr;
+				$app->log(Dumper($value_obj));
 			$class->post_save_value($app, $value_obj, $obj, $field);
 		}
 	}
 	return 1;
+}
+
+sub post_remove {
+	my ($cb, $app, $obj) = @_;
+	require FieldDay::YAML;
+	my $ot = FieldDay::YAML->object_type_by_class(ref $obj);
+	require FieldDay::Value;
+	my $terms = {
+		object_type => $ot->{'object_type'},
+		object_id => $obj->id,
+	};
+	for my $value (FieldDay::Value->load($terms)) {
+		$value->remove;
+	}
 }
 
 sub stashed_id {

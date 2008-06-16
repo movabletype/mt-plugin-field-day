@@ -48,30 +48,85 @@ sub query_parse {
 	my $type = $app->{searchparam}{Type};
 	my $ot = FieldDay::YAML->object_type(use_type($type));
 	my $args = {};
-	my $terms = $app->def_terms;
-	my $like = $parsed->{'terms'}->[0]->[0]->{[keys %{$parsed->{'terms'}->[0]->[0]}]->[0]}->{like};
-	my $id_col = id_col($ot);
-	$args->{join} = FieldDay::Value->join_on(
-		undef,
-		{
-			'object_id' => \"= $id_col", #"
-			'value' => { like => $like },
-			'object_type' => $ot->{'object_type'},
-			($ot->{'has_blog_id'} && exists $app->{searchparam}{IncludeBlogs})
-				? ('blog_id' => [ keys %{ $app->{searchparam}{IncludeBlogs} } ])
-				: (),
+	if ($app->param('search') && ($app->param('search') ne '%')) {
+		my $terms = $app->def_terms;
+		my $like = $parsed->{'terms'}->[0]->[0]->{[keys %{$parsed->{'terms'}->[0]->[0]}]->[0]}->{like};
+		my $id_col = id_col($ot);
+		$args->{join} = FieldDay::Value->join_on(
+			undef,
+			{
+				'object_id' => \"= $id_col", #"
+				'value' => { like => $like },
+				'object_type' => $ot->{'object_type'},
+				$app->param('fields') ? ('key' => [ split(/,/, $app->param('fields')) ]) : (),
+				($ot->{'has_blog_id'} && exists $app->{searchparam}{IncludeBlogs})
+					? ('blog_id' => [ keys %{ $app->{searchparam}{IncludeBlogs} } ])
+					: (),
+			}
+		);
+		eval("require $ot->{'object_class'};");
+		my $iter = $ot->{'object_class'}->load_iter($terms, $args);
+		my @ids;
+		while (my $obj = $iter->()) {
+			$ids{$obj->id} = 1;
 		}
-	);
-	eval("require $ot->{'object_class'};");
-	my $iter = $ot->{'object_class'}->load_iter($terms, $args);
-	my @ids;
-	while (my $obj = $iter->()) {
-		$ids{$obj->id} = 1;
-	}
-	if (%ids) {
-		push(@{$parsed->{terms}->[0]}, '-or', { id => [ keys %ids ] });
+		if (%ids) {
+			push(@{$parsed->{terms}->[0]}, '-or', { id => [ keys %ids ] });
+		}
 	}
 	$parsed;
+}
+
+sub execute {
+    my $app = shift;
+    return $app->SUPER::execute(@_) unless $app->param('sort_field');
+    my ( $terms, $args ) = @_;
+
+    my $class = $app->model( $app->{searchparam}{Type} )
+        or return $app->errtrans('Unsupported type: [_1]', encode_html($app->{searchparam}{Type}));
+
+    my $count = $app->count( $class, $terms, $args );
+    return $app->errtrans("Invalid query: [_1]", $app->errstr) unless defined $count;
+
+	my $offset = $args->{offset} || 0;
+	my $limit = $args->{limit} || 0;
+	delete $args->{offset};
+	delete $args->{limit};
+    my @results = $class->load( $terms, $args )
+        or $app->error($class->errstr);
+    my @ids = map { $_->id } @results;
+    require FieldDay::YAML;
+    require FieldDay::Value;
+    my $ot = FieldDay::YAML->object_type_by_class($class);
+    my @values = FieldDay::Value->load({
+    	key => $app->param('sort_field'),
+		object_type => $ot->{object_type},
+		object_id => \@ids,
+    });
+    my %values = map { $_->object_id => lc($_->value || $_->value_text || '') } @values;
+    my $max;
+	if ($limit) {
+		$max = $limit + $offset - 1;
+	}
+	if (!$max || ($max > $#results)) {
+		$max = $#results;
+	}
+	if ($app->param('SearchResultDisplay') && ($app->param('SearchResultDisplay') eq 'descend')) {
+		if ($app->param('sort_numeric')) {
+			@results = sort { ($values{$a->id} || 0) <=> ($values{$b->id} || 0) } @results;
+		} else {
+			@results = sort { ($values{$b->id} || '') cmp ($values{$a->id} || '') } @results;
+		}
+	} else {
+		if ($app->param('sort_numeric')) {
+			@results = sort { ($values{$a->id} || 0) <=> ($values{$b->id} || 0) } @results;
+		} else {
+			@results = sort { ($values{$a->id} || '') cmp ($values{$b->id} || '') } @results;
+		}	
+	}
+    @results = @results[$offset .. $max];
+    my $iter = sub { shift @results; };
+    ( $count, $iter );
 }
 
 sub process_link {
@@ -98,7 +153,7 @@ sub process_link {
 	$app->param('IncludeBlogs', $app->param(ucfirst($app->mode) . 'Blogs'));
 	my $blog_list = $app->create_blog_list;
 	$app->{searchparam}{IncludeBlogs} = $blog_list->{IncludeBlogs};
-	for my $key (qw( searchTerms search category category_basename author )) {
+	for my $key (qw( searchTerms search category category_basename author fields )) {
 		$app->param($key, '');
 	}
 	for my $key ($app->param) {
