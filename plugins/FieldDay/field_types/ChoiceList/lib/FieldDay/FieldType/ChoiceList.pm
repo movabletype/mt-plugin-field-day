@@ -49,6 +49,7 @@ sub pre_publish {
 			return $value || '';
 		}
 	}
+	return $value;
 }
 
 1;
