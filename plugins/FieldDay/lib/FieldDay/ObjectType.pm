@@ -124,7 +124,6 @@ sub cms_post_save {
 				$value_obj->populate($app, $name, $value, $use_type);
 			}
 			$value_obj->save || die $value_obj->errstr;
-				$app->log(Dumper($value_obj));
 			$class->post_save_value($app, $value_obj, $obj, $field);
 		}
 	}
