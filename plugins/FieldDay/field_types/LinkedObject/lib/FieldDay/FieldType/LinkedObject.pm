@@ -73,7 +73,6 @@ sub hdlr_LinkedObjects {
 	my $linking_ot_class = require_type(MT->instance, 'object', $linking_type);
 	my $linking_ot = FieldDay::YAML->object_type($linking_type);
 	my $object_id = $linking_ot_class->stashed_id($ctx, $args);
-	my $linked_type = $class->object_type;
 	require FieldDay::Value;
 	my $load_args = {};
 	my $terms = $ot_class->load_terms($ctx, $args);

@@ -23,6 +23,7 @@ sub edit_template_source {
 	for my $field (@fields) {
 		my $data = $field->data;
 		my $class;
+		$data->{'type'} ||= 'Text';
 		unless ($class = $type_classes{$data->{'type'}}) {
 			$class = require_type(MT->instance, 'field', $data->{'type'});
 			$type_classes{$data->{'type'}} = $class;
@@ -90,6 +91,7 @@ sub cms_post_save {
 	for my $field (@fields) {
 		my $data = $field->data;
 		my $name = $field->name;
+		$data->{'type'} ||= 'Text';
 		my $class = require_type($app, 'field', $data->{'type'});
 		if ($data->{'group'}) {
 				# get rid of existing values; trying to keep track of which 

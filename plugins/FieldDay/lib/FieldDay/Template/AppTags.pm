@@ -73,6 +73,7 @@ TMPL
 			}
 			for my $field (@{$grouped_fields->{$group_id}}) {
 				my $data = $field->data;
+				$data->{'type'} ||= 'Text';
 				my $tmpl_text = $render_tmpls->{$data->{'type'}};
 				my $tmpl = MT::Template->new('type' => 'scalarref', 'source' => \$tmpl_text);
 				my $field_name = $field->name;

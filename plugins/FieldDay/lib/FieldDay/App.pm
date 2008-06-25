@@ -28,6 +28,7 @@ sub cfg_fields {
 		for my $key (qw( type label group )) {
 			$row->{$key} = $data->{$key};
 		}
+		$row->{'type'} ||= 'Text';
 		my $ft_class = FieldDay::YAML->field_type($row->{'type'})->{'class'};
 		$row->{"is_$row->{'type'}"} = 1;
 		my $options = $ft_class->options;

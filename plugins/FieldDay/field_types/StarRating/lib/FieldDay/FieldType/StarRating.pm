@@ -139,7 +139,7 @@ sub star_url {
 }
 
 sub post_save_value {
-	my $class = shift;
+	my $ot_class = shift;
 	my ($app, $value_obj, $obj, $field) = @_;
 	my $options = $field->data->{'options'};
 	return 1 unless $options->{'average_object_type'};
