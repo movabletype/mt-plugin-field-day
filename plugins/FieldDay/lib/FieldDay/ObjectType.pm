@@ -38,7 +38,7 @@ sub edit_template_source {
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript">
 function ffFormOnSubmit() {
-	document.$form_id.onsubmit = ffSubmit;
+	document.forms['$form_id'].onsubmit = ffSubmit;
 }
 </script>
 <script type="text/javascript" src="<mt:var name="static_uri">plugins/FieldDay/WOM.js"></script>
