@@ -17,7 +17,8 @@ sub get_fd_data {
 	my ($key, $object_id) = obj_stash_key($ctx, $args);
 	return $ctx->stash($key) if $ctx->stash($key);
 	my $ot = FieldDay::YAML->object_type($args->{'object_type'});
-	my %blog_id = $ot->{'has_blog_id'} ? ('blog_id' => $ctx->stash('blog_id')) : ();
+	my %blog_id = ($ot->{'has_blog_id'} && $ctx->stash('blog'))
+		? ('blog_id' => $ctx->stash('blog')->id) : ();
 	my %setting_terms = (
 		%blog_id,
 		'object_type' => $args->{'object_type'},
