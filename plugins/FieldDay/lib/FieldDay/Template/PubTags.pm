@@ -110,10 +110,10 @@ sub hdlr_IfFieldGroup {
 	my %instances = $args->{'instances'} ? (map { $_ => 1 } split(/,/, $args->{'instances'})) : ();
 	my $group_id = get_group_id($fd_data, $ctx, $args);
 		# return true if any instance of any field in this group has a value
-	my $values = $fd_data->{'values'}->{$field->name};
 	for (my $i = 0; $i < $fd_data->{'group_need_ns'}->{$group_id}; $i++) {
 		next if (%instances && !$instances{$i+1});
 		for my $field (@{$fd_data->{'grouped_fields'}->{$group_id}}) {
+			my $values = $fd_data->{'values'}->{$field->name};
 			next unless ($values && @$values && $values->[$i]);
 			return 1 if $values->[$i]->value;
 		}
