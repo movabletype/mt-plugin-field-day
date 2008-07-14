@@ -29,7 +29,7 @@ sub pre_render {
 sub pre_publish {
 	my $class = shift;
 	my ($ctx, $args, $value, $field) = @_;
-	return $value unless ($field->object_type eq 'entry');
+	return $value unless ($field->object_type =~ /^entry|page$/);
 	my $entry = $ctx->stash('entry');
 	return $value unless $entry;
     my $convert_breaks = exists $args->{convert_breaks} ?

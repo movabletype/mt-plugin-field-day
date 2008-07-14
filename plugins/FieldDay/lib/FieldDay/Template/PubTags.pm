@@ -128,7 +128,7 @@ sub hdlr_IfField {
 	my $stash_key = obj_stash_key($ctx, $args);
 	my %instances;
 		# if there's a stashed instance, we only want to check that one
-	if ($ctx->stash("$stash_key:instance")) {
+	if (defined $ctx->stash("$stash_key:instance")) {
 		$instances{$ctx->stash("$stash_key:instance")} = 1;
 	} else {
 		%instances = $args->{'instances'} ? (map { $_ => 1 } split(/,/, $args->{'instances'})) : ();
@@ -139,8 +139,7 @@ sub hdlr_IfField {
 		# return true if any instance of this field has a value
 	my $values = $fd_data->{'values'}->{$field};
 	return 0 unless ($values && @$values);
-	for (my $i = 0; $i < $fd_data->{'group_need_ns'}->{$group_id}; $i++) {
-		next if (%instances && !$instances{$i+1});
+	for my $i (%instances ? (keys %instances) : (0 .. $fd_data->{'group_need_ns'}->{$group_id})) {
 		next unless $values->[$i];
 		return 1 if $values->[$i]->value;
 	}
@@ -157,7 +156,7 @@ sub hdlr_FieldValue {
 	my $instance = 0;
 	if ($args->{'instance'}) {
 		$instance = $args->{'instance'} - 1;
-	} elsif ($ctx->stash("$stash_key:instance")) {
+	} elsif (defined $ctx->stash("$stash_key:instance")) {
 		$instance = $ctx->stash("$stash_key:instance");
 	}
 	my $values = $fd_data->{'values'}->{$field};
