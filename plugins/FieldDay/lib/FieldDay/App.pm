@@ -9,6 +9,18 @@ sub plugin {
     return MT->component('FieldDay');
 }
 
+sub save_linked_obj {
+	my $class = shift;
+	my ($plugin, $app) = @_;
+	require FieldDay::Setting;
+	require FieldDay::Util;
+	(my $setting_id = $app->param('setting_id')) || return $app->json_error('No setting ID');
+	(my $setting = FieldDay::Setting->load($setting_id)) || return $app->json_error('Setting not found');
+	my $type = $setting->data->{'type'};
+	my $ft = FieldDay::Util::require_type($app, 'field', $type);
+	return $ft->save_object($setting, $app);
+}
+
 sub cfg_fields {
 	my $class = shift;
 	my ($plugin, $app) = @_;

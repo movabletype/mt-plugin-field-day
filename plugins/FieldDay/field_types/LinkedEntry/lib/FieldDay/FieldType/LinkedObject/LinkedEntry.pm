@@ -26,6 +26,11 @@ sub options {
 		'lastn' => undef,
 		'search' => undef,
 		'published' => 1,
+		'autocomplete' => 1,
+		'allow_create' => 1,
+		'create_fields' => undef,
+		'required_fields' => undef,
+		'unique_fields' => undef,
 	};
 }
 
@@ -39,9 +44,9 @@ sub object_type {
 
 sub load_objects {
 	my $class = shift;
-	my ($param) = @_;
+	my ($param, %terms) = @_;
 	require MT::Entry;
-	my $terms = {};
+	my $terms = { %terms };
 	if ($param->{'linked_blog_id'}) {
 		$terms->{'blog_id'} = $param->{'linked_blog_id'};
 	}
@@ -87,10 +92,139 @@ sub load_objects {
 sub object_label {
 	my $class = shift;
 	my ($obj) = @_;
+	return '' unless $obj;
 	require MT::Util;
 	require MT::Blog;
 	return $obj->title ? MT::Util::remove_html($obj->title) : '[untitled]';
 }
 
+sub core_fields {
+	return {
+		'title' => {
+			'type' => 'Text',
+			'label' => 'Title',
+		},
+		'text' => {
+			'type' => 'TextArea',
+			'label' => 'Body',
+			'label_above' => 1,
+		},
+		'text_more' => {
+			'type' => 'TextArea',
+			'label' => 'Extended',
+			'label_above' => 1,
+		},
+	};
+}
+
+sub save_object {
+	my $class = shift;
+	my ($setting, $app) = @_;
+	(my $blog_id = $app->param('blog_id'))
+		|| return $app->json_error('No blog_id');
+	my $core_fields = $class->core_fields;
+	my $data = $setting->data;
+	require MT::Entry;
+	require FieldDay::Value;
+	if ($data->{'options'}->{'required_fields'}) {
+		for my $req (split(/,/, $data->{'options'}->{'required_fields'})) {
+			$req =~ s/ +//g;
+			next unless $req;
+			if (!$app->param($req)) {
+				return $app->json_error("$req is required");
+			}
+		}
+	}
+	if ($data->{'options'}->{'unique_fields'}) {
+		my $found_entry;
+		for my $unique (split(/,/, $data->{'options'}->{'unique_fields'})) {
+			$unique =~ s/ +//g;
+			# unique fields are not necessarily required
+			next unless $app->param($unique);
+			if ($core_fields->{$unique}) {
+				$found_entry = MT::Entry->load(
+					{
+						blog_id => $blog_id,
+						$unique => $app->param($unique)
+					}
+				);
+				last if $found_entry;
+			} else {
+				$found_entry = MT::Entry->load(
+					{
+						blog_id => $blog_id
+					},
+					{
+						join => FieldDay::Value->join_on(
+							undef,
+							{
+								object_id => \'= entry_id', #'
+								blog_id => $blog_id,
+								object_type => 'entry',
+								key => $unique,
+								value => $app->param($unique),
+							},
+						),
+					}
+				);
+				last if $found_entry;
+			}
+		}
+		if ($found_entry) {
+			return $app->json_result({
+				code => 'found',
+				id => $found_entry->id,
+				label => $found_entry->title,
+				msg => 'Entry already exists; using existing entry.',
+			});
+		}
+	}
+	my $entry = MT::Entry->new;
+	$entry->author_id($app->user->id);
+	$entry->status(2);
+	$entry->blog_id($blog_id);
+	# have to save now so we have an ID
+	$entry->save || return $app->json_error($entry->errstr);
+	for my $field (split(/,/, $data->{'options'}->{'create_fields'})) {
+		if ($core_fields->{$field}) {
+			$entry->$field($app->param($field));
+		} else {
+			save_field_for_entry($entry, $field, $app->param($field));
+		}
+	}
+	$entry->save || return $app->json_error($entry->errstr);
+	return $app->json_result({
+		code => 'added',
+		id => $entry->id,
+		label => $entry->title,
+	});
+}
+
+sub save_field_for_entry {
+	my ($entry, $key, $value) = @_;
+	require FieldDay::Value;
+	my $val_obj = FieldDay::Value->set_by_key(
+		{
+			object_id => $entry->id,
+			object_type => 'entry',
+			key => $key,
+		},
+		{
+			blog_id => $entry->blog_id,
+			value => $value,
+		}
+	);
+	$val_obj->save || die $val_obj->errstr;
+}
+
+sub do_query {
+	my $class = shift;
+	my ($setting, $q) = @_;
+	my %terms = (
+		title => { like => '%' . $q->param('query') . '%' },
+	);
+	my @entries = $class->load_objects($setting->data->{'options'}, %terms);
+	return join("\n", map { $_->title . "\t" . $_->id . "\t" . $_->blog_id } @entries);
+}
 
 1;

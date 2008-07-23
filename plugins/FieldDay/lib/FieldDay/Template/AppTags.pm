@@ -78,8 +78,11 @@ TMPL
 				my $tmpl = MT::Template->new('type' => 'scalarref', 'source' => \$tmpl_text);
 				my $field_name = $field->name;
 				$field_name .= "-instance-$i" if ($group_id > 0);
+				my $js_field_name = $field_name;
+				$js_field_name =~ s/-/_/g;
 				my $param = {
 					'field' => $field_name,
+					'js_field' => $js_field_name,
 					'label' => $data->{'label'} || $field_name,
 					'label_above' => $data->{'options'}->{'label_above'} ? 1 : 0,
 				};
@@ -93,6 +96,7 @@ TMPL
 					}
 				}
 				$param->{'static_uri'} = $static_uri;
+				$param->{'setting_id'} = $field->id;
 				$class->pre_render($param);
 				$tmpl->param($param);
 				$group_out .= $tmpl->output;

@@ -30,10 +30,10 @@ sub options {
 sub html_head {
 	return <<"HTML";
 <script type="text/javascript">
-womAdd('fdFileFixForm()');
 function fdFileFixForm() {
 document.getElementById('<mt:var name="object_form_id">').enctype = 'multipart/form-data';
 }
+TC.attachLoadEvent(fdFileFixForm);
 </script>
 HTML
 }

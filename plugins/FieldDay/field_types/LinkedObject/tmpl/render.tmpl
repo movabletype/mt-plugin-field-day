@@ -3,10 +3,70 @@
 	label="<mt:var name="label">"
     label_class="<mt:if name="label_above">top-label<mt:else>left-label</mt:else></mt:if>"
 	>
+
+<mt:if name="autocomplete">
+
+<div class="yui-skin-sam">
+<div id="<mt:var name="field">-div" class="autocomplete">
+<input id="<mt:var name="field">-text" name="<mt:var name="field">-text" type="text" />
+<select name="<mt:var name="field">" id="<mt:var name="field">">
+<mt:loop name="object_loop">
+<option value="<mt:var name="value">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
+</mt:loop>
+</select>
+
+<div id="<mt:var name="field">-container"></div>
+</div>
+</div>
+
+<script type="text/javascript"> 
+var myDataSource<mt:var name="js_field"> = new YAHOO.widget.DS_XHR(myServer, mySchema);
+myDataSource<mt:var name="js_field">.responseType = YAHOO.widget.DS_XHR.TYPE_FLAT; 
+myDataSource<mt:var name="js_field">.scriptQueryAppend = 'setting_id=<mt:var name="setting_id">';
+var autoComp<mt:var name="js_field"> = new YAHOO.widget.AutoComplete('<mt:var name="field">-text', '<mt:var name="field">-container', myDataSource<mt:var name="js_field">);
+var itemSelectHandler<mt:var name="js_field"> = function(sType, aArgs) {
+	linkedObjectSelect('<mt:var name="field">', aArgs[2]);
+};
+autoComp<mt:var name="js_field">.itemSelectEvent.subscribe(itemSelectHandler<mt:var name="js_field">);
+</script>
+
+<mt:else>
+
 <select name="<mt:var name="field">" id="<mt:var name="field">">
 <option value="">Select</option>
 <mt:loop name="object_loop">
 <option value="<mt:var name="value">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
 </mt:loop>
 </select>
+
+</mt:else>
+</mt:if>
+
+<mt:if name="allow_create">
+<script type="text/javascript">
+linkedObjectFormFields['<mt:var name="field">'] = new Array(<mt:var name="field_list">);
+</script>
+<div id="<mt:var name="field">-create-link" class="linked-object-create-link"><a href="javascript:void(0);" onclick="linkedObjectToggleCreate('<mt:var name="field">', true)">Create</a></div>
+
+<div id="<mt:var name="field">-create-fields" class="linked-object-create-fields">
+<mt:var name="create_form">
+<div class="actions-bar pkg">
+<div class="button-actions actions">
+<button
+        type="button"
+        title="Create"
+        onclick="linkedObjectSubmit('<mt:var name="field">', <mt:var name="setting_id">, <mt:var name="linked_blog_id">, <mt:if name="autocomplete">true<mt:else>false</mt:else></mt:if>)"
+>Create</button>
+<button
+        type="button"
+        title="Cancel"
+        onclick="linkedObjectToggleCreate('<mt:var name="field">', false)"
+>Cancel</button>
+</div>
+</div>
+
+</div>
+
+</mt:if>
+
 </mtapp:setting>

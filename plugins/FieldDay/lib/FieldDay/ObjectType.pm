@@ -26,7 +26,7 @@ sub edit_template_source {
 		$data->{'type'} ||= 'Text';
 		unless ($class = $type_classes{$data->{'type'}}) {
 			$class = require_type(MT->instance, 'field', $data->{'type'});
-			$type_classes{$data->{'type'}} = $class;
+			$type_classes{$class->html_head_type || $data->{'type'}} = $class;
 		}
 	}
 	my $html_head = '';
@@ -41,7 +41,6 @@ function ffFormOnSubmit() {
 	document.forms['$form_id'].onsubmit = ffSubmit;
 }
 </script>
-<script type="text/javascript" src="<mt:var name="static_uri">plugins/FieldDay/WOM.js"></script>
 $html_head
 </mt:setvarblock>
 HTML

@@ -4,7 +4,7 @@ use strict;
 use Data::Dumper;
 
 use vars qw( $VERSION $SCHEMA_VERSION );
-$VERSION = '1.0b7.4';
+$VERSION = '1.1';
 $SCHEMA_VERSION = '0.1594';
 
 use base qw( MT::Plugin );
@@ -48,6 +48,7 @@ sub init_registry {
 						my $action = $_;
 						"fd_${_}_default" => sub { mode_dispatch("${action}_default", @_) }			
 					} qw( set clear override use )),
+					'fd_save_linked_obj' => sub { mode_dispatch('save_linked_obj', @_) },
 				},
 				'page_actions' => $page_actions,
 			},
@@ -81,6 +82,8 @@ sub init_registry {
 
 sub init_request {
 	my $app = shift;
+	require FieldDay::FieldType;
+	$FieldDay::FieldType::type_tmpls = {};
 }
 
 sub do_upgrade {

@@ -5,6 +5,8 @@ use FieldDay::YAML qw( types object_type );
 use FieldDay::Util qw( require_type mtlog );
 use Data::Dumper;
 
+our $type_tmpls;
+
 sub label {
 	return 'Unknown';
 }
@@ -72,8 +74,13 @@ sub render_tmpl_type {
 # the field type that contains the render template, used for subclasses
 }
 
+sub html_head_type {
+}
+
 sub type_tmpls {
 	my ($plugin, $app, $tmpl_type) = @_;
+	$type_tmpls ||= {};
+	return $type_tmpls->{$tmpl_type} if $type_tmpls->{$tmpl_type};
 	my $field_types = types('field');
 	my %options = ();
 	my $ft_path = $app->{'cfg'}->pluginpath . '/FieldDay/field_types';
@@ -88,6 +95,7 @@ sub type_tmpls {
 		die Dumper($yaml) unless $tmpl;
 		$options{$yaml->{'field_type'}} = $tmpl->text;
 	}
+	$type_tmpls->{$tmpl_type} = \%options;
 	return \%options;
 }
 
