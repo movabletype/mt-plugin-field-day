@@ -46,6 +46,15 @@
 </mtapp:setting>
 
 <mtapp:setting
+	id="<mt:var name="field">_autocomplete_fields"
+	label="Autocomplete Display Fields"
+	hint="Comma-separated list"
+	show_hint="1"
+	content_class="field-content-text">
+	<input type="text" name="<mt:var name="field">_autocomplete_fields" value="<mt:var name="autocomplete_fields">" class="full-width" />
+</mtapp:setting>
+
+<mtapp:setting
 	id="<mt:var name="field">_allow_create"
 	label="Allow Create"
 	content_class="field-content-text">

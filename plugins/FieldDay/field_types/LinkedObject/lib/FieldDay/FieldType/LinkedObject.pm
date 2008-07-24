@@ -191,7 +191,11 @@ var mySchema = ["\\n", "\\t"];
 YAHOO.widget.AutoComplete.prototype.formatResult = function(aResultItem, sQuery) {
 	var re = new RegExp('(' + sQuery + ')', 'ig');
 	var matches = aResultItem[0].match(re);
-	return aResultItem[0].replace(re, function(str) { return '<span class="linked-object-highlight">' + str + '</span>'; });
+	var str = aResultItem[0].replace(re, function(str) { return '<span class="linked-object-highlight">' + str + '</span>'; });
+	if (aResultItem[3]) {
+		str += '<span class="linked-object-info">' + aResultItem[3] + '</span>';
+	}
+	return str;
 };
 </script>
 <style type="text/css">
@@ -215,6 +219,10 @@ display:none;
 border:1px solid #999;
 margin:10px 0 0 0;
 padding:10px;
+}
+.linked-object-info {
+position:absolute;
+left:300px;
 }
 </style>
 HTML

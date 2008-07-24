@@ -27,6 +27,7 @@ sub options {
 		'search' => undef,
 		'published' => 1,
 		'autocomplete' => 1,
+		'autocomplete_fields' => undef,
 		'allow_create' => 1,
 		'create_fields' => undef,
 		'required_fields' => undef,
@@ -217,14 +218,46 @@ sub save_field_for_entry {
 	$val_obj->save || die $val_obj->errstr;
 }
 
+sub field_value_for_entry {
+	my ($entry, $key) = @_;
+	my $id = (ref $entry) ? $entry->id : $entry;
+	require FieldDay::Value;
+	my $val_obj = FieldDay::Value->load(
+		{
+			object_id => $id,
+			object_type => 'entry',
+			key => $key,
+		},
+	);
+	$val_obj ? $val_obj->value : '';
+}
+
 sub do_query {
 	my $class = shift;
 	my ($setting, $q) = @_;
 	my %terms = (
 		title => { like => '%' . $q->param('query') . '%' },
 	);
-	my @entries = $class->load_objects($setting->data->{'options'}, %terms);
-	return join("\n", map { $_->title . "\t" . $_->id . "\t" . $_->blog_id } @entries);
+	my $options = $setting->data->{'options'};
+	my @entries = $class->load_objects($options, %terms);
+	return join("\n", map { $class->map_entry($_, $options) } @entries);
+}
+
+sub map_entry {
+	my $class = shift;
+	my ($entry, $options) = @_;
+	my @values = ($entry->title, $entry->id, $entry->blog_id);
+	if ($options->{'autocomplete_fields'}) {
+		my $core_fields = $class->core_fields;
+		for my $field (split(/,/, $options->{'autocomplete_fields'})) {
+			if ($core_fields->{$field}) {
+				push(@values, $entry->$field);
+			} else {
+				push(@values, field_value_for_entry($entry, $field));
+			}
+		}
+	}
+	return join("\t", @values);
 }
 
 1;

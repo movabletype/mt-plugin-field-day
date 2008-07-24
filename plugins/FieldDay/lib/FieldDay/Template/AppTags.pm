@@ -17,19 +17,21 @@ sub hdlr_cmsfields {
 	my %instance_list = ();
 	my @group_need_initial = ();
 	my %group_max_instances = ();
+	my %group_initial_instances = ();
 	my $static_uri = MT->instance->static_path;
 	for my $group_id (sort {
 				$group_orders->{$a} <=> $group_orders->{$b}
 			} keys %$grouped_fields) {
 		#next unless ($groups_by_id->{$group_id});
 		my $group_out = qq{<div id="group-${group_id}-parent">};
-		my $n = $group_need_ns->{$group_id} || 0;
-		if (!$n && $group_id) {
-			push(@group_need_initial, $group_id);
-		}
 		my $g_data;
 		if ($group_id > 0) {
 			$g_data = $groups_by_id->{$group_id}->data;
+		}
+		my $n = $group_need_ns->{$group_id} || 0;
+		if (!$n && $group_id) {
+			push(@group_need_initial, $group_id);
+			$group_initial_instances{$group_id} = $g_data->{'initial'} || 1;
 		}
 		if ($g_data->{'instances'} && ($g_data->{'instances'} > 0)) {
 			$group_max_instances{$group_id} = $g_data->{'instances'};
@@ -42,7 +44,7 @@ sub hdlr_cmsfields {
 			}
 			if ($group_id > 0) {
 				my $inst = ' <span class="instance-i" id="group-' . $group_id . '-display-instance-' . $i . '">' . ($i+1) . '</span>';
-				my $buttons = ($g_data->{'instances'} == 1) ? '' : <<"TMPL";
+				my $buttons = ($g_data->{'instances'} && ($g_data->{'instances'} == 1)) ? '' : <<"TMPL";
 <span class="fd-group-buttons" id="group-${group_id}-buttons-instance-$i">
 <span class="fd-group-button">
 <a href="javascript:void(0);" onclick="ffDeleteInstance('group-$group_id', $i);"><img src="${static_uri}plugins/FieldDay/nav-delete.gif" border="0" /></a>
@@ -122,12 +124,16 @@ TMPL
 		. ');';
 	$js_vars .= 'var group_fields = new Array();';
 	$js_vars .= 'var group_max_instances = new Array();';
+	$js_vars .= 'var group_initial_instances = new Array();';
 	for my $group_id (keys %$grouped_fields) {
 		$js_vars .= "group_fields['group-$group_id'] = new Array("
 		. join(',', map { "'" . $_->name . "'" } @{$grouped_fields->{$group_id}} )
 		. ');';
 		if ($group_max_instances{$group_id}) {
 			$js_vars .= "group_max_instances['group-$group_id'] = $group_max_instances{$group_id};";
+		}
+		if ($group_initial_instances{$group_id}) {
+			$js_vars .= "group_initial_instances['group-$group_id'] = $group_initial_instances{$group_id};";
 		}
 	}
 	$js = <<"TMPL";
