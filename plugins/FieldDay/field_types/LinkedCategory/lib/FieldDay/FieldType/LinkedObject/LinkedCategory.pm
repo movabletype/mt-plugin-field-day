@@ -54,8 +54,13 @@ sub load_objects {
 
 sub object_label {
 	my $class = shift;
-	my ($obj) = @_;
+	my ($obj, $param) = @_;
 	require MT::Util;
+	if (!$param->{'linked_blog_id'}) {
+		require MT::Blog;
+		my $blog = MT::Blog->load($obj->blog_id);
+		return MT::Util::remove_html($blog->name . ' > ' . $obj->label);
+	}
 	return MT::Util::remove_html($obj->label);
 }
 
