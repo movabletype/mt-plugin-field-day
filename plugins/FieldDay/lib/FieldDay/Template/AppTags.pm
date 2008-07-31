@@ -19,6 +19,7 @@ sub hdlr_cmsfields {
 	my %group_max_instances = ();
 	my %group_initial_instances = ();
 	my $static_uri = MT->instance->static_path;
+	my $tabindex = 3;
 	for my $group_id (sort {
 				$group_orders->{$a} <=> $group_orders->{$b}
 			} keys %$grouped_fields) {
@@ -87,6 +88,7 @@ TMPL
 					'js_field' => $js_field_name,
 					'label' => $data->{'label'} || $field_name,
 					'label_above' => $data->{'options'}->{'label_above'} ? 1 : 0,
+					'tabindex' => ++$tabindex,
 				};
 				my $class = require_type(MT->instance, 'field', $data->{'type'});
 				for my $key (keys %{$class->options}) {
@@ -102,6 +104,8 @@ TMPL
 				$class->pre_render($param);
 				$tmpl->param($param);
 				$group_out .= $tmpl->output;
+					# the field type may increment this
+				$tabindex = $param->{'tabindex'};
 			}
 			$group_out .= '</div></div>' if $group_id;
 		}

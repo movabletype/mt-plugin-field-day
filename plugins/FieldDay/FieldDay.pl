@@ -4,7 +4,7 @@ use strict;
 use Data::Dumper;
 
 use vars qw( $VERSION $SCHEMA_VERSION );
-$VERSION = '1.1.0blogscom';
+$VERSION = '1.1.1blogscom';
 $SCHEMA_VERSION = '0.1594';
 
 use base qw( MT::Plugin );
@@ -23,6 +23,8 @@ my $plugin = MT::Plugin::FieldDay->new({
 	'schema_version' => $SCHEMA_VERSION,
 });
 MT->add_plugin($plugin);
+
+sub instance { $plugin }
 
 sub init_registry {
 	my $component = shift;

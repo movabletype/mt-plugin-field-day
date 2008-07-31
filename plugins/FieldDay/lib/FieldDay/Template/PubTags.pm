@@ -276,10 +276,10 @@ sub hdlr_ByValue {
 		}
 	}
 	if (@eq) {
-		push(@terms, '-and', { value => [ @terms ] });
+		push(@terms, '-and', { value => [ @eq ] });
 	}
 	if (@ne) {
-		push(@terms, '-and', { value => { not => [ @terms ] } });
+		push(@terms, '-and', { value => { not => [ @ne ] } });
 	}
 	require FieldDay::Value;
 	$load_args->{'join'} = FieldDay::Value->join_on(

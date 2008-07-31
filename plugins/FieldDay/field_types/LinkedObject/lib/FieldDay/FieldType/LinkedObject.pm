@@ -86,6 +86,7 @@ sub pre_render {
 				'field' => $field_name,
 				'label' => $data->{'label'} || $name,
 				'label_above' => $data->{'options'}->{'label_above'} ? 1 : 0,
+				'tabindex' => ++$param->{'tabindex'},
 			};
 			my $f_class = require_type(MT->instance, 'field', $data->{'type'});
 			for my $key (keys %{$f_class->options}) {
@@ -229,32 +230,47 @@ sub hdlr_LinkedObjects {
 	$ctx->stash('tag') =~ /^(.+?)(If)?Linked/i;
 	my $linking_type = lc($1);
 	return $ctx->error('No field passed') unless $args->{'field'};
+	require FieldDay::Template::PubTags;
 	my $ot_class = require_type(MT->instance, 'object', $linked_type);
 	my $ot = FieldDay::YAML->object_type($linked_type);
 	my $linking_ot_class = require_type(MT->instance, 'object', $linking_type);
 	my $linking_ot = FieldDay::YAML->object_type($linking_type);
 	my $object_id = $linking_ot_class->stashed_id($ctx, $args);
-	require FieldDay::Value;
-	my $load_args = {};
-	my $terms = $ot_class->load_terms($ctx, $args);
-	delete $terms->{'blog_id'};
-	my $id_col = id_col($ot);
-	$load_args->{join} = FieldDay::Value->join_on(
-		undef,
-		{
-			'value'        => \"= $id_col", #"
-			'key' => $args->{'field'},
-			'object_type' => $linking_ot->{'object_mt_type'} || $linking_ot->{'object_type'},
-			'object_id' => $object_id,
+	my $pass_args = { %$args, 'object_type' => $linking_type };
+	my $stash_key = FieldDay::Template::PubTags::obj_stash_key($ctx, $pass_args);
+	my $instance = $ctx->stash("$stash_key:instance");
+	my $iter;
+	if (defined $instance) {
+		my $fd_data = FieldDay::Template::PubTags::get_fd_data(MT::Plugin::FieldDay->instance, $ctx, $pass_args, $cond);
+		my $values = $fd_data->{'values'}->{$args->{'field'}};
+		if ($values && @$values && $values->[$instance] && $values->[$instance]->value) {
+			$iter = $ot->{'object_class'}->load_iter({ id => $values->[$instance]->value });
+		} else {
+			return '';
 		}
-	);
-	eval("require $ot->{'object_class'};");
-	if ($ctx->stash('tag') =~ /IfLinked/) {
-		return $ot->{'object_class'}->count($terms, $load_args) ? 1 : 0;
+	} else {
+		require FieldDay::Value;
+		my $load_args = {};
+		my $terms = $ot_class->load_terms($ctx, $args);
+		delete $terms->{'blog_id'};
+		my $id_col = id_col($ot);
+		$load_args->{join} = FieldDay::Value->join_on(
+			undef,
+			{
+				'value'        => \"= $id_col", #"
+				'key' => $args->{'field'},
+				'object_type' => $linking_ot->{'object_mt_type'} || $linking_ot->{'object_type'},
+				'object_id' => $object_id,
+			}
+		);
+		eval("require $ot->{'object_class'};");
+		if ($ctx->stash('tag') =~ /IfLinked/) {
+			return $ot->{'object_class'}->count($terms, $load_args) ? 1 : 0;
+		}
+		$load_args->{'sort'} = $args->{'sort_by'} || $ot_class->sort_by;
+		$load_args->{'direction'} = $args->{'sort_order'} || $ot_class->sort_order;
+		$iter = $ot->{'object_class'}->load_iter($terms, $load_args);
 	}
-	$load_args->{'sort'} = $args->{'sort_by'} || $ot_class->sort_by;
-	$load_args->{'direction'} = $args->{'sort_order'} || $ot_class->sort_order;
-	my $iter = $ot->{'object_class'}->load_iter($terms, $load_args);
 	return $ot_class->block_loop($iter, $ctx, $args, $cond);
 }
 

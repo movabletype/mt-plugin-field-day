@@ -8,8 +8,8 @@
 
 <div class="yui-skin-sam">
 <div id="<mt:var name="field">-div" class="autocomplete">
-<input id="<mt:var name="field">-text" name="<mt:var name="field">-text" type="text" />
-<select name="<mt:var name="field">" id="<mt:var name="field">">
+<input id="<mt:var name="field">-text" name="<mt:var name="field">-text" type="text" tabindex="<mt:var name="tabindex">" />
+<select name="<mt:var name="field">" id="<mt:var name="field">" tabindex="<mt:var name="tabindex">">
 <mt:loop name="object_loop">
 <option value="<mt:var name="value">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
 </mt:loop>
@@ -32,7 +32,7 @@ autoComp<mt:var name="js_field">.itemSelectEvent.subscribe(itemSelectHandler<mt:
 
 <mt:else>
 
-<select name="<mt:var name="field">" id="<mt:var name="field">">
+<select name="<mt:var name="field">" id="<mt:var name="field">" tabindex="<mt:var name="tabindex">">
 <option value="">Select</option>
 <mt:loop name="object_loop">
 <option value="<mt:var name="value">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
