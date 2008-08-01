@@ -8,7 +8,7 @@ use FieldDay::Util qw( load_fields require_type mtlog );
 sub obj_stash_key {
 	my ($ctx, $args) = @_;
 	my $class = require_type(MT->instance, 'object', $args->{'object_type'});
-	my $id = $class->stashed_id($ctx, $args);
+	my $id = $args->{'id'} ? $args->{'id'} : $class->stashed_id($ctx, $args);
 	return ("fd:$args->{'object_type'}:$id", $id);
 }
 
@@ -17,8 +17,8 @@ sub get_fd_data {
 	my ($key, $object_id) = obj_stash_key($ctx, $args);
 	return $ctx->stash($key) if $ctx->stash($key);
 	my $ot = FieldDay::YAML->object_type($args->{'object_type'});
-	my %blog_id = ($ot->{'has_blog_id'} && $ctx->stash('blog'))
-		? ('blog_id' => $ctx->stash('blog')->id) : ();
+	my %blog_id = ($ot->{'has_blog_id'} && ($args->{'blog_id'} || $ctx->stash('blog')))
+		? ('blog_id' => ($args->{'blog_id'} || $ctx->stash('blog')->id)) : ();
 	my %setting_terms = (
 		%blog_id,
 		'object_type' => $args->{'object_type'},
