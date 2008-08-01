@@ -54,10 +54,39 @@ sub hdlr_FieldGroup {
 		$group_id = $groups_by_name{$group}->id;
 		local $ctx->{'__stash'}{"$stash_key:group_id"} = $group_id;
 	}
+	my @indices = (0 .. $fd_data->{'group_need_ns'}->{$group_id} - 1);
+	if ($args->{'sort_by'}) {
+		# we don't need to actually sort the values, just rejigger the indices.
+		if ($args->{'numeric'}) {
+			if ($args->{'sort_order'} eq 'descend') {
+				@indices = sort {
+					$fd_data->{'values'}->{$args->{'sort_by'}}->[$b]->value
+					<=> $fd_data->{'values'}->{$args->{'sort_by'}}->[$a]->value
+				} @indices;
+			} else {
+				@indices = sort {
+					$fd_data->{'values'}->{$args->{'sort_by'}}->[$a]->value
+					<=> $fd_data->{'values'}->{$args->{'sort_by'}}->[$b]->value
+				} @indices;
+			}		
+		} else {
+			if ($args->{'sort_order'} eq 'descend') {
+				@indices = sort {
+					lc($fd_data->{'values'}->{$args->{'sort_by'}}->[$b]->value) 
+					cmp lc($fd_data->{'values'}->{$args->{'sort_by'}}->[$a]->value)
+				} @indices;
+			} else {
+				@indices = sort {
+					lc($fd_data->{'values'}->{$args->{'sort_by'}}->[$a]->value) 
+					cmp lc($fd_data->{'values'}->{$args->{'sort_by'}}->[$b]->value)
+				} @indices;
+			}
+		}
+	}
 	my $builder = $ctx->stash('builder');
 	my $tokens  = $ctx->stash('tokens');
 	my $out;
-	for (my $i = 0; $i < $fd_data->{'group_need_ns'}->{$group_id}; $i++) {
+	for my $i (@indices) {
 		next if (%instances && !$instances{$i+1});
 		local $ctx->{'__stash'}{"$stash_key:instance"} = $i;
 		my $text = $builder->build( $ctx, $tokens )
@@ -233,6 +262,7 @@ sub hdlr_ByValue {
 	my $ot_class = require_type(MT->instance, 'object', $object_type);
 	require FieldDay::Value;
 	my $terms = $ot_class->load_terms($ctx, $args);
+	$terms->{'blog_id'} = $args->{'blog_id'} if $args->{'blog_id'};
 	my $load_args = {};
 	my $id_col = ($ot->{'object_datasource'} || $ot->{'object_mt_type'} || $object_type) . '_id';
 	my @keys = grep { /^(eq|ne)/ } keys %$args;
