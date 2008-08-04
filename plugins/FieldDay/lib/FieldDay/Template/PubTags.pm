@@ -160,7 +160,9 @@ sub hdlr_IfField {
 	my $stash_key = obj_stash_key($ctx, $args);
 	my %instances;
 		# if there's a stashed instance, we only want to check that one
-	if (defined $ctx->stash("$stash_key:instance")) {
+	if ($args->{'instance'}) {
+		$instances{$args->{'instance'} - 1} = 1;
+	} elsif (defined $ctx->stash("$stash_key:instance")) {
 		$instances{$ctx->stash("$stash_key:instance")} = 1;
 	} else {
 		%instances = $args->{'instances'} ? (map { $_ => 1 } split(/,/, $args->{'instances'})) : ();
