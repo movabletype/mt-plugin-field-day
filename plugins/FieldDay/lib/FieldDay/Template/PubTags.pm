@@ -76,6 +76,9 @@ sub hdlr_Field {
 	my $field = $ctx->stash($stash_key . ':field') || $args->{'field'};
 	return '' unless ($field);
 	local $ctx->{'__stash'}{"$stash_key:field"} = $field;
+	if (!$fd_data->{'fields_by_name'}->{$field}) {
+		return $ctx->error("Field $field not defined");
+	}
 	my $group_id = $fd_data->{'fields_by_name'}->{$field}->data->{'group'} || 0;
 	my $builder = $ctx->stash('builder');
 	my $tokens  = $ctx->stash('tokens');
@@ -128,13 +131,18 @@ sub hdlr_IfField {
 	my $stash_key = obj_stash_key($ctx, $args);
 	my %instances;
 		# if there's a stashed instance, we only want to check that one
-	if (defined $ctx->stash("$stash_key:instance")) {
+	if ($args->{'instance'}) {
+		$instances{$args->{'instance'} - 1} = 1;
+	} elsif (defined $ctx->stash("$stash_key:instance")) {
 		$instances{$ctx->stash("$stash_key:instance")} = 1;
 	} else {
 		%instances = $args->{'instances'} ? (map { $_ => 1 } split(/,/, $args->{'instances'})) : ();
 	}
 	my $field = $ctx->stash($stash_key . ':field') || $args->{'field'};
 	return 0 unless ($field);
+	if (!$fd_data->{'fields_by_name'}->{$field}) {
+		return $ctx->error("Field $field not defined");
+	}
 	my $group_id = $fd_data->{'fields_by_name'}->{$field}->data->{'group'} || 0;
 		# return true if any instance of this field has a value
 	my $values = $fd_data->{'values'}->{$field};
@@ -160,6 +168,9 @@ sub hdlr_FieldValue {
 		$instance = $ctx->stash("$stash_key:instance");
 	}
 	my $values = $fd_data->{'values'}->{$field};
+	if (!$fd_data->{'fields_by_name'}->{$field}) {
+		return $ctx->error("Field $field not defined");
+	}
 	my $field_class = require_type(MT->instance, 'field', $fd_data->{'fields_by_name'}->{$field}->data->{'type'} || 'Text');
 	if (!($values && @$values && $values->[$instance])) {
 		if ($args->{'enter'}) {
