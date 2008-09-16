@@ -3,7 +3,7 @@
 	label="<mt:var name="label">"
     label_class="<mt:if name="label_above">top-label<mt:else>left-label</mt:else></mt:if>"
 	>
-<select name="<mt:var name="field">" id="<mt:var name="field">">
+<select name="<mt:var name="field">" id="<mt:var name="field">" tabindex="<mt:var name="tabindex">">
 <option value="">Select</option>
 <mt:loop name="choice_loop">
 <option value="<mt:var name="value">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>

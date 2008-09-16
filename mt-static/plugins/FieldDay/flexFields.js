@@ -10,13 +10,15 @@ Array.prototype.swap = function(a, b) {
 	this[a] = this[b];
 	this[b] = tmp;
 }
-womAdd('ffInitialize()');
 function ffInitialize() {
 	for (var i = 0; i < group_need_initial.length; i++) {
-		ffAddInstance(group_need_initial[i], -1);
+		for (var j = -1; j < (group_initial_instances[group_need_initial[i]] - 1); j++) {
+			ffAddInstance(group_need_initial[i], j);
+		}
 	}
 	ffFormOnSubmit();
 }
+TC.attachLoadEvent(ffInitialize);
 function ffSubmit() {
 	
 }
@@ -53,6 +55,10 @@ function ffRenumberInstance(group_id, old_i, new_i) {
 }
 function ffAddInstance(group_id) {
 	var i = -1;
+	if (group_max_instances[group_id] && (instance_list[group_id].length == group_max_instances[group_id])) {
+		alert('Only ' + group_max_instances[group_id] + ' instances of that group are allowed.');
+		return;
+	}
 	var parent = getByID(group_id + '-parent');
 	var new_i = instance_list[group_id].length;
 	var new_name = group_id + '-' + new_i;
@@ -69,6 +75,9 @@ function ffAddInstance(group_id) {
 	parent.appendChild(new_instance);
 }
 function ffDeleteInstance(group_id, i) {
+	if (instance_list[group_id].length == 1) {
+		return;
+	}
 	var parent = getByID(group_id + '-parent');
 	var instance = getByID(group_id + '-' + i);
 	for (var j = i + 1; j < instance_list[group_id].length; j++) {

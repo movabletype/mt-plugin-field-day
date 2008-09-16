@@ -120,8 +120,8 @@ sub load_fields {
 		$max_order = $_->order if ($_->order > $max_order); 
 		$_->id => $_->order
 	} @$groups };
-		# put ungrouped fields at the end
-	$group_orders->{0} = $max_order + 1;
+		# put ungrouped fields at the beginning
+	$group_orders->{0} = 0;
 	my $groups_by_id = { map {
 		$_->id => $_
 	} @$groups };

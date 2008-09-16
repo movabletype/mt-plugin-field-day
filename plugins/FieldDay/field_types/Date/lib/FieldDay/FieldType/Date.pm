@@ -90,7 +90,7 @@ sub pre_render {
 # before the field is rendered in the CMS
 	my $class = shift;
 	my ($param) = @_;
-	my $tabindex = $param->{'tabindex'};
+	my $tabindex = $param->{'tabindex'} - 1;
 	$param->{'show_min'} = $param->{'show_hms'};
 	$param->{'show_sec'} = ($param->{'time'} eq 'hhmmss') ? 1 : 0;
 	$param->{'date_order'} ||= 'mdy';
@@ -132,6 +132,7 @@ sub pre_render {
 			}
 		}
 	}
+	$param->{'tabindex'} = $tabindex;
 }
 
 sub pre_save_value {

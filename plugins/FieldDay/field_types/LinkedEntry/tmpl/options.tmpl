@@ -38,3 +38,53 @@
 	<input type="checkbox" name="<mt:var name="field">_published"<mt:if name="published"> checked="checked"</mt:if> />
 </mtapp:setting>
 
+<mtapp:setting
+	id="<mt:var name="field">_autocomplete"
+	label="Autocomplete"
+	content_class="field-content-text">
+	<input type="checkbox" name="<mt:var name="field">_autocomplete"<mt:if name="autocomplete"> checked="checked"</mt:if> />
+</mtapp:setting>
+
+<mtapp:setting
+	id="<mt:var name="field">_autocomplete_fields"
+	label="Autocomplete Display Fields"
+	hint="Comma-separated list"
+	show_hint="1"
+	content_class="field-content-text">
+	<input type="text" name="<mt:var name="field">_autocomplete_fields" value="<mt:var name="autocomplete_fields">" class="full-width" />
+</mtapp:setting>
+
+<mtapp:setting
+	id="<mt:var name="field">_allow_create"
+	label="Allow Create"
+	content_class="field-content-text">
+	<input type="checkbox" name="<mt:var name="field">_allow_create"<mt:if name="allow_create"> checked="checked"</mt:if> />
+</mtapp:setting>
+
+<mtapp:setting
+	id="<mt:var name="field">_create_fields"
+	label="Create Fields"
+	hint="Comma-separated list"
+	show_hint="1"
+	content_class="field-content-text">
+	<input type="text" name="<mt:var name="field">_create_fields" value="<mt:var name="create_fields">" class="full-width" />
+</mtapp:setting>
+
+<mtapp:setting
+	id="<mt:var name="field">_required_fields"
+	label="Required Fields"
+	hint="Comma-separated list"
+	show_hint="1"
+	content_class="field-content-text">
+	<input type="text" name="<mt:var name="field">_required_fields" value="<mt:var name="required_fields">" class="full-width" />
+</mtapp:setting>
+
+<mtapp:setting
+	id="<mt:var name="field">_unique_fields"
+	label="Unique Fields"
+	hint="Comma-separated list"
+	show_hint="1"
+	content_class="field-content-text">
+	<input type="text" name="<mt:var name="field">_unique_fields" value="<mt:var name="unique_fields">" class="full-width" />
+</mtapp:setting>
+

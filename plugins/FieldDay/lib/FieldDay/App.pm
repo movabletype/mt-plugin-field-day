@@ -9,6 +9,18 @@ sub plugin {
     return MT->component('FieldDay');
 }
 
+sub save_linked_obj {
+	my $class = shift;
+	my ($plugin, $app) = @_;
+	require FieldDay::Setting;
+	require FieldDay::Util;
+	(my $setting_id = $app->param('setting_id')) || return $app->json_error('No setting ID');
+	(my $setting = FieldDay::Setting->load($setting_id)) || return $app->json_error('Setting not found');
+	my $type = $setting->data->{'type'};
+	my $ft = FieldDay::Util::require_type($app, 'field', $type);
+	return $ft->save_object($setting, $app);
+}
+
 sub cfg_fields {
 	my $class = shift;
 	my ($plugin, $app) = @_;
@@ -120,7 +132,8 @@ sub cfg_groups {
 	require FieldDay::Setting;
 	my $options = {
 		'label' => '',
-		'instances' => 1
+		'instances' => 1,
+		'initial' => 1,
 	};
 	my $hasher = sub {
 		my ($obj, $row) = @_;
@@ -211,13 +224,19 @@ sub save_groups {
 	my $class = shift;
 	my ($plugin, $app) = @_;
 	require FieldDay::Setting;
+	my $options = {
+		'label' => '',
+		'instances' => 1,
+		'initial' => 1,
+	};
 	for my $row_name (split(/,/, $app->param('fd_setting_list'))) {
 		next unless $row_name;
 		next if ($row_name eq 'prototype__');
 		next unless $app->param($row_name . '_name');
 		my $data = {};
-		$data->{'label'} = $app->param($row_name . '_label');
-		$data->{'instances'} = $app->param($row_name . '_instances');
+		for my $key (keys %$options) {
+			$data->{$key} = $app->param($row_name . '_' . $key);
+		}
 		populate_setting($app, 'group', $row_name, $data);
 	}
 	for my $row_name (split(/,/, $app->param('fd_deleted_settings'))) {
