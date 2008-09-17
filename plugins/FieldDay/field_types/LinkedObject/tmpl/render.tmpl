@@ -4,6 +4,35 @@
     label_class="<mt:if name="label_above">top-label<mt:else>left-label</mt:else></mt:if>"
 	>
 
+<mt:if name="pub_tmpl">
+
+<mt:if name="allow_create">
+
+<style type="text/css">
+.linked-object-create-fields {
+display:block;
+}
+</style>
+<div id="<mt:var name="field">-create-fields" class="linked-object-create-fields">
+<input type="hidden" name="<mt:var name="field">" value="dummy" />
+<mt:var name="create_form">
+</div>
+
+<mt:else>
+
+<select name="<mt:var name="field">" id="<mt:var name="field">" tabindex="<mt:var name="tabindex">">
+<option value="">Select</option>
+<mt:loop name="object_loop">
+<option value="<mt:var name="value">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
+</mt:loop>
+</select>
+
+</mt:else>
+
+</mt:if>
+
+<mt:else>
+
 <mt:if name="autocomplete">
 
 <div class="yui-skin-sam">
@@ -68,6 +97,10 @@ linkedObjectFormFields['<mt:var name="field">'] = new Array(<mt:var name="field_
 </div>
 
 </div>
+
+</mt:if>
+
+</mt:else>
 
 </mt:if>
 

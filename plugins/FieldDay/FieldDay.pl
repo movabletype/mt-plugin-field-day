@@ -111,6 +111,8 @@ sub init_object_types {
 			# callbacks
 		$cbs->{"cms_post_save.$use_type"} = 
 			sub { callback_dispatch('cms_post_save', $key, $ot, @_) };
+		$cbs->{"api_post_save.$use_type"} = 
+			sub { callback_dispatch('cms_post_save', $key, $ot, @_) };
 		if ($ot->{'object_class'}) {
 			$cbs->{"$ot->{'object_class'}::post_remove"} = 
 				sub { callback_dispatch('post_remove', $key, $ot, @_) };

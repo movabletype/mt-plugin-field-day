@@ -48,7 +48,9 @@ sub pre_render {
 # before the field is rendered in the CMS
 	my $class = shift;
 	my ($param) = @_;
-	$param->{'can_upload'} = MT->instance->permissions->can_upload;
+	if (MT->instance->permissions) {
+		$param->{'can_upload'} = MT->instance->permissions->can_upload;
+	}
 	if ($param->{'value'} && $param->{'value'} =~ /\.(jpg|gif|bmp|png|jpeg)$/) {
 		$param->{'image'} = 1;
 	}

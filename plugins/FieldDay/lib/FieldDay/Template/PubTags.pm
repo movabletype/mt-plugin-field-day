@@ -3,14 +3,7 @@ package FieldDay::Template::PubTags;
 use strict;
 use Data::Dumper;
 use FieldDay::YAML qw( field_type object_type );
-use FieldDay::Util qw( load_fields require_type mtlog );
-
-sub obj_stash_key {
-	my ($ctx, $args) = @_;
-	my $class = require_type(MT->instance, 'object', $args->{'object_type'});
-	my $id = $args->{'id'} ? $args->{'id'} : $class->stashed_id($ctx, $args);
-	return ("fd:$args->{'object_type'}:$id", $id);
-}
+use FieldDay::Util qw( load_fields require_type mtlog obj_stash_key );
 
 sub get_fd_data {
 	my ($plugin, $ctx, $args, $cond) = @_;

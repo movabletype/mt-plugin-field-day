@@ -84,7 +84,7 @@ sub pre_render {
 			push(@field_list, $field_name);
 			my $f_param = {
 				'field' => $field_name,
-				'label' => $data->{'label'} || $name,
+				'label' => $data->{'label'} || '',
 				'label_above' => $data->{'options'}->{'label_above'} ? 1 : 0,
 				'tabindex' => ++$param->{'tabindex'},
 			};
@@ -221,6 +221,13 @@ left:300px;
 }
 </style>
 HTML
+}
+
+sub pre_save_value {
+# before the CMS saves a value from the editing screen
+	my $class = shift;
+	my $linked_object_id = $class->save_linked_object(@_);
+	return $linked_object_id;
 }
 
 sub hdlr_LinkedObjects {
