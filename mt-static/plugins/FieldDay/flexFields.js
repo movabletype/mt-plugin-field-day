@@ -16,11 +16,9 @@ function ffInitialize() {
 			ffAddInstance(group_need_initial[i], j);
 		}
 	}
-	ffFormOnSubmit();
 }
-TC.attachLoadEvent(ffInitialize);
-function ffSubmit() {
-	
+if (typeof(TC) != 'undefined') {
+	TC.attachLoadEvent(ffInitialize);
 }
 function ffRenumberFields(node, old_re, new_str) {
 //recursively 
