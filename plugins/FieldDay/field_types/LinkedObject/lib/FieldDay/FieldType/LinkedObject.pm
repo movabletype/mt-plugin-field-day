@@ -259,7 +259,7 @@ sub hdlr_LinkedObjects {
 			{
 				'value'        => \"= $id_col", #"
 				'key' => $args->{'field'},
-				'object_type' => $linking_ot->{'object_mt_type'} || $linking_ot->{'object_type'},
+				'object_type' => $linking_ot->{'object_type'},
 				'object_id' => $object_id,
 			}
 		);
@@ -303,7 +303,7 @@ sub hdlr_LinkingObjects {
 			'object_id' => \"= $id_col", #"
 			'value'        => $linked_object_id,
 			'key' => $args->{'field'},
-			'object_type' => $linking_ot->{'object_mt_type'} || $linking_ot->{'object_type'},
+			'object_type' => $linking_ot->{'object_type'},
 		}
 	);
 	eval("require $ot->{'object_class'};");
