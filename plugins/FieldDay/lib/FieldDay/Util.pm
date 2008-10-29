@@ -38,6 +38,7 @@ sub app_value_terms {
 
 sub use_type {
 	my ($use_type) = @_;
+	return 'system' unless $use_type;
 	if ($use_type) {
 		my $types = types('object');
 		if (!$types->{$use_type}) {
@@ -81,7 +82,7 @@ sub load_fields {
 	my @fields = FieldDay::Setting->load_with_default($terms, $sort);
 	my $values = {};
 		# don't try to load values for a new object (no ID)
-	if ($ctx->stash('fd:value_terms') || MT->instance->param('id')) {
+	if ($ctx->stash('fd:value_terms') || MT->instance->param('id') || ($terms->{'object_type'} eq 'system')) {
 		for my $field (@fields) {
 			$terms = $ctx->stash('fd:value_terms')
 				? { %{$ctx->stash('fd:value_terms')}, 'key' => $field->name }

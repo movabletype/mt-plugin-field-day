@@ -48,7 +48,14 @@ sub pre_render {
 # before the field is rendered in the CMS
 	my $class = shift;
 	my ($param) = @_;
-	$param->{'can_upload'} = MT->instance->permissions->can_upload;
+	my $app = MT->instance;
+	if ($app->param('blog_id')) {
+		$param->{'can_upload'} = $app->permissions->can_upload;
+	} else {
+		# if no blog context (i.e. for a System field), assume they wouldn't be able to access
+		# this screen unless they have appropriate permissions
+		$param->{'can_upload'} = 1;
+	}
 	if ($param->{'value'} && $param->{'value'} =~ /\.(jpg|gif|bmp|png|jpeg)$/) {
 		$param->{'image'} = 1;
 	}
