@@ -45,7 +45,12 @@ sub block_loop {
 	my $builder = $ctx->stash('builder');
 	my $tokens  = $ctx->stash('tokens');
 	my $out = '';
+	my @authors;
 	while (my $author = $iter->()) {
+		push(@authors, $author);
+	}
+	@authors = @{$class->sort_objects('MT::Author', \@authors, $ctx, $args)};
+	for my $author (@authors) {
         local $ctx->{__stash}{author} = $author;
         local $ctx->{__stash}{author_id} = $author->id;
 		my $text = $builder->build($ctx, $tokens, $cond);
@@ -61,6 +66,13 @@ sub sort_by {
 
 sub sort_order {
 	return 'ascend';
+}
+
+sub val {
+	my $class = shift;
+	my ($ctx, $args, $obj) = @_;
+	local $ctx->{__stash}->{author} = $obj;
+	return $ctx->tag('UserFieldValue', $args);
 }
 
 1;

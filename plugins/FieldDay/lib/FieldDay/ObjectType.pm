@@ -164,4 +164,28 @@ sub block_loop {
 	return '';
 }
 
+sub sort_objects {
+	my $class = shift;
+	my ($object_class, $objects, $ctx, $args) = @_;
+	my $col = $args->{'sort_by'};
+	if ($col && !$object_class->column_def($col) && !$object_class->is_meta_column($col)) {
+		my $so = $args->{'sort_order'};
+		local $args->{field} = $col;
+		if ($args->{'numeric'}) {
+			if ($so eq 'descend') {
+				@$objects = sort { $class->val($ctx, $args, $b) <=> $class->val($ctx, $args, $a) } @$objects;
+			} else {
+				@$objects = sort { $class->val($ctx, $args, $a) <=> $class->val($ctx, $args, $b) } @$objects;
+			}
+		} else {
+			if ($so eq 'descend') {
+				@$objects = sort { $class->val($ctx, $args, $b) cmp $class->val($ctx, $args, $a) } @$objects;
+			} else {
+				@$objects = sort { $class->val($ctx, $args, $a) cmp $class->val($ctx, $args, $b) } @$objects;
+			}
+		}
+	}
+	$objects;
+}
+
 1;
