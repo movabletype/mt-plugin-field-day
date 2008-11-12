@@ -131,10 +131,16 @@ sub execute {
 
 sub process_link {
     my $app = shift;
-
 	if (!$app->param('search')) {
 		$app->{search_string} = '%';
 		$app->param('search', '%');
+	}
+	# need to hide this from the initial linked/ing search, but keep track of it
+	# to apply to the parent search
+	my $offset;
+	if ($app->param('offset')) {
+		$offset = $app->param('offset');
+		$app->param('offset', '');
 	}
     my @arguments = $app->search_terms();
     return $app->error($app->errstr) if $app->errstr;
@@ -162,6 +168,9 @@ sub process_link {
 			$key =~ s/^link(ed|ing)_//;
 			$app->param($key, $val);
 		}
+	}
+	if ($offset) {
+		$app->param('offset', $offset);
 	}
 	if (@ids) {
 		$app->param($app->mode . '_ids', join(',', @ids));
