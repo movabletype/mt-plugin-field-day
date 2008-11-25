@@ -38,6 +38,9 @@ sub hdlr_cmsfields {
 			$group_max_instances{$group_id} = $g_data->{'instances'};
 		}
 		$instance_list{$group_id} = [];
+		if ($group_id > 0) {
+			$group_out .= qq{<h4 class="fd-group-head">$g_data->{'label'}</h4>};
+		}
 		for (my $i = -1; $i < $n; $i++) {
 				# don't need a prototype if no group
 			if (($i == -1) && ($group_id == 0)) {
@@ -70,7 +73,7 @@ TMPL
 				}
 				$group_out .= <<"TMPL";
 $div
-<h4 class="fd-group-head">$g_data->{'label'}$inst$buttons</h4>
+<span class="fd-group-inst-buttons"><span class="fd-group-inst">$inst</span>$buttons</span>
 <div id="group-${group_id}-fields-instance-$i">
 TMPL
 			}
@@ -87,7 +90,7 @@ TMPL
 					'field' => $field_name,
 					'js_field' => $js_field_name,
 					'label' => $data->{'label'} || $field_name,
-					'label_above' => $data->{'options'}->{'label_above'} ? 1 : 0,
+					'label_display' => $data->{'options'}->{'label_display'},
 					'tabindex' => ++$tabindex,
 				};
 				my $class = require_type(MT->instance, 'field', $data->{'type'});
@@ -154,7 +157,16 @@ padding:5px 0 5px 5px;
 margin-bottom:10px;
 }
 .fd-group-buttons {
-padding-left:5px;
+padding-right:5px;
+}
+.fd-group-inst-buttons {
+float:left;
+width:75px;
+}
+.fd-group-inst {
+font-weight:bold;
+font-size:12px;
+padding-right:5px;
 }
 </style>
 $js

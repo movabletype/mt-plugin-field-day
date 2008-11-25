@@ -32,11 +32,9 @@ sub pre_render {
 	my %blog_ids = ();
 	if ($param->{'autocomplete'}) {
 		if ($param->{'value'}) {
-			push(@object_loop, {
-				'value' => $param->{'value'},
-				'selected' => 1,
-				'label' => $class->object_label($class->load_objects({}, id => $param->{'value'})),
-			});
+			my $obj = $class->load_objects({}, id => $param->{'value'});
+			$param->{'value_label'} = $class->object_label($obj);
+			$param->{'blog_id'} = $obj->can('blog_id') ? $obj->blog_id : undef;
 		}
 	} else {
 		for my $obj ($class->load_objects($param)) {
@@ -85,7 +83,7 @@ sub pre_render {
 			my $f_param = {
 				'field' => $field_name,
 				'label' => $data->{'label'} || $name,
-				'label_above' => $data->{'options'}->{'label_above'} ? 1 : 0,
+				'label_display' => $data->{'options'}->{'label_display'},
 				'tabindex' => ++$param->{'tabindex'},
 			};
 			my $f_class = require_type(MT->instance, 'field', $data->{'type'});
@@ -120,10 +118,29 @@ sub html_head {
 <script type="text/javascript">
 function linkedObjectSelect(field, data) {
 	var f = getByID(field);
-	f.options.length = 1;
-	f.options[0] = new Option(data[0], data[1]);
-	var tx = getByID(field + '-text');
-	tx.value = '';
+	var ac = getByID(field + '-ac');
+	var ed = getByID(field + '-change');
+	var bl = getByID(field + '-blog_id');
+	f.value = data[1];
+	ac.value = data[0];
+	ac.setAttribute('readOnly', 'readonly');
+	ed.style.display = 'inline';
+	bl.value = data[2];
+}
+function linkedObjectChange(field) {
+	var f = getByID(field);
+	var ac = getByID(field + '-ac');
+	var ed = getByID(field + '-change');
+	f.value = '';
+	ac.removeAttribute('readOnly');
+	ac.value = '';
+	ed.style.display ='none';
+}
+function linkedObjectView(field) {
+	var f = getByID(field);
+	var bl = getByID(field + '-blog_id');
+	var url = '<mt:var name="script_url">?__mode=view&_type=entry&id=' + f.value + '&blog_id=' + bl.value;
+	window.location = url;
 }
 function linkedObjectToggleCreate(field, on) {
 	var fieldsDiv = getByID(field + '-create-fields');

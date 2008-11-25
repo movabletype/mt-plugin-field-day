@@ -1,36 +1,44 @@
 <mtapp:setting
 	id="<mt:var name="field">"
-	label="<mt:var name="label">"
-    label_class="<mt:if name="label_above">top-label<mt:else>left-label</mt:else></mt:if>"
+	label="<mt:unless name="label_display" eq="hide"><mt:var name="label"></mt:unless>"
+    label_class="<mt:if name="label_display" like="/above|hide/">top-label<mt:else>left-label</mt:else></mt:if>"
 	>
 
 <mt:if name="autocomplete">
 
+<div style="float:left;">
+
 <div class="yui-skin-sam">
 <div id="<mt:var name="field">-div" class="autocomplete">
-<input id="<mt:var name="field">-text" name="<mt:var name="field">-text" type="text" tabindex="<mt:var name="tabindex">" />
-<select name="<mt:var name="field">" id="<mt:var name="field">" tabindex="<mt:var name="tabindex">">
-<mt:loop name="object_loop">
-<option value="<mt:var name="value">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
-</mt:loop>
-</select>
-
-<a href="javascript:void(0);" onclick="linkedObjectSelect('<mt:var name="field">', new Array('', 0));">Clear</a>
+<input id="<mt:var name="field">-ac" name="<mt:var name="field">-ac" type="text" tabindex="<mt:var name="tabindex">" value="<mt:var name="value_label">"<mt:if name="value"> readonly="readonly"</mt:if> style="width:350px;" />
+<input id="<mt:var name="field">" name="<mt:var name="field">" type="hidden" value="<mt:var name="value">" />
+<input id="<mt:var name="field">-blog_id" name="<mt:var name="field">-blog_id" type="hidden" value="<mt:var name="blog_id">" />
+&nbsp;
+<div id="<mt:var name="field">-change" style="display:<mt:if name="value">inline<mt:else>none</mt:if>;">
+<a href="javascript:void(0);" name="<mt:var name="field">" onclick="linkedObjectChange(this.name);">Change</a> &nbsp; 
+<a href="javascript:void(0);" name="<mt:var name="field">" onclick="linkedObjectView(this.name);">View</a>
+</div> &nbsp;
+<span id="<mt:var name="field">-create-link" class="linked-object-create-link"><a href="javascript:void(0);" onclick="linkedObjectToggleCreate('<mt:var name="field">', true)">Create</a></span>
 
 <div id="<mt:var name="field">-container"></div>
 </div>
 </div>
 
-<script type="text/javascript"> 
+<script type="text/javascript">
 var myDataSource<mt:var name="js_field"> = new YAHOO.widget.DS_XHR(myServer, mySchema);
 myDataSource<mt:var name="js_field">.responseType = YAHOO.widget.DS_XHR.TYPE_FLAT; 
 myDataSource<mt:var name="js_field">.scriptQueryAppend = 'setting_id=<mt:var name="setting_id">';
-var autoComp<mt:var name="js_field"> = new YAHOO.widget.AutoComplete('<mt:var name="field">-text', '<mt:var name="field">-container', myDataSource<mt:var name="js_field">);
+var autoComp<mt:var name="js_field"> = new YAHOO.widget.AutoComplete('<mt:var name="field">-ac', '<mt:var name="field">-container', myDataSource<mt:var name="js_field">);
 var itemSelectHandler<mt:var name="js_field"> = function(sType, aArgs) {
 	linkedObjectSelect('<mt:var name="field">', aArgs[2]);
 };
 autoComp<mt:var name="js_field">.itemSelectEvent.subscribe(itemSelectHandler<mt:var name="js_field">);
 </script>
+
+<mt:unless name="allow_create">
+</div>
+<div style="clear:both;"></div>
+</mt:unless>
 
 <mt:else>
 
@@ -48,7 +56,9 @@ autoComp<mt:var name="js_field">.itemSelectEvent.subscribe(itemSelectHandler<mt:
 <script type="text/javascript">
 linkedObjectFormFields['<mt:var name="field">'] = new Array(<mt:var name="field_list">);
 </script>
-<div id="<mt:var name="field">-create-link" class="linked-object-create-link"><a href="javascript:void(0);" onclick="linkedObjectToggleCreate('<mt:var name="field">', true)">Create</a></div>
+<mt:unless name="autocomplete">
+<span id="<mt:var name="field">-create-link" class="linked-object-create-link"><a href="javascript:void(0);" onclick="linkedObjectToggleCreate('<mt:var name="field">', true)">Create</a></span>
+</mt:unless>
 
 <div id="<mt:var name="field">-create-fields" class="linked-object-create-fields">
 <mt:var name="create_form">
@@ -68,6 +78,11 @@ linkedObjectFormFields['<mt:var name="field">'] = new Array(<mt:var name="field_
 </div>
 
 </div>
+
+<mt:if name="autocomplete">
+</div>
+<div style="clear:both;"></div>
+</mt:if>
 
 </mt:if>
 

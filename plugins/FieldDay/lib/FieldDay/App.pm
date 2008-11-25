@@ -44,8 +44,8 @@ sub cfg_fields {
 		my $ft_class = FieldDay::YAML->field_type($row->{'type'})->{'class'};
 		$row->{"is_$row->{'type'}"} = 1;
 		my $options = $ft_class->options;
-		for my $key (keys %$options, 'label_above') {
-			$row->{$key} = $data->{'options'}->{$key} || $options->{$key};
+		for my $key (keys %$options, 'label_display') {
+			$row->{$key} = exists $data->{'options'}->{$key} ? $data->{'options'}->{$key} : $options->{$key};
 		}
 		$row->{'type_loop'} = field_type_loop($row->{'type'});
 		$row->{'group_loop'} = group_loop($app, $data->{'group'});
@@ -206,7 +206,7 @@ sub save_fields {
 			$data->{$key} = $app->param($row_name . '_' . $key);
 		}
 		$data->{'options'} = {};
-		for my $option (keys %{$type_options->{$row_name_type}}, 'label_above') {
+		for my $option (keys %{$type_options->{$row_name_type}}, 'label_display') {
 			$data->{'options'}->{$option} = $app->param($row_name . "_$option");
 		}
 		FieldDay::YAML->field_type($row_name_type)->{'class'}->pre_save_options($app, $row_name, $data->{'options'});
