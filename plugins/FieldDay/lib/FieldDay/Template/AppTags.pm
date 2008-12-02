@@ -104,8 +104,8 @@ TMPL
 				}
 				$param->{'static_uri'} = $static_uri;
 				$param->{'setting_id'} = $field->id;
-				$class->pre_render($param);
-				$tmpl->param($param);
+				$class->pre_render($param, $args);
+				$tmpl->param({ %$param, %$args });
 				$group_out .= $tmpl->output;
 					# the field type may increment this
 				$tabindex = $param->{'tabindex'};

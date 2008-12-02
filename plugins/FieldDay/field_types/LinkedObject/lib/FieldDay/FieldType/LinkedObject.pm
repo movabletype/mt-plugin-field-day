@@ -3,7 +3,7 @@ package FieldDay::FieldType::LinkedObject;
 use strict;
 use Data::Dumper;
 use FieldDay::YAML qw( field_type object_type );
-use FieldDay::Util qw( app_setting_terms load_fields require_type mtlog );
+use FieldDay::Util qw( app_setting_terms load_fields require_type mtlog obj_stash_key );
 
 use base qw( FieldDay::FieldType );
 
@@ -27,7 +27,7 @@ sub pre_edit_options {
 
 sub pre_render {
 	my $class = shift;
-	my ($param) = @_;
+	my ($param, $args) = @_;
 	my @object_loop = ();
 	my %blog_ids = ();
 	if ($param->{'autocomplete'}) {
@@ -85,6 +85,7 @@ sub pre_render {
 				'label' => $data->{'label'} || $name,
 				'label_display' => $data->{'options'}->{'label_display'},
 				'tabindex' => ++$param->{'tabindex'},
+				%$args
 			};
 			my $f_class = require_type(MT->instance, 'field', $data->{'type'});
 			for my $key (keys %{$f_class->options}) {
@@ -98,6 +99,8 @@ sub pre_render {
 		$param->{'field_list'} = join(',', map { "'" . $_ . "'" } @field_list);
 	}
 	$param->{'object_loop'} = \@object_loop;
+	$param->{'linked_object_type'} = $class->object_type;
+
 }
 
 sub render_tmpl_type {
@@ -240,6 +243,18 @@ left:300px;
 HTML
 }
 
+sub pre_save_value {
+# before the CMS saves a value from the editing screen
+	my $class = shift;
+	my ($app, $i_name, $obj, $options) = @_;
+	# template should have hidden field with value -1
+	if ($app->param($i_name) <= 0) {
+		my $linked_object_id = $class->save_linked_object(@_);
+		return $linked_object_id;
+	}
+	return $app->param($i_name);
+}
+
 sub hdlr_LinkedObjects {
 	my $class = shift;
 	my $linked_type = shift;
@@ -254,7 +269,7 @@ sub hdlr_LinkedObjects {
 	my $linking_ot = FieldDay::YAML->object_type($linking_type);
 	my $object_id = $linking_ot_class->stashed_id($ctx, $args);
 	my $pass_args = { %$args, 'object_type' => $linking_type };
-	my $stash_key = FieldDay::Template::PubTags::obj_stash_key($ctx, $pass_args);
+	my $stash_key = obj_stash_key($ctx, $pass_args);
 	my $instance = $ctx->stash("$stash_key:instance");
 	my $iter;
 	if (defined $instance) {

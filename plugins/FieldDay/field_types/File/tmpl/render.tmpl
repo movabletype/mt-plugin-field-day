@@ -3,10 +3,19 @@
 	label="<mt:var name="label">"
     label_class="<mt:if name="label_above">top-label<mt:else>left-label</mt:else></mt:if>"
 	>
+	<mt:if name="pub_tmpl">
+
+	<input type="file" name="<mt:var name="field">_upload" tabindex="<mt:var name="tabindex">" onchange="setDirty()" />
+
+	<mt:else>
 	<mt:if name="image">
 	<table cellspacing="0" cellpadding="0" border="0"><tr valign="top"><td nowrap="nowrap"></mt:if>
 	<input id="<mt:var name="field">" name="<mt:var name="field">" value="<mt:var name="value">" style="width:300px;" tabindex="<mt:var name="tabindex">" onchange="setDirty()" /><mt:if name="value"><mt:unless name="image">&nbsp;&nbsp;<a href="<mt:var name="url_path">/<mt:var name="value">" target="_blank"><mt:var name="value"></a></mt:unless></mt:if>
 	<mt:if name="can_upload"><br /><input type="file" name="<mt:var name="field">_upload" tabindex="<mt:var name="tabindex">" onchange="setDirty()" /></mt:if>
 	<mt:if name="image"></td><td><a href="<mt:var name="url_path">/<mt:var name="value">" target="_blank"><img src="<mt:var name="url_path">/<mt:var name="value">" height="50" border="0" hspace="10" /></a></td></tr></table></mt:if>
 	</mt:if>
+	
+	</mt:else>
+	</mt:if>
+	
 </mtapp:setting>

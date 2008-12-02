@@ -6,10 +6,17 @@ use Data::Dumper;
 use Exporter;
 @FieldDay::Util::ISA = qw( Exporter );
 use vars qw( @EXPORT_OK );
-@EXPORT_OK = qw( app_setting_terms app_value_terms 
+@EXPORT_OK = qw( app_setting_terms app_value_terms obj_stash_key
 				 require_type mtlog load_fields use_type );
 
 use FieldDay::YAML qw( object_type field_type types );
+
+sub obj_stash_key {
+	my ($ctx, $args) = @_;
+	my $class = require_type(MT->instance, 'object', $args->{'object_type'});
+	my $id = $args->{'id'} ? $args->{'id'} : $class->stashed_id($ctx, $args);
+	return ("fd:$args->{'object_type'}:$id", $id);
+}
 
 sub app_setting_terms {
 	my ($app, $setting_type, $name) = @_;
@@ -74,6 +81,16 @@ sub load_fields {
 	my ($plugin, $ctx, $args, $cond) = @_;
 	require FieldDay::Setting;
 	require FieldDay::Value;
+	if ($args->{'pub_tmpl'}) {
+		my $ot = FieldDay::YAML->object_type($args->{'object_type'});
+		my %blog_id = ($ot->{'has_blog_id'} && ($args->{'blog_id'} || $ctx->stash('blog')))
+			? ('blog_id' => ($args->{'blog_id'} || $ctx->stash('blog')->id)) : ();
+		my %setting_terms = (
+			%blog_id,
+			'object_type' => $args->{'object_type'},
+		);
+		$ctx->stash('fd:setting_terms', \%setting_terms);
+	}
 	my $sort = { 'sort' => 'order' };
 	my $terms;
 	$terms = $ctx->stash('fd:setting_terms')
@@ -82,7 +99,8 @@ sub load_fields {
 	my @fields = FieldDay::Setting->load_with_default($terms, $sort);
 	my $values = {};
 		# don't try to load values for a new object (no ID)
-	if ($ctx->stash('fd:value_terms') || MT->instance->param('id') || ($terms->{'object_type'} eq 'system')) {
+	if (!$args->{'pub_tmpl'}
+		&& ($ctx->stash('fd:value_terms') || MT->instance->param('id') || ($terms->{'object_type'} eq 'system'))) {
 		for my $field (@fields) {
 			$terms = $ctx->stash('fd:value_terms')
 				? { %{$ctx->stash('fd:value_terms')}, 'key' => $field->name }

@@ -4,6 +4,7 @@ use strict;
 use Data::Dumper;
 
 use base qw( FieldDay::FieldType::LinkedObject );
+use FieldDay::Util qw( app_setting_terms load_fields require_type mtlog );
 
 sub tags {
 	return {
@@ -115,6 +116,13 @@ sub core_fields {
 			'label' => 'Extended',
 			'label_above' => 1,
 		},
+		'status' => {
+			'type' => 'RadioButtons',
+			'label' => '',
+			'options' => {
+				'choices' => "1=Unpublished\n2=Published",
+			},
+		}
 	};
 }
 
@@ -199,6 +207,52 @@ sub save_object {
 		id => $entry->id,
 		label => $entry->title,
 	});
+}
+
+sub save_linked_object {
+	my $class = shift;
+	my ($app, $i_name, $obj, $options) = @_;
+	my $core_fields = $class->core_fields;
+	require MT::Entry;
+	require FieldDay::Setting;
+	my $save = 0;
+	my %ef_values = ();
+	# create an entry, but we won't necessarily save it
+	# unless and until we have at least one field value
+	my $entry = MT::Entry->new;
+	$entry->author_id($app->user->id);
+	$entry->status(1);
+	$entry->blog_id($options->{'linked_blog_id'});
+	for my $field (split(/,/, $options->{'create_fields'})) {
+		my $param_key = $i_name . '-' . $field;
+		if ($core_fields->{$field}) {
+			if ($app->param($param_key)) {
+				$entry->$field($app->param($param_key));
+				$save = 1;
+			}
+		} else {
+			my $setting = FieldDay::Setting->load({
+				object_type => 'entry',
+				blog_id => $options->{'linked_blog_id'},
+				name => $field,
+			});
+			my $data = $setting->data;
+			my $class = require_type($app, 'field', $data->{'type'});
+			my $value = $class->pre_save_value($app, $param_key, $entry, $data->{'options'});
+			if ($value) {
+				$save = 1;
+				$ef_values{$field} = $value;
+			}
+		}
+	}
+	if ($save) {
+		$entry->save || die $entry->errstr;
+		for my $field (keys %ef_values) {
+			save_field_for_entry($entry, $field, $ef_values{$field});
+		}
+		return $entry->id;
+	}
+	return undef;
 }
 
 sub save_field_for_entry {
