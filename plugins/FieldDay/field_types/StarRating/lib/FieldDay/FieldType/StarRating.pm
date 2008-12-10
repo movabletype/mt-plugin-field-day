@@ -77,7 +77,7 @@ sub pre_edit_options {
 	for my $key (sort keys %$ots) {
 		push(@ot_loop, {
 			'name' => $key,
-			'selected' => ($key eq $param->{'average_object_type'}),
+			'selected' => ($key eq ($param->{'average_object_type'} || '')),
 		});
 	}
 	$param->{'object_type_loop'} = \@ot_loop;

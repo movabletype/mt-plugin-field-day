@@ -20,15 +20,24 @@ sub hdlr_cmsfields {
 	my %group_initial_instances = ();
 	my $static_uri = MT->instance->static_path;
 	my $tabindex = 3;
+	my $blog_id = MT->instance->param('blog_id');
+	my $check_set = $blog_id && MT->component('blogset');
 	for my $group_id (sort {
 				$group_orders->{$a} <=> $group_orders->{$b}
 			} keys %$grouped_fields) {
-		#next unless ($groups_by_id->{$group_id});
-		my $group_out = qq{<div id="group-${group_id}-parent">};
 		my $g_data;
 		if ($group_id > 0) {
 			$g_data = $groups_by_id->{$group_id}->data;
+			if ($check_set && $g_data->{'set'}) {
+				require BlogSet::Util;
+				if (!BlogSet::Util::blog_in_set($blog_id, $g_data->{'set'})) {
+					delete $grouped_fields->{$group_id};
+					next;
+				}
+			}
 		}
+		my $class = $group_id ? ' class="fd-group-parent">' : '';
+		my $group_out = qq{<div id="group-${group_id}-parent"$class};
 		my $n = $group_need_ns->{$group_id} || 0;
 		if (!$n && $group_id) {
 			push(@group_need_initial, $group_id);
@@ -65,17 +74,22 @@ sub hdlr_cmsfields {
 </span>
 TMPL
 				my $div;
+				my $class = ' class="fd-group"';
 				if ($i == -1) {
-					$div = qq{<div id="group-${group_id}-$i" style="display:none;">};
+					$div = qq{<div id="group-${group_id}-$i" style="display:none;"$class>};
 				} else {
-					$div = qq{<div id="group-${group_id}-$i">};
+					$div = qq{<div id="group-${group_id}-$i"$class>};
 					push(@{$instance_list{$group_id}}, "group-${group_id}-$i");
 				}
-				$group_out .= <<"TMPL";
-$div
+				$group_out .= $div;
+				if ($n) {
+					$group_out .= qq{
 <span class="fd-group-inst-buttons"><span class="fd-group-inst">$inst</span>$buttons</span>
+};
+				}
+				$group_out .= qq{
 <div id="group-${group_id}-fields-instance-$i">
-TMPL
+};
 			}
 			for my $field (@{$grouped_fields->{$group_id}}) {
 				my $data = $field->data;
@@ -112,7 +126,7 @@ TMPL
 			}
 			$group_out .= '</div></div>' if $group_id;
 		}
-		$group_out .= '</div>';
+		$group_out .= '</div><div style="clear:both;"></div>';
 		$out .= $group_out;
 	}
 	my $js = '';
@@ -162,11 +176,23 @@ padding-right:5px;
 .fd-group-inst-buttons {
 float:left;
 width:75px;
+padding-bottom:5px;
 }
 .fd-group-inst {
 font-weight:bold;
 font-size:12px;
 padding-right:5px;
+}
+.fd-group {
+padding-bottom:5px;
+margin-bottom:10px;
+border-bottom:1px solid #ccc;
+}
+.fd-group-parent {
+padding-bottom:10px;
+}
+.fd-group-parent .field {
+margin-bottom:.75em;
 }
 </style>
 $js

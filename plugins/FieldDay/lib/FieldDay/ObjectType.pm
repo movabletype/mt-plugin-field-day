@@ -36,11 +36,6 @@ sub edit_template_source {
 	my $form_id = $class->object_form_id;
 	$html_head = <<"HTML";
 <mt:setvarblock name="html_head" append="1">
-<script type="text/javascript">
-function ffFormOnSubmit() {
-	document.forms['$form_id'].onsubmit = ffSubmit;
-}
-</script>
 $html_head
 </mt:setvarblock>
 HTML

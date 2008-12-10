@@ -108,20 +108,6 @@ sub cfg_fields {
 	});
 }
 
-sub group_loop {
-	my ($app, $selected) = @_;
-	my @loop = ({ 'label' => 'Select', 'group' => 0 });
-	for my $group (FieldDay::Setting->load(app_setting_terms($app, 'group'))) {
-		my $data = $group->data;
-		push(@loop, {
-			'group' => $group->id,
-			'label'=> $data->{'label'} || $group->name,
-			'selected' => ($selected && ($selected == $group->id)) ? 1 : 0
-		});
-	}
-	return \@loop;
-}
-
 sub cfg_groups {
 	my $class = shift;
 	my ($plugin, $app) = @_;
@@ -134,6 +120,7 @@ sub cfg_groups {
 		'label' => '',
 		'instances' => 1,
 		'initial' => 1,
+		'set' => 0,
 	};
 	my $hasher = sub {
 		my ($obj, $row) = @_;
@@ -145,6 +132,9 @@ sub cfg_groups {
 			$row->{$key} = exists($data->{$key}) ? $data->{$key} : $options->{$key};
 		}
 		$row->{'new'} = 0;
+		if (MT->component('blogset')) {
+			$row->{'set_loop'} = set_loop($app, $data->{'set'});
+		}
 	};
 	$app->mode('fd_cfg_groups');
 	return $app->listing({
@@ -170,6 +160,7 @@ sub cfg_groups {
 				'is_text' => 1,
 				'prototype' => 1,
 				'order' => 0,
+				MT->component('blogset') ? ('set_loop' => set_loop($app)) : (),
 				%$options,
 			};
 			unshift(@{$param->{'object_loop'}}, $row);
@@ -183,6 +174,7 @@ sub cfg_groups {
 			'setting_label' => 'Field Group',
 			'setting_label_pl' => 'Field Groups',
 			'saved' => $app->param('saved') ? 1 : 0,
+			'has_sets' => MT->component('blogset') ? 1 : 0,
 			default_params($app),
 		}
 	});
@@ -217,7 +209,7 @@ sub save_fields {
 			$setting->remove || die $setting->errstr;
 		}
 	}
-	return $app->redirect($app->uri . '?' . $app->param('return_args'));
+	return $app->redirect($app->uri . '?' . $app->param('return_args') . '&saved=1');
 }
 
 sub save_groups {
@@ -228,12 +220,16 @@ sub save_groups {
 		'label' => '',
 		'instances' => 1,
 		'initial' => 1,
+		'set' => 0,
 	};
 	for my $row_name (split(/,/, $app->param('fd_setting_list'))) {
 		next unless $row_name;
 		next if ($row_name eq 'prototype__');
 		next unless $app->param($row_name . '_name');
 		my $data = {};
+		if (!$app->param($row_name . '_label')) {
+			$app->param($row_name . '_label', $app->param($row_name . '_name'));
+		}
 		for my $key (keys %$options) {
 			$data->{$key} = $app->param($row_name . '_' . $key);
 		}
@@ -244,7 +240,7 @@ sub save_groups {
 			$setting->remove || die $setting->errstr;
 		}
 	}
-	return $app->redirect($app->uri . '?' . $app->param('return_args'));
+	return $app->redirect($app->uri . '?' . $app->param('return_args') . '&saved=1');
 }
 
 sub set_default {
@@ -389,6 +385,34 @@ sub field_type_loop {
 	}
 	return \@loop;
 }
+
+sub group_loop {
+	my ($app, $selected) = @_;
+	my @loop = ({ 'label' => 'Select', 'group' => 0 });
+	for my $group (FieldDay::Setting->load(app_setting_terms($app, 'group'))) {
+		my $data = $group->data;
+		push(@loop, {
+			'group' => $group->id,
+			'label'=> $data->{'label'} || $group->name,
+			'selected' => ($selected && ($selected == $group->id)) ? 1 : 0
+		});
+	}
+	return \@loop;
+}
+
+sub set_loop {
+	my ($app, $selected) = @_;
+	my @loop = ({ 'label' => 'Select', 'set' => 0 });
+	for my $set (MT->model('blog_set')->load) {
+		push(@loop, {
+			'set' => $set->id,
+			'label'=> $set->name,
+			'selected' => ($selected && ($selected == $set->id)) ? 1 : 0
+		});
+	}
+	return \@loop;
+}
+
 
 sub content_nav_loop {
 	my ($active) = @_;

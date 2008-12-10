@@ -32,9 +32,10 @@ sub pre_render {
 	my %blog_ids = ();
 	if ($param->{'autocomplete'}) {
 		if ($param->{'value'}) {
-			my $obj = $class->load_objects({}, id => $param->{'value'});
-			$param->{'value_label'} = $class->object_label($obj);
-			$param->{'blog_id'} = $obj->can('blog_id') ? $obj->blog_id : undef;
+			if (my $obj = $class->load_objects({}, id => $param->{'value'})) {
+				$param->{'value_label'} = $class->object_label($obj);
+				$param->{'blog_id'} = $obj->can('blog_id') ? $obj->blog_id : undef;
+			}
 		}
 	} else {
 		for my $obj ($class->load_objects($param)) {
@@ -248,7 +249,7 @@ sub pre_save_value {
 	my $class = shift;
 	my ($app, $i_name, $obj, $options) = @_;
 	# template should have hidden field with value -1
-	if ($app->param($i_name) <= 0) {
+	if ($app->param($i_name) < 0) {
 		my $linked_object_id = $class->save_linked_object(@_);
 		return $linked_object_id;
 	}

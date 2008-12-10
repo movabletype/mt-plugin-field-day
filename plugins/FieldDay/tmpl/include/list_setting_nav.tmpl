@@ -1,3 +1,11 @@
+<script type="text/javascript">
+function confirmUseDefault() {
+	if (confirm('Use default settings? This will overwrite any existing settings for this blog.')) {
+		window.location = '<mt:var name="script_url">?__mode=fd_use_default&_type=<mt:var name="setting_object_type">&blog_id=<mt:var name="blog_id">&return_args=<mt:var name="return_args" encode_url="1">';
+	}
+	return false;
+}
+</script>
 <h3>Configure:</h3>
 <ul>
 <mt:loop name="content_nav_loop">
@@ -9,7 +17,7 @@
 <a href="<mt:var name="script_url">?__mode=fd_clear_default&_type=<mt:var name="setting_object_type">&blog_id=<mt:var name="blog_id">&return_args=<mt:var name="return_args" encode_url="1">">Remove "<mt:var name="blog_name">" Settings as Default</a>
 <mt:else>
 <mt:unless name="using_default">
-<a href="<mt:var name="script_url">?__mode=fd_use_default&_type=<mt:var name="setting_object_type">&blog_id=<mt:var name="blog_id">&return_args=<mt:var name="return_args" encode_url="1">">Use Default Settings</a>
+<a href="javascript:void(0);" onclick="confirmUseDefault();">Use Default Settings</a>
 </mt:unless>
 <a href="<mt:var name="script_url">?__mode=fd_set_default&_type=<mt:var name="setting_object_type">&blog_id=<mt:var name="blog_id">&return_args=<mt:var name="return_args" encode_url="1">">Use "<mt:var name="blog_name">" Settings as Default</a>
 </mt:else>

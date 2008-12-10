@@ -1,7 +1,8 @@
+<div style="<mt:if name="label_display" eq="hide">float:left;margin-left:55px;<mt:else>clear:both;</mt:if>">
 <mtapp:setting
 	id="<mt:var name="field">"
-	label="<mt:var name="label">"
-    label_class="<mt:if name="label_above">top-label<mt:else>left-label</mt:else></mt:if>"
+	label="<mt:unless name="label_display" eq="hide"><mt:var name="label"></mt:unless>"
+    label_class="<mt:if name="label_display" like="/above|hide/">top-label<mt:else>left-label</mt:else></mt:if>"
 	>
 <mt:if name="is_average">
 
@@ -22,3 +23,4 @@ star_off_url = '<mt:var name="off_url">';
 </mt:if>
 <input type="hidden" name="<mt:var name="field">" id="<mt:var name="field">" value="<mt:var name="value">" />
 </mtapp:setting>
+</div>

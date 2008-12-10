@@ -5,6 +5,12 @@ use Data::Dumper;
 
 use base qw( FieldDay::ObjectType );
 
+sub callbacks {
+	return {
+		'cms_pre_preview' => \&cms_pre_preview,
+	};
+}
+
 sub insert_before {
 	return qq{<mt:setvarblock name="show_metadata">};
 }
@@ -23,16 +29,16 @@ sub load_terms {
 # specify terms to use when a tag loads objects
 	my $class = shift;
 	my ($ctx, $args) = @_;
-	my %blog_id;
+	my %terms;
 	if ($args->{'blog_ids'}) {
-		$blog_id{'blog_id'} = [ split(/,/, $args->{'blog_ids'}) ];
+		$terms{'blog_id'} = [ split(/,/, $args->{'blog_ids'}) ];
 	} elsif ($ctx->stash('blog')) {
-		$blog_id{'blog_id'} = $ctx->stash('blog')->id;
+		$terms{'blog_id'} = $ctx->stash('blog')->id;
 	}
-	return {
-		'status' => MT::Entry::RELEASE(),
-		%blog_id
-	};
+	if (!$args->{'preview'}) {
+		$terms{'status'} = MT::Entry::RELEASE();
+	}
+	return \%terms;
 }
 
 sub block_loop {
@@ -697,6 +703,12 @@ sub _hdlr_entries {
     $res;
 }
 
-
+sub cms_pre_preview {
+	my ($cb, $app, $obj, $data) = @_;
+	return 1 unless ($app->param('fieldday'));
+	for my $param ($app->param()) {
+		
+	}
+}
 
 1;

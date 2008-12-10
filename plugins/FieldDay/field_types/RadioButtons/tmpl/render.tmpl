@@ -1,9 +1,11 @@
+<div style="<mt:if name="label_display" eq="hide">float:left;margin-left:55px;<mt:else>clear:both;</mt:if>">
 <mtapp:setting
 	id="<mt:var name="field">"
-	label="<mt:var name="label">"
-    label_class="<mt:if name="label_above">top-label<mt:else>left-label</mt:else></mt:if>"
+	label="<mt:unless name="label_display" eq="hide"><mt:var name="label"></mt:unless>"
+    label_class="<mt:if name="label_display" like="/above|hide/">top-label<mt:else>left-label</mt:else></mt:if>"
 	>
 <mt:loop name="choice_loop">
 <input type="radio" name="<mt:var name="field">" value="<mt:var name="value">"<mt:if name="selected"> checked="checked"</mt:if> tabindex="<mt:var name="tabindex">" /> <mt:var name="label">&nbsp;
 </mt:loop>
 </mtapp:setting>
+</div>
