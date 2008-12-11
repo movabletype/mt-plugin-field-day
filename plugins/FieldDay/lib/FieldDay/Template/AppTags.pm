@@ -82,7 +82,7 @@ TMPL
 					push(@{$instance_list{$group_id}}, "group-${group_id}-$i");
 				}
 				$group_out .= $div;
-				if ($n) {
+				if ($group_max_instances{$group_id} != 1) {
 					$group_out .= qq{
 <span class="fd-group-inst-buttons"><span class="fd-group-inst">$inst</span>$buttons</span>
 };
