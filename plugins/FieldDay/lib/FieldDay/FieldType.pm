@@ -114,7 +114,7 @@ sub field_options {
 		'type' => 'field',
 		'object_type' => $object_type,
 		'name' => $args->{'field'},
-		$ctx->stash('blog_id') ? ('blog_id' => $ctx->stash('blog_id')) : (),
+		$ctx->stash('blog') ? ('blog_id' => $ctx->stash('blog')->id) : (),
 	);
 	my $setting = FieldDay::Setting->load(\%terms);
 	return {} unless $setting;

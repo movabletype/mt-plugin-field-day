@@ -16,7 +16,6 @@ function ffInitialize() {
 			ffAddInstance(group_need_initial[i], j);
 		}
 	}
-	ffFormOnSubmit();
 }
 if (typeof(TC) != 'undefined') {
 	TC.attachLoadEvent(ffInitialize);	
