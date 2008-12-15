@@ -4,7 +4,7 @@ use strict;
 use Data::Dumper;
 
 use vars qw( $VERSION $SCHEMA_VERSION );
-$VERSION = '1.0b7.5';
+$VERSION = '1.0b7.6';
 $SCHEMA_VERSION = '0.1594';
 
 use base qw( MT::Plugin );
