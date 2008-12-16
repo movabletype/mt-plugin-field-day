@@ -49,6 +49,7 @@ sub load_objects {
 	my ($param, %terms) = @_;
 	require MT::Entry;
 	my $terms = { %terms };
+	$terms->{'class'} ||= 'entry';
 	if ($param->{'linked_blog_id'}) {
 		$terms->{'blog_id'} = $param->{'linked_blog_id'};
 	}

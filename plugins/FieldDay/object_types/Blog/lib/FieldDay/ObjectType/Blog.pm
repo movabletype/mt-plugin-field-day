@@ -45,6 +45,13 @@ sub block_loop {
 	return $out;
 }
 
+sub edit_template_source {
+	my $class = shift;
+	my ($cb, $app, $template) = @_;
+	$class->SUPER::edit_template_source($cb, $app, $template);
+	$$template =~ s/<form name="cfg_form"/<form name="cfg_form" id="cfg_form"/;
+}
+
 sub sort_by {
 	return 'name';
 }

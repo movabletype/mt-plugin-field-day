@@ -243,6 +243,49 @@ sub save_groups {
 	return $app->redirect($app->uri . '?' . $app->param('return_args') . '&saved=1');
 }
 
+sub copy_settings {
+	my $class = shift;
+	my ($plugin, $app) = @_;
+	my $blog_id = $app->param('blog_id');
+	my $from_blog_id = $app->param('from_blog_id');
+	return $app->error('Invalid blog_id') unless ($blog_id =~ /^\d+$/);
+	return $app->error('Invalid from_blog_id') unless ($from_blog_id =~ /^\d+$/);
+	my $ot = FieldDay::YAML->object_type($app->param('_type'));
+	my %terms = (
+		blog_id => $blog_id,
+		object_type => $ot->{'object_type'},
+	);
+	require FieldDay::Setting;
+	for my $setting (FieldDay::Setting->load(\%terms)) {
+		$setting->remove;
+	}
+	$terms{blog_id} = $from_blog_id;
+	$terms{type} = 'group';
+	my %group_map;
+	for my $orig (FieldDay::Setting->load(\%terms)) {
+		my $old_id = $orig->id;
+		my $new = $orig->clone;
+		$new->id(undef);
+		$new->blog_id($blog_id);
+		$new->save || die $new->errstr;
+		$group_map{$old_id} = $new->id;
+	}
+	$terms{type} = 'field';
+	for my $orig (FieldDay::Setting->load(\%terms)) {
+		my $old_id = $orig->id;
+		my $new = $orig->clone;
+		$new->id(undef);
+		$new->blog_id($blog_id);
+		my $data = $new->data;
+		if ($data->{group}) {
+			$data->{group} = $group_map{$data->{group}};
+			$new->data($data);
+		}
+		$new->save || die $new->errstr;
+	}
+	return $app->redirect($app->uri . '?' . $app->param('return_args'));
+}
+
 sub set_default {
 	my $class = shift;
 	my ($plugin, $app) = @_;

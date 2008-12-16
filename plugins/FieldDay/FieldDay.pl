@@ -50,6 +50,7 @@ sub init_registry {
 						my $action = $_;
 						"fd_${_}_default" => sub { mode_dispatch("${action}_default", @_) }			
 					} qw( set clear override use )),
+					'fd_copy_settings' => sub { mode_dispatch('copy_settings', @_) },
 					'fd_save_linked_obj' => sub { mode_dispatch('save_linked_obj', @_) },
 				},
 				'page_actions' => $page_actions,

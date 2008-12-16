@@ -318,7 +318,7 @@ sub hdlr_LinkingObjects {
 	my $ot = FieldDay::YAML->object_type($linked_type);
 	my $linking_ot = FieldDay::YAML->object_type($linking_type);
 	my $linking_ot_class = require_type(MT->instance, 'object', $linking_type);
-	my $linked_object_id = $ot_class->stashed_id($ctx, $args);
+	my $linked_object_id = $ot_class->stashed_id($ctx, $args) || $ctx->var('id');
 	require FieldDay::Value;
 	my $load_args = {};
 	my $terms = $linking_ot_class->load_terms($ctx, $args);
