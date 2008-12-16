@@ -7,6 +7,17 @@ use FieldDay::Util qw( app_setting_terms load_fields require_type mtlog obj_stas
 
 use base qw( FieldDay::FieldType );
 
+sub options {
+	return {
+		'autocomplete' => 1,
+		'autocomplete_fields' => undef,
+		'allow_create' => 1,
+		'create_fields' => undef,
+		'required_fields' => undef,
+		'unique_fields' => undef,
+	};
+}
+
 sub pre_edit_options {
 # before FieldDay displays the config screen
 	my $class = shift;
@@ -35,6 +46,8 @@ sub pre_render {
 			if (my $obj = $class->load_objects({}, id => $param->{'value'})) {
 				$param->{'value_label'} = $class->object_label($obj);
 				$param->{'blog_id'} = $obj->can('blog_id') ? $obj->blog_id : undef;
+			} else {
+				$param->{'value_label'} = '[object missing]';
 			}
 		}
 	} else {
@@ -62,7 +75,7 @@ sub pre_render {
 		my $static_uri = MT->instance->static_path;
 		my $render_tmpls = FieldDay::FieldType::type_tmpls(MT->instance, MT->instance, 'render');
 		for my $name (split(/,/, $param->{'create_fields'})) {
-			my $core_fields = $class->core_fields;
+			my $core_fields = $class->core_fields($param->{'linked_blog_id'});
 			my $data;
 			if ($core_fields->{$name}) {
 				$data = $core_fields->{$name};
@@ -130,6 +143,7 @@ function linkedObjectSelect(field, data) {
 	ac.setAttribute('readOnly', 'readonly');
 	ed.style.display = 'inline';
 	bl.value = data[2];
+	getByID(field + '-view-link').href = '<mt:var name="script_url">?__mode=view&_type=entry&id=' + f.value + '&blog_id=' + bl.value;
 }
 function linkedObjectChange(field) {
 	var f = getByID(field);
@@ -153,7 +167,7 @@ function linkedObjectToggleCreate(field, on) {
 		linkDiv.style.display = 'none';
 		fieldsDiv.style.display = 'block';
 	} else {
-		linkDiv.style.display = 'block';
+		linkDiv.style.display = 'inline';
 		fieldsDiv.style.display = 'none';
 	}
 }
@@ -191,12 +205,12 @@ function linkedObjectReturn(c, field, ac) {
     if (result.code == 'added') {
     	linkedObjectToggleCreate(field, false);
     	if (ac) {
-    		linkedObjectSelect(field, new Array(result.label, result.id));
+    		linkedObjectSelect(field, new Array(result.label, result.id, result.blog_id));
     	}
     } else if (result.code == 'found') {
     	linkedObjectToggleCreate(field, false);
     	if (ac) {
-    		linkedObjectSelect(field, new Array(result.label, result.id));
+    		linkedObjectSelect(field, new Array(result.label, result.id, result.blog_id));
     	}
     	alert(result.msg);
     }
@@ -206,6 +220,9 @@ var myServer = "<mt:var name="script_path">plugins/FieldDay/mt-linkedobj-flat.cg
 var mySchema = ["\\n", "\\t"]; 
 YAHOO.widget.AutoComplete.prototype.formatResult = function(aResultItem, sQuery) {
 	var re = new RegExp('(' + sQuery + ')', 'ig');
+	if (aResultItem[0].length > 50) {
+		aResultItem[0] = aResultItem[0].substring(0, 50) + '...';
+	}
 	var matches = aResultItem[0].match(re);
 	var str = aResultItem[0].replace(re, function(str) { return '<span class="linked-object-highlight">' + str + '</span>'; });
 	if (aResultItem[3]) {
@@ -226,9 +243,6 @@ width:50%;
 .linked-object-highlight {
 font-weight:bold;
 color:#33789c;
-}
-.linked-object-create-link {
-padding:5px 0 0 0;
 }
 .linked-object-create-fields {
 display:none;

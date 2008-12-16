@@ -20,6 +20,7 @@ sub tags {
 }
 
 sub options {
+	my $class = shift;
 	return {
 		'linked_blog_id' => undef,
 		'category_ids' => undef,
@@ -27,12 +28,7 @@ sub options {
 		'lastn' => undef,
 		'search' => undef,
 		'published' => 1,
-		'autocomplete' => 1,
-		'autocomplete_fields' => undef,
-		'allow_create' => 1,
-		'create_fields' => undef,
-		'required_fields' => undef,
-		'unique_fields' => undef,
+		%{$class->SUPER::options()}
 	};
 }
 
@@ -102,6 +98,8 @@ sub object_label {
 }
 
 sub core_fields {
+	my $class = shift;
+	my ($blog_id) = @_;
 	return {
 		'title' => {
 			'type' => 'Text',
@@ -110,21 +108,42 @@ sub core_fields {
 		'text' => {
 			'type' => 'TextArea',
 			'label' => 'Body',
-			'label_above' => 1,
+			'options' => {
+				'label_display' => 'above',
+			},
 		},
 		'text_more' => {
 			'type' => 'TextArea',
 			'label' => 'Extended',
-			'label_above' => 1,
+			'options' => {
+				'label_display' => 'above',
+			},
 		},
 		'status' => {
 			'type' => 'RadioButtons',
-			'label' => '',
+			'label' => 'Status',
 			'options' => {
+				'label_display' => 'hide',
 				'choices' => "1=Unpublished\n2=Published",
 			},
-		}
+		},
+		'category' => {
+			'type' => 'SelectMenu',
+			'label' => 'Category',
+			'options' => {
+				'choices' => $class->cat_choices($blog_id),
+			},
+		},
 	};
+}
+
+sub cat_choices {
+	my $class = shift;
+	my ($blog_id) = @_;
+	my %terms;
+	$terms{blog_id} = $blog_id if $blog_id;
+	my @cats = MT->model('category')->load(\%terms);
+	return join("\n", map { $_->id . '=' . $_->label } @cats);
 }
 
 sub save_object {
@@ -197,7 +216,17 @@ sub save_object {
 	$entry->save || return $app->json_error($entry->errstr);
 	for my $field (split(/,/, $data->{'options'}->{'create_fields'})) {
 		if ($core_fields->{$field}) {
-			$entry->$field($app->param($field));
+			if ($field eq 'category') {
+				require MT::Placement;
+				my $place = MT::Placement->new;
+				$place->entry_id($entry->id);
+				$place->blog_id($entry->blog_id);
+				$place->category_id($app->param($field));
+				$place->is_primary(1);
+				$place->save || die $place->errstr;
+			} else {
+				$entry->$field($app->param($field));
+			}
 		} else {
 			save_field_for_entry($entry, $field, $app->param($field));
 		}
@@ -207,6 +236,7 @@ sub save_object {
 		code => 'added',
 		id => $entry->id,
 		label => $entry->title,
+		blog_id => $entry->blog_id,
 	});
 }
 
@@ -228,7 +258,20 @@ sub save_linked_object {
 		my $param_key = $i_name . '-' . $field;
 		if ($core_fields->{$field}) {
 			if ($app->param($param_key)) {
-				$entry->$field($app->param($param_key));
+				if ($field eq 'category') {
+					if (!$entry->id) {
+						$entry->save || die $entry->errstr;
+					}
+					require MT::Placement;
+					my $place = MT::Placement->new;
+					$place->entry_id($entry->id);
+					$place->blog_id($entry->blog_id);
+					$place->category_id($app->param($param_key));
+					$place->is_primary(1);
+					$place->save || die $place->errstr;
+				} else {
+					$entry->$field($app->param($param_key));
+				}
 				$save = 1;
 			}
 		} else {

@@ -23,6 +23,7 @@ sub stashed_id {
 	if ($ctx->stash('entry')) {
 		return $ctx->stash('entry')->author_id;
 	}
+	return 0;
 }
 
 sub insert_before_html_head {

@@ -16,7 +16,7 @@ sub object_form_id {
 sub stashed_id {
 	my $class = shift;
 	my ($ctx, $args) = @_;
-	return $ctx->stash('template')->id;
+	return $ctx->stash('template') ? $ctx->stash('template')->id : 0;
 }
 
 sub load_terms {

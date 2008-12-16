@@ -22,7 +22,7 @@ sub object_form_id {
 sub stashed_id {
 	my $class = shift;
 	my ($ctx, $args) = @_;
-	return $ctx->stash('entry') ? $ctx->stash('entry')->id : undef;
+	return $ctx->stash('entry') ? $ctx->stash('entry')->id : 0;
 }
 
 sub load_terms {

@@ -20,7 +20,7 @@ sub insert_before_html_head {
 sub stashed_id {
 	my $class = shift;
 	my ($ctx, $args) = @_;
-	return $ctx->stash('blog')->id;
+	return $ctx->stash('blog') ? $ctx->stash('blog')->id : 0;
 }
 
 sub load_terms {

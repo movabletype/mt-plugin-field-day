@@ -15,12 +15,14 @@
 <input id="<mt:var name="field">-blog_id" name="<mt:var name="field">-blog_id" type="hidden" value="<mt:var name="blog_id">" />
 &nbsp;
 <div id="<mt:var name="field">-change" style="display:<mt:if name="value">inline<mt:else>none</mt:if>;">
-<a href="javascript:void(0);" name="<mt:var name="field">" onclick="linkedObjectChange(this.name);">Change</a> &nbsp; 
-<a href="javascript:void(0);" name="<mt:var name="field">" onclick="linkedObjectView(this.name);">View</a>
-</div> &nbsp;
+<a href="javascript:void(0);" name="<mt:var name="field">" id="<mt:var name="field">-change-link" onclick="linkedObjectChange(this.name);">Change</a> &nbsp; 
+<a href="<mt:var name="script_url">?__mode=view&_type=entry&id=<mt:var name="value">&blog_id=<mt:var name="blog_id">" name="<mt:var name="field">-view-link" id="<mt:var name="field">-view-link">View</a>
+ &nbsp;</div>
+<mt:if name="allow_create">
 <span id="<mt:var name="field">-create-link" class="linked-object-create-link"><a href="javascript:void(0);" onclick="linkedObjectToggleCreate('<mt:var name="field">', true)">Create</a></span>
+</mt:if>
 
-<div id="<mt:var name="field">-container"></div>
+<div id="<mt:var name="field">-container" style="width:<mt:if name="label_display" like="/above|hide/">565<mt:else>440</mt:if>px;"></div>
 </div>
 </div>
 
@@ -45,7 +47,7 @@ autoComp<mt:var name="js_field">.itemSelectEvent.subscribe(itemSelectHandler<mt:
 <select name="<mt:var name="field">" id="<mt:var name="field">" tabindex="<mt:var name="tabindex">">
 <option value="">Select</option>
 <mt:loop name="object_loop">
-<option value="<mt:var name="value">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
+<option value="<mt:var name="value">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" trim_to="50"></option>
 </mt:loop>
 </select>
 
@@ -57,7 +59,7 @@ autoComp<mt:var name="js_field">.itemSelectEvent.subscribe(itemSelectHandler<mt:
 linkedObjectFormFields['<mt:var name="field">'] = new Array(<mt:var name="field_list">);
 </script>
 <mt:unless name="autocomplete">
-<span id="<mt:var name="field">-create-link" class="linked-object-create-link"><a href="javascript:void(0);" onclick="linkedObjectToggleCreate('<mt:var name="field">', true)">Create</a></span>
+&nbsp; <span id="<mt:var name="field">-create-link" class="linked-object-create-link"><a href="javascript:void(0);" onclick="linkedObjectToggleCreate('<mt:var name="field">', true)">Create</a></span>
 </mt:unless>
 
 <div id="<mt:var name="field">-create-fields" class="linked-object-create-fields">
