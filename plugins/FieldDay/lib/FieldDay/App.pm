@@ -3,7 +3,7 @@ package FieldDay::App;
 use strict;
 use Data::Dumper;
 use FieldDay::YAML qw( types object_type field_type );
-use FieldDay::Util qw( app_setting_terms require_type mtlog use_type );
+use FieldDay::Util qw( app_setting_terms require_type mtlog use_type generic_options );
 
 sub plugin {
     return MT->component('FieldDay');
@@ -25,9 +25,6 @@ sub cfg_fields {
 	my $class = shift;
 	my ($plugin, $app) = @_;
 	my $ot = FieldDay::YAML->object_type(use_type($app->param('_type')));
-	#if ($ot->{'object_mt_type'}) {
-	#	$app->param('setting_object_mt_type', $ot->{'object_mt_type'});
-	#}
 	require FieldDay::FieldType;
 	my $options_tmpls = FieldDay::FieldType::type_tmpls($plugin, $app, 'options');
 	require FieldDay::Setting;
@@ -44,7 +41,7 @@ sub cfg_fields {
 		my $ft_class = FieldDay::YAML->field_type($row->{'type'})->{'class'};
 		$row->{"is_$row->{'type'}"} = 1;
 		my $options = $ft_class->options;
-		for my $key (keys %$options, 'label_display') {
+		for my $key (keys %$options, generic_options()) {
 			$row->{$key} = exists $data->{'options'}->{$key} ? $data->{'options'}->{$key} : $options->{$key};
 		}
 		$row->{'type_loop'} = field_type_loop($row->{'type'});
@@ -112,9 +109,6 @@ sub cfg_groups {
 	my $class = shift;
 	my ($plugin, $app) = @_;
 	my $ot = FieldDay::YAML->object_type($app->param('_type'));
-	#if ($ot->{'object_mt_type'}) {
-	#	$app->param('setting_object_mt_type', $ot->{'object_mt_type'});
-	#}
 	require FieldDay::Setting;
 	my $options = {
 		'label' => '',
@@ -198,7 +192,7 @@ sub save_fields {
 			$data->{$key} = $app->param($row_name . '_' . $key);
 		}
 		$data->{'options'} = {};
-		for my $option (keys %{$type_options->{$row_name_type}}, 'label_display') {
+		for my $option (keys %{$type_options->{$row_name_type}}, generic_options()) {
 			$data->{'options'}->{$option} = $app->param($row_name . "_$option");
 		}
 		FieldDay::YAML->field_type($row_name_type)->{'class'}->pre_save_options($app, $row_name, $data->{'options'});

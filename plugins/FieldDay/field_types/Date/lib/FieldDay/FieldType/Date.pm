@@ -97,36 +97,35 @@ sub pre_render {
 	for (split(//, $param->{'date_order'})) {
 		$param->{"tabindex_$_"} = ++$tabindex;
 	}
-	
 	$param->{'y_select'} = choice_tmpl('y', 'Year'); 
 	$param->{'m_select'} = choice_tmpl('m', 'Month'); 
 	$param->{'d_select'} = choice_tmpl('d', 'Day');
 		# numerify it in case the field type was changed
 		# and there's a text value in there
 	$param->{'value'} = $param->{'value'} ? (eval("$param->{'value'} + 0") || '') : '';
-	my ($y, $m, $d, $h, $min, $s) = unpack('A4A2A2A2A2A2', $param->{'value'});
-	$param->{'y_loop'} = option_loop($param->{'y_start'}, $param->{'y_end'}, $y);
-	$param->{'m_loop'} = option_loop(1, 12, $m);
-	$param->{'d_loop'} = option_loop(1, 31, $d);
+	@{$param}{qw( y m d h min s )} = unpack('A4A2A2A2A2A2', $param->{'value'});
+	$param->{'y_loop'} = option_loop($param->{'y_start'}, $param->{'y_end'}, $param->{'y'});
+	$param->{'m_loop'} = option_loop(1, 12, $param->{'m'});
+	$param->{'d_loop'} = option_loop(1, 31, $param->{'d'});
 	if ($param->{'show_hms'}) {
 		my ($start_h, $end_h) = $param->{'ampm'} ? (1, 12) : (0, 23);
 		if ($param->{'ampm'}) {
-			if ($h && ($h > 12)) {
+			if ($param->{'h'} && ($param->{'h'} > 12)) {
 				$param->{'pm_selected'} = 1;
-				$h = $h - 12;
+				$param->{'h'} = $param->{'h'} - 12;
 			} else {
 				$param->{'am_selected'} = 1;
 			}
 		}
-		$param->{'h_loop'} = option_loop($start_h, $end_h, $h);
+		$param->{'h_loop'} = option_loop($start_h, $end_h, $param->{'h'});
 		$param->{'tabindex_h'} = ++$tabindex;
 		$param->{'h_select'} = choice_tmpl('h', 'HH');
 		if ($param->{'time'} ne 'hh') {
-			$param->{'min_loop'} = option_loop_step(0, 59, $param->{'minutes'}, $min);
+			$param->{'min_loop'} = option_loop_step(0, 59, $param->{'minutes'}, $param->{'min'});
 			$param->{'tabindex_min'} = ++$tabindex;
 			$param->{'min_select'} = choice_tmpl('min', 'MM');
 			if ($param->{'time'} eq 'hhmmss') {
-				$param->{'s_loop'} = option_loop(0, 59, $s);
+				$param->{'s_loop'} = option_loop(0, 59, $param->{'s'});
 				$param->{'tabindex_s'} = ++$tabindex;
 				$param->{'s_select'} = choice_tmpl('s', 'SS');
 			}

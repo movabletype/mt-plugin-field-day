@@ -7,9 +7,13 @@ use Exporter;
 @FieldDay::Util::ISA = qw( Exporter );
 use vars qw( @EXPORT_OK );
 @EXPORT_OK = qw( app_setting_terms app_value_terms obj_stash_key
-				 require_type mtlog load_fields use_type );
+				 require_type mtlog load_fields use_type generic_options );
 
 use FieldDay::YAML qw( object_type field_type types );
+
+sub generic_options {
+	return qw( label_display read_only );
+}
 
 sub obj_stash_key {
 	my ($ctx, $args) = @_;

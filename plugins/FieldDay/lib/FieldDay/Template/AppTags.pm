@@ -3,7 +3,7 @@ package FieldDay::Template::AppTags;
 use strict;
 use Data::Dumper;
 use FieldDay::YAML qw( field_type );
-use FieldDay::Util qw( app_setting_terms load_fields require_type mtlog );
+use FieldDay::Util qw( app_setting_terms load_fields require_type mtlog generic_options );
 
 sub hdlr_cmsfields {
 	my $class = shift;
@@ -104,7 +104,7 @@ TMPL
 					'field' => $field_name,
 					'js_field' => $js_field_name,
 					'label' => $data->{'label'} || $field_name,
-					'label_display' => $data->{'options'}->{'label_display'},
+					map { $_ => $data->{'options'}->{$_} } generic_options(),
 					'tabindex' => ++$tabindex,
 				};
 				my $class = require_type(MT->instance, 'field', $data->{'type'});

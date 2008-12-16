@@ -4,6 +4,6 @@
 	label="<mt:unless name="label_display" eq="hide"><mt:var name="label"></mt:unless>"
     label_class="<mt:if name="label_display" like="/above|hide/">top-label<mt:else>left-label</mt:else></mt:if>"
 	>
-	<input type="checkbox" name="<mt:var name="field">" id="<mt:var name="field">"<mt:if name="value"> checked="checked"</mt:if> tabindex="<mt:var name="tabindex">" />
+	<input type="checkbox" name="<mt:var name="field">" id="<mt:var name="field">"<mt:if name="value"> checked="checked"</mt:if> tabindex="<mt:var name="tabindex">"<mt:if name="read_only"> disabled="disabled"</mt:if> />
 </mtapp:setting>
 </div>

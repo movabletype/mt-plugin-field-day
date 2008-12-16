@@ -5,7 +5,7 @@
     label_class="<mt:if name="label_display" like="/above|hide/">top-label<mt:else>left-label</mt:else></mt:if>"
 	>
 	<div class="textarea-wrapper"<mt:if name="width">style="width:<mt:var name="width">px;"</mt:if>>
-		<input name="<mt:var name="field">" id="<mt:var name="field">" <mt:if name="width">style="width:<mt:var name="width">px;"<mt:else>class="full-width short"</mt:else></mt:if> tabindex="<mt:var name="tabindex">" value="<$mt:var name="value" escape="html"$>" mt:watch-change="1" autocomplete="off"<mt:if name="length">maxlength="<mt:var name="length">"</mt:if> />
+		<input name="<mt:var name="field">" id="<mt:var name="field">" <mt:if name="width">style="width:<mt:var name="width">px;"<mt:else>class="full-width short"</mt:else></mt:if> tabindex="<mt:var name="tabindex">" value="<$mt:var name="value" escape="html"$>" mt:watch-change="1" autocomplete="off"<mt:if name="length">maxlength="<mt:var name="length">"</mt:if><mt:if name="read_only"> disabled="disabled"</mt:if> />
 	</div>
 </mtapp:setting>
 </div>
