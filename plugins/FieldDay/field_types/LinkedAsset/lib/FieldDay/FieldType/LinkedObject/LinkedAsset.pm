@@ -112,7 +112,7 @@ sub pre_save_value {
 		if ($info) {
 			$mimetype = $info->{'Content-Type'};
 		}
-		my $basename = $app->param($i_name . '-file');
+		my $basename = $app->param($i_name . '-file_name') || $app->param($i_name . '-file');
 		$basename =~ s!\\!/!g;    ## Change backslashes to forward slashes
 		$basename =~ s!^.*/!!;    ## Get rid of full directory paths
 		if ( $basename =~ m!\.\.|\0|\|! ) {
@@ -261,6 +261,7 @@ sub pre_save_value {
 			$asset->image_height($h);
 		}
 		$asset->mime_type($mimetype) if $mimetype;
+		$asset->description($app->param($i_name . '-description'));
 		$asset->save;
 		# TODO: munge the params so we can save extra asset fields
 		#$app->run_callbacks( 'cms_post_save.asset', $app, $asset, $original );
