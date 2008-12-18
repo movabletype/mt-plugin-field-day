@@ -114,7 +114,6 @@ sub pre_render {
 	}
 	$param->{'object_loop'} = \@object_loop;
 	$param->{'linked_object_type'} = $class->object_type;
-
 }
 
 sub render_tmpl_type {
@@ -133,26 +132,42 @@ sub html_head {
 <script type="text/javascript" src="http://yui.yahooapis.com/2.5.2/build/connection/connection-min.js"></script> 
 <script type="text/javascript" src="http://yui.yahooapis.com/2.5.2/build/autocomplete/autocomplete-min.js"></script>
 <script type="text/javascript">
+function fdFileFixForm() {
+document.getElementById('<mt:var name="object_form_id">').enctype = 'multipart/form-data';
+}
+TC.attachLoadEvent(fdFileFixForm);
 function linkedObjectSelect(field, data) {
 	var f = getByID(field);
 	var ac = getByID(field + '-ac');
 	var ed = getByID(field + '-change');
 	var bl = getByID(field + '-blog_id');
+	var img = getByID(field + '-img');
+	var link = getByID(field + '-link');
+	var type = getByID(field + '-object_type');
 	f.value = data[1];
 	ac.value = data[0];
-	ac.setAttribute('readOnly', 'readonly');
+	ac.setAttribute('disabled', 'disabled');
 	ed.style.display = 'inline';
 	bl.value = data[2];
-	getByID(field + '-view-link').href = '<mt:var name="script_url">?__mode=view&_type=entry&id=' + f.value + '&blog_id=' + bl.value;
+	getByID(field + '-view-link').href = '<mt:var name="script_url">?__mode=view&_type=' + type.value + '&id=' + f.value + '&blog_id=' + bl.value;
+	if (data[3]) {
+		img.src = data[3];
+		link.href = data[3]; 
+	}
 }
 function linkedObjectChange(field) {
 	var f = getByID(field);
 	var ac = getByID(field + '-ac');
 	var ed = getByID(field + '-change');
+	var pr = getByID(field + '-preview');
+	var img = getByID(field + '-img');
 	f.value = '';
-	ac.removeAttribute('readOnly');
+	ac.removeAttribute('disabled');
 	ac.value = '';
 	ed.style.display ='none';
+	if (img) {
+		img.src = '';
+	}
 }
 function linkedObjectView(field) {
 	var f = getByID(field);
@@ -169,6 +184,7 @@ function linkedObjectToggleCreate(field, on) {
 	} else {
 		linkDiv.style.display = 'inline';
 		fieldsDiv.style.display = 'none';
+		var img = getByID(field + '-img');
 	}
 }
 function linkedObjectSubmit(field, setting_id, blog_id, ac) {
@@ -253,6 +269,10 @@ padding:10px;
 .linked-object-info {
 position:absolute;
 left:300px;
+}
+input.ac-field[disabled] {
+color:#333;
+font-weight:bold;
 }
 </style>
 HTML

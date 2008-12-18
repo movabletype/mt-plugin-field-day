@@ -63,7 +63,6 @@ sub callbacks {
 sub cms_post_save {
 	my $class = shift;
 	my ($cb, $app, $obj) = @_;
-	
 		# if this beacon is not present, FieldDay was not loaded when the
 		# editing template was loaded; we don't want to blow away any
 		# existing data
