@@ -35,7 +35,7 @@ sub val {
 	local $ctx->{__stash}->{entry} = $e;
 	local $ctx->{__stash}->{entry_id} = $e->id;
 	local $ctx->{__stash}->{blog_id} = $e->blog_id;
-	die $ctx->tag('PageFieldValue', $args);
+	return $ctx->tag('PageFieldValue', $args);
 }
 
 1;
