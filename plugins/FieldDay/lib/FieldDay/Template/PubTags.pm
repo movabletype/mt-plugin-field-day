@@ -128,19 +128,38 @@ sub get_group_id {
 	return $group_id;
 }
 
+sub get_group_ids {
+	my ($fd_data, $ctx, $args) = @_;
+	my $stash_key = obj_stash_key($ctx, $args);
+	my $group_id = $ctx->stash($stash_key . ':group_id');
+	my @group_ids;
+	push(@group_ids, $group_id) if $group_id;
+	my $groups = $args->{'group'} || $args->{'groups'};
+	return 0 unless ($group_id || $groups);
+	if ($groups) {
+		for my $group (split(/,/, $groups)) {
+			my %groups_by_name = map { $_->name => $_ } values %{$fd_data->{'groups_by_id'}};
+			push(@group_ids, $groups_by_name{$group}->id);
+		}
+	}
+	return @group_ids;
+}
+
 sub hdlr_IfFieldGroup {
 	my $class = shift;
 	my ($plugin, $ctx, $args, $cond) = @_;
 	my $fd_data = get_fd_data($plugin, $ctx, $args, $cond);
 	my %instances = $args->{'instances'} ? (map { $_ => 1 } split(/,/, $args->{'instances'})) : ();
-	my $group_id = get_group_id($fd_data, $ctx, $args);
+	my @group_ids = get_group_ids($fd_data, $ctx, $args);
 		# return true if any instance of any field in this group has a value
-	for (my $i = 0; $i < $fd_data->{'group_need_ns'}->{$group_id}; $i++) {
-		next if (%instances && !$instances{$i+1});
-		for my $field (@{$fd_data->{'grouped_fields'}->{$group_id}}) {
-			my $values = $fd_data->{'values'}->{$field->name};
-			next unless ($values && @$values && $values->[$i]);
-			return 1 if $values->[$i]->value;
+	for my $group_id (@group_ids) {
+		for (my $i = 0; $i < $fd_data->{'group_need_ns'}->{$group_id}; $i++) {
+			next if (%instances && !$instances{$i+1});
+			for my $field (@{$fd_data->{'grouped_fields'}->{$group_id}}) {
+				my $values = $fd_data->{'values'}->{$field->name};
+				next unless ($values && @$values && $values->[$i]);
+				return 1 if $values->[$i]->value;
+			}
 		}
 	}
 	return 0;
@@ -160,18 +179,20 @@ sub hdlr_IfField {
 	} else {
 		%instances = $args->{'instances'} ? (map { $_ => 1 } split(/,/, $args->{'instances'})) : ();
 	}
-	my $field = $ctx->stash($stash_key . ':field') || $args->{'field'};
-	return 0 unless ($field);
-	if (!$fd_data->{'fields_by_name'}->{$field}) {
-		return $ctx->error("Field $field not defined");
-	}
-	my $group_id = $fd_data->{'fields_by_name'}->{$field}->data->{'group'} || 0;
-		# return true if any instance of this field has a value
-	my $values = $fd_data->{'values'}->{$field};
-	return 0 unless ($values && @$values);
-	for my $i (%instances ? (keys %instances) : (0 .. $fd_data->{'group_need_ns'}->{$group_id})) {
-		next unless $values->[$i];
-		return 1 if $values->[$i]->value;
+	my $fields = $ctx->stash($stash_key . ':field') || $args->{'field'} || $args->{'fields'};
+	return 0 unless ($fields);
+	for my $field (split(/,/, $fields)) {
+		if (!$fd_data->{'fields_by_name'}->{$field}) {
+			return $ctx->error("Field $field not defined");
+		}
+		my $group_id = $fd_data->{'fields_by_name'}->{$field}->data->{'group'} || 0;
+			# return true if any instance of this field has a value
+		my $values = $fd_data->{'values'}->{$field};
+		next unless ($values && @$values);
+		for my $i (%instances ? (keys %instances) : (0 .. $fd_data->{'group_need_ns'}->{$group_id})) {
+			next unless $values->[$i];
+			return 1 if $values->[$i]->value;
+		}
 	}
 	return 0;
 }
