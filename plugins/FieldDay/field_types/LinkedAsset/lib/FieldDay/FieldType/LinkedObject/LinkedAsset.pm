@@ -92,11 +92,9 @@ HTML
 	$param->{'no_ajax'} = 1;
 	$param->{'ac_field_width'} = 150;
 	my $asset = MT->model('asset')->load($param->{'value'});
-	return unless $asset;
-	return unless ($asset->class eq 'image');
-	my $url = $asset->url;
+	my $url = ($asset && $asset->class eq 'image') ? $asset->url : '';
 	$param->{'preview'} = <<"HTML";
-<a href="$url" id="$param->{'field'}-link"><img src="$url" id="$param->{'field'}-img" width="100" align="top" style="padding-left:20px;" border="0" /></a>
+<a href="$url" id="<mt:var name="field">-link" name="<mt:var name="field">-link"><img src="$url" id="<mt:var name="field">-img" name="<mt:var name="field">-img" width="100" align="top" style="padding-left:20px;" border="0" /></a>
 HTML
 }
 
