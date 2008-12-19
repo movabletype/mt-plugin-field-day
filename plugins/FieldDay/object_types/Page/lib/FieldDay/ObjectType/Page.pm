@@ -29,4 +29,13 @@ sub block_loop {
 	return MT::Template::Context::_hdlr_pages($ctx, $args, $cond);
 }
 
+sub val {
+	my $class = shift;
+	my ($ctx, $args, $e) = @_;
+	local $ctx->{__stash}->{entry} = $e;
+	local $ctx->{__stash}->{entry_id} = $e->id;
+	local $ctx->{__stash}->{blog_id} = $e->blog_id;
+	return $ctx->tag('PageFieldValue', $args);
+}
+
 1;

@@ -165,6 +165,7 @@ sub sort_objects {
 	if ($col && !$object_class->column_def($col) && !$object_class->is_meta_column($col)) {
 		my $so = $args->{'sort_order'};
 		local $args->{field} = $col;
+		local $ctx->{__stash};
 		if ($args->{'numeric'}) {
 			if ($so eq 'descend') {
 				@$objects = sort { $class->val($ctx, $args, $b) <=> $class->val($ctx, $args, $a) } @$objects;

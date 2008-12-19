@@ -25,6 +25,10 @@ sub options_tmpl_type {
 	return 'LinkedEntry';
 }
 
+sub object_type {
+	return 'page';
+}
+
 sub load_objects {
 	my $class = shift;
 	my ($param, %terms) = @_;
