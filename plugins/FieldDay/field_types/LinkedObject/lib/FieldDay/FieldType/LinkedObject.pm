@@ -336,7 +336,7 @@ sub hdlr_LinkedObjects {
 			return $ot->{'object_class'}->count($terms, $load_args) ? 1 : 0;
 		}
 		if ($args->{'sort_by'}) {
-			if ($ot->{'object_class'}->column_def($args->{'sort_by'}) ||$ot->{'object_class'}->is_meta_column($args->{'sort_by'})) {
+			if ($ot->{'object_class'}->column_def($args->{'sort_by'}) || $ot->{'object_class'}->is_meta_column($args->{'sort_by'})) {
 				$load_args->{'sort'} = $args->{'sort_by'};
 			}
 		} else {
@@ -387,7 +387,13 @@ sub hdlr_LinkingObjects {
 	if ($ctx->stash('tag') =~ /IfLinking/) {
 		return $linking_ot->{'object_class'}->count($terms, $load_args) ? 1 : 0;
 	}
-	$load_args->{'sort'} = $args->{'sort_by'} || $linking_ot_class->sort_by;
+	if ($args->{'sort_by'}) {
+		if ($linking_ot->{'object_class'}->column_def($args->{'sort_by'}) || $linking_ot->{'object_class'}->is_meta_column($args->{'sort_by'})) {
+			$load_args->{'sort'} = $args->{'sort_by'};
+		}
+	} else {
+		$load_args->{'sort'} = $ot_class->sort_by;
+	}
 	$load_args->{'direction'} = $args->{'sort_order'} || $linking_ot_class->sort_order;
 	my $iter = $linking_ot->{'object_class'}->load_iter($terms, $load_args);
 	return $linking_ot_class->block_loop($iter, $ctx, $args, $cond);
