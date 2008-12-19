@@ -331,6 +331,7 @@ sub hdlr_LinkedObjects {
 			}
 		);
 		eval("require $ot->{'object_class'};");
+		die $@ if $@;
 		if ($ctx->stash('tag') =~ /IfLinked/) {
 			return $ot->{'object_class'}->count($terms, $load_args) ? 1 : 0;
 		}
@@ -374,6 +375,8 @@ sub hdlr_LinkingObjects {
 		}
 	);
 	eval("require $ot->{'object_class'};");
+	die $@ if $@;
+	eval("require $linking_ot->{'object_class'};");
 	die $@ if $@;
 	if ($ctx->stash('tag') =~ /IfLinking/) {
 		return $linking_ot->{'object_class'}->count($terms, $load_args) ? 1 : 0;
