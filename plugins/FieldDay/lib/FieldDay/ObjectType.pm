@@ -162,7 +162,7 @@ sub sort_objects {
 	my $class = shift;
 	my ($object_class, $objects, $ctx, $args) = @_;
 	my $col = $args->{'sort_by'};
-	if ($col && !$object_class->column_def($col) && !$object_class->is_meta_column($col)) {
+	if ($col && !$object_class->has_column($col) && !$object_class->is_meta_column($col)) {
 		my $so = $args->{'sort_order'};
 		local $args->{field} = $col;
 		local $ctx->{__stash};
@@ -179,6 +179,8 @@ sub sort_objects {
 				@$objects = sort { $class->val($ctx, $args, $a) cmp $class->val($ctx, $args, $b) } @$objects;
 			}
 		}
+		# don't want this passed along to the core tag handler
+		delete $args->{'sort_by'};
 	}
 	$objects;
 }

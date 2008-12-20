@@ -388,7 +388,7 @@ sub hdlr_LinkingObjects {
 		return $linking_ot->{'object_class'}->count($terms, $load_args) ? 1 : 0;
 	}
 	if ($args->{'sort_by'}) {
-		if ($linking_ot->{'object_class'}->column_def($args->{'sort_by'}) || $linking_ot->{'object_class'}->is_meta_column($args->{'sort_by'})) {
+		if ($linking_ot->{'object_class'}->has_column($args->{'sort_by'}) || $linking_ot->{'object_class'}->is_meta_column($args->{'sort_by'})) {
 			$load_args->{'sort'} = $args->{'sort_by'};
 		}
 	} else {
