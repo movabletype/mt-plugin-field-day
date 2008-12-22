@@ -83,6 +83,7 @@ sub cms_post_save {
 	my $use_type = $app->param('setting_object_type') || use_type($app->param('_type'));
 	for my $field (@fields) {
 		my $data = $field->data;
+		next if ($data->{'options'}->{'read_only'});
 		my $name = $field->name;
 		$data->{'type'} ||= 'Text';
 		my $class = require_type($app, 'field', $data->{'type'});
