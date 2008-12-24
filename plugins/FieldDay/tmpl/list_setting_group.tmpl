@@ -99,7 +99,7 @@ fd_setting_list[fd_setting_list.length] = '<mt:var name="group">';
 <a href="javascript:void(0);" onclick="moveRow('down', '<mt:var name="group">')"><img src="<mt:var name="static_uri">plugins/FieldDay/nav-arrow-down.gif" border="0" /></a>
 </td>
 <td><input type="text" name="<mt:var name="group">_name" id="<mt:var name="group">_name" value="<mt:var name="group">" onchange="nameChange('<mt:var name="group">')" /></td>
-<td><input type="text" name="<mt:var name="group">_label" id="<mt:var name="group">_label" value="<mt:var name="label">" /></td>
+<td><input type="text" name="<mt:var name="group">_label" id="<mt:var name="group">_label" value="<mt:var name="label" escape="html">" /></td>
 <td><input type="text" class="tiny-width" name="<mt:var name="group">_instances" id="<mt:var name="group">_instances" value="<mt:var name="instances">" /></td>
 <td><input type="text" class="tiny-width" name="<mt:var name="group">_initial" id="<mt:var name="group">_initial" value="<mt:var name="initial">" /></td>
 <mt:if name="has_sets">

@@ -183,7 +183,8 @@ sub hdlr_IfField {
 	return 0 unless ($fields);
 	for my $field (split(/,/, $fields)) {
 		if (!$fd_data->{'fields_by_name'}->{$field}) {
-			return $ctx->error("Field $field not defined");
+			next;
+			#return $ctx->error("Field $field not defined");
 		}
 		my $group_id = $fd_data->{'fields_by_name'}->{$field}->data->{'group'} || 0;
 			# return true if any instance of this field has a value
