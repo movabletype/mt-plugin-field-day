@@ -30,7 +30,8 @@ sub load_terms {
 	my $class = shift;
 	my ($ctx, $args) = @_;
 	my %terms;
-	if ($args->{'blog_ids'}) {
+	if ($args->{'no_blog_id'}) {
+	} elsif ($args->{'blog_ids'}) {
 		$terms{'blog_id'} = [ split(/,/, $args->{'blog_ids'}) ];
 	} elsif ($ctx->stash('blog')) {
 		$terms{'blog_id'} = $ctx->stash('blog')->id;
