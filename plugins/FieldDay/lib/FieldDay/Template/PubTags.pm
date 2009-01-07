@@ -352,12 +352,18 @@ sub hdlr_ByValue {
 	if (@ne) {
 		push(@terms, '-and', { value => { not => [ @ne ] } });
 	}
+	my %instance_args;
+	if ($args->{'instance'}) {
+		my @instances = split(',', $args->{'instance'});
+		$instance_args{'instance'} = \@instances;
+	}
 	require FieldDay::Value;
 	$load_args->{'join'} = FieldDay::Value->join_on(
 		undef,
 		[{
 			object_id        => \"= $id_col", #"
 			key => $args->{'field'},
+			%instance_args,
 		},
 		@terms
 		],
