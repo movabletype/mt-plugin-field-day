@@ -48,12 +48,16 @@ function submitCopyBlog() {
 <mt:if name="blog_id">
 <li>
 <mt:if name="is_default">
+<mt:if name="is_administrator">
 <a href="<mt:var name="script_url">?__mode=fd_clear_default&_type=<mt:var name="setting_object_type">&blog_id=<mt:var name="blog_id">&return_args=<mt:var name="return_args" encode_url="1">">Remove "<mt:var name="blog_name">" Settings as Default</a>
+</mt:if>
 <mt:else>
 <mt:unless name="using_default">
 <a href="javascript:void(0);" onclick="confirmUseDefault();">Use Default Settings</a>
 </mt:unless>
+<mt:if name="is_administrator">
 <a href="<mt:var name="script_url">?__mode=fd_set_default&_type=<mt:var name="setting_object_type">&blog_id=<mt:var name="blog_id">&return_args=<mt:var name="return_args" encode_url="1">">Use "<mt:var name="blog_name">" Settings as Default</a>
+</mt:if>
 </mt:else>
 </mt:if>
 </li>

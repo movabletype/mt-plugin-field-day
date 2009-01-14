@@ -303,7 +303,12 @@ sub hdlr_ByValue {
 	my $ot_class = require_type(MT->instance, 'object', $object_type);
 	require FieldDay::Value;
 	my $terms = $ot_class->load_terms($ctx, $args);
-	$terms->{'blog_id'} = $args->{'blog_id'} if $args->{'blog_id'};
+	my $blog_ids = $args->{'blog_id'} || $args->{'include_blogs'};
+	if ($blog_ids) {
+		$terms->{'blog_id'} = [ split(/,/, $blog_ids) ];
+		delete $args->{'blog_id'};
+		delete $args->{'include_blogs'};		
+	}
 	my $load_args = {};
 	my $id_col = ($ot->{'object_datasource'} || $ot->{'object_mt_type'} || $object_type) . '_id';
 	my @keys = grep { /^(eq|ne)/ } keys %$args;
