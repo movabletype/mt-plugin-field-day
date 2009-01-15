@@ -307,8 +307,11 @@ sub hdlr_LinkedObjects {
 	my $stash_key = obj_stash_key($ctx, $pass_args);
 	my $instance = $ctx->stash("$stash_key:instance");
 	my $iter;
+	my $fd_data;	
+	if (defined $instance || (($args->{'sort_by'} || '') eq 'instance')) {
+		$fd_data = FieldDay::Template::PubTags::get_fd_data(MT::Plugin::FieldDay->instance, $ctx, $pass_args, $cond);
+	}
 	if (defined $instance) {
-		my $fd_data = FieldDay::Template::PubTags::get_fd_data(MT::Plugin::FieldDay->instance, $ctx, $pass_args, $cond);
 		my $values = $fd_data->{'values'}->{$args->{'field'}};
 		if ($values && @$values && $values->[$instance] && $values->[$instance]->value) {
 			$iter = $ot->{'object_class'}->load_iter({ id => $values->[$instance]->value });
@@ -336,6 +339,13 @@ sub hdlr_LinkedObjects {
 			return $ot->{'object_class'}->count($terms, $load_args) ? 1 : 0;
 		}
 		if ($args->{'sort_by'}) {
+			if ($args->{'sort_by'} eq 'instance') {
+				my @objs = $ot->{'object_class'}->load($terms, $load_args);
+				my %vs_by_obj_id = map { $_->value => $_ } @{$fd_data->{'values'}->{$args->{'field'}}};
+				@objs = sort { $vs_by_obj_id{$b->id}->instance <=> $vs_by_obj_id{$a->id}->instance } @objs;
+				$iter = sub { pop @objs };
+				return $ot_class->block_loop($iter, $ctx, $args, $cond);
+			}
 			if ($ot->{'object_class'}->column_def($args->{'sort_by'}) || $ot->{'object_class'}->is_meta_column($args->{'sort_by'})) {
 				$load_args->{'sort'} = $args->{'sort_by'};
 			}

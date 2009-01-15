@@ -16,8 +16,8 @@ sub options {
 		'minutes' => 5,
 		'show_hms' => undef,
 		'ampm' => 1,
-		'y_start' => 2000,
-		'y_end' => 2008,
+		'y_start' => 2008,
+		'y_end' => 2010,
 	};
 }
 
