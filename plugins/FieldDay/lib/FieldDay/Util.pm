@@ -6,10 +6,29 @@ use Data::Dumper;
 use Exporter;
 @FieldDay::Util::ISA = qw( Exporter );
 use vars qw( @EXPORT_OK );
-@EXPORT_OK = qw( app_setting_terms app_value_terms obj_stash_key
+@EXPORT_OK = qw( app_setting_terms app_value_terms obj_stash_key can_edit
 				 require_type mtlog load_fields use_type generic_options );
 
 use FieldDay::YAML qw( object_type field_type types );
+
+sub can_edit {
+	my $app = MT->instance;
+	my $user = $app->user;
+	return 0 unless $user;
+	return 1 if $user->is_superuser;
+	return 0 unless $app->param('blog_id'); # only superuser can edit system-wide fields
+	my $plugin = MT->component('fieldday');
+	my $role_name = $plugin->get_config_value('settings_role', 'system');
+	return 0 unless $role_name;
+	my $role = MT->model('role')->load({ name => $role_name });
+	return 0 unless $role;
+	my $assoc = MT->model('association')->load({
+		'blog_id' => $app->param('blog_id'),
+		'role_id' => $role->id,
+		'author_id' => $user->id,
+	});
+	return $assoc ? 1 : 0;
+}
 
 sub generic_options {
 	return qw( label_display read_only );

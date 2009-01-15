@@ -3,7 +3,8 @@ package FieldDay::App;
 use strict;
 use Data::Dumper;
 use FieldDay::YAML qw( types object_type field_type );
-use FieldDay::Util qw( app_setting_terms require_type mtlog use_type generic_options );
+use FieldDay::Util qw( app_setting_terms require_type mtlog use_type generic_options
+					   can_edit );
 
 sub plugin {
     return MT->component('FieldDay');
@@ -24,6 +25,7 @@ sub save_linked_obj {
 sub cfg_fields {
 	my $class = shift;
 	my ($plugin, $app) = @_;
+	return $app->error('Permission denied') unless can_edit();
 	my $ot = FieldDay::YAML->object_type(use_type($app->param('_type')));
 	require FieldDay::FieldType;
 	my $options_tmpls = FieldDay::FieldType::type_tmpls($plugin, $app, 'options');
@@ -108,6 +110,7 @@ sub cfg_fields {
 sub cfg_groups {
 	my $class = shift;
 	my ($plugin, $app) = @_;
+	return $app->error('Permission denied') unless can_edit();
 	my $ot = FieldDay::YAML->object_type($app->param('_type'));
 	require FieldDay::Setting;
 	my $options = {
@@ -177,6 +180,7 @@ sub cfg_groups {
 sub save_fields {
 	my $class = shift;
 	my ($plugin, $app) = @_;
+	return $app->error('Permission denied') unless can_edit();
 	require FieldDay::Setting;
 	my $type_options = type_options($app);
 	for my $row_name (split(/,/, $app->param('fd_setting_list'))) {
@@ -209,6 +213,7 @@ sub save_fields {
 sub save_groups {
 	my $class = shift;
 	my ($plugin, $app) = @_;
+	return $app->error('Permission denied') unless can_edit();
 	require FieldDay::Setting;
 	my $options = {
 		'label' => '',
@@ -240,6 +245,7 @@ sub save_groups {
 sub copy_settings {
 	my $class = shift;
 	my ($plugin, $app) = @_;
+	return $app->error('Permission denied') unless can_edit();
 	my $blog_id = $app->param('blog_id');
 	my $from_blog_id = $app->param('from_blog_id');
 	return $app->error('Invalid blog_id') unless ($blog_id =~ /^\d+$/);
@@ -283,6 +289,7 @@ sub copy_settings {
 sub set_default {
 	my $class = shift;
 	my ($plugin, $app) = @_;
+	return $app->error('Permission denied') unless can_edit();
 	return $app->error('No blog_id passed') unless $app->param('blog_id');
 	require FieldDay::Setting;
 	my $ot = FieldDay::YAML->object_type($app->param('_type'));
@@ -299,6 +306,7 @@ sub set_default {
 sub clear_default {
 	my $class = shift;
 	my ($plugin, $app) = @_;
+	return $app->error('Permission denied') unless can_edit();
 	return $app->error('No blog_id passed') unless $app->param('blog_id');
 	require FieldDay::Setting;
 	my $ot = FieldDay::YAML->object_type($app->param('_type'));
@@ -313,6 +321,7 @@ sub clear_default {
 sub override_default {
 	my $class = shift;
 	my ($plugin, $app) = @_;
+	return $app->error('Permission denied') unless can_edit();
 	return $app->error('No blog_id passed') unless $app->param('blog_id');
 	require FieldDay::Setting;
 	my $ot = FieldDay::YAML->object_type($app->param('_type'));
@@ -329,6 +338,7 @@ sub override_default {
 sub use_default {
 	my $class = shift;
 	my ($plugin, $app) = @_;
+	return $app->error('Permission denied') unless can_edit();
 	return $app->error('No blog_id passed') unless $app->param('blog_id');
 	require FieldDay::Setting;
 	my $ot = FieldDay::YAML->object_type($app->param('_type'));
