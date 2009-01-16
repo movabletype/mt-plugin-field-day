@@ -167,21 +167,32 @@ sub sort_objects {
 		my $so = $args->{'sort_order'};
 		local $args->{field} = $col;
 		local $ctx->{__stash};
+		my %vals;
+		for my $obj (@$objects) {
+			my %terms = (
+				object_id => $obj->id,
+				object_type => $args->{'object_type'},
+				key => $col,
+			);
+			my $value = MT->model('fdvalue')->load(\%terms);
+			$vals{$obj->id} = $value->value if $value;
+		}
 		if ($args->{'numeric'}) {
 			if ($so eq 'descend') {
-				@$objects = sort { $class->val($ctx, $args, $b) <=> $class->val($ctx, $args, $a) } @$objects;
+				@$objects = sort { $vals{$b->id} <=> $vals{$a->id} } @$objects;
 			} else {
-				@$objects = sort { $class->val($ctx, $args, $a) <=> $class->val($ctx, $args, $b) } @$objects;
+				@$objects = sort { $vals{$a->id} <=> $vals{$b->id} } @$objects;
 			}
 		} else {
 			if ($so eq 'descend') {
-				@$objects = sort { $class->val($ctx, $args, $b) cmp $class->val($ctx, $args, $a) } @$objects;
+				@$objects = sort { $vals{$b->id} cmp $vals{$a->id} } @$objects;
 			} else {
-				@$objects = sort { $class->val($ctx, $args, $a) cmp $class->val($ctx, $args, $b) } @$objects;
+				@$objects = sort { $vals{$a->id} cmp $vals{$a->id} } @$objects;
 			}
 		}
 		# don't want this passed along to the core tag handler
 		delete $args->{'sort_by'};
+		delete $args->{'sort_order'};
 	}
 	$objects;
 }

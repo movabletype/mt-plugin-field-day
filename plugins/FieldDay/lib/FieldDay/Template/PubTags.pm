@@ -348,7 +348,11 @@ sub hdlr_ByValue {
 			push(@ne, $use_args{$key});
 		} elsif ($key =~ /^(ge|gt|le|lt|like|not_like)$/) {
 			my $op = $ops{$key} || $key;
-			push(@terms, '-and', { value => { $op => $use_args{$key} } });
+			if ($args->{numeric} && ($key =~ /^(ge|gt|le|lt)$/)) {
+				push(@terms, '-and', { value => \"$op $use_args{$key}" }); #"
+			} else {
+				push(@terms, '-and', { value => { $op => $use_args{$key} } });
+			}
 		}
 	}
 	if (@eq) {
