@@ -1,4 +1,18 @@
 <mtapp:setting
+	id="<mt:var name="field">_text_entry"
+	label="Display text field for entry"
+	content_class="field-content-text">
+	<input type="checkbox" name="<mt:var name="field">_text_entry" id="<mt:var name="field">_text_entry" <mt:if name="text_entry"> checked="checked"</mt:if> />
+</mtapp:setting>
+
+<mtapp:setting
+	id="<mt:var name="field">_default_year"
+	label="Default to current year"
+	content_class="field-content-text">
+	<input type="checkbox" name="<mt:var name="field">_default_year" id="<mt:var name="field">_default_year" <mt:if name="default_year"> checked="checked"</mt:if> />
+</mtapp:setting>
+
+<mtapp:setting
 	id="<mt:var name="field">_date_order"
 	label="Date Order"
 	content_class="field-content-text">
@@ -46,4 +60,3 @@
 	to
 	<input type="text" name="<mt:var name="field">_y_end" value="<mt:var name="y_end">" class="tiny-width" />
 </mtapp:setting>
-

@@ -22,6 +22,9 @@
 			</mt:if>
 		</mt:if>
 	<mt:else>
+		<mt:if name="text_entry">
+			<input type="text" id="<mt:var name="field">_text" value="<mt:var name="date_text">" onchange="fd_date_text_change(this);" class="fd-field-short" />
+		</mt:if>
 		<mt:if name="date_order" eq="mdy">
 			<mt:var name="m_select">
 			<mt:var name="d_select">

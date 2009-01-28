@@ -11,7 +11,9 @@ sub label {
 
 sub options {
 	return {
+		'text_entry' => 1,
 		'date_order' => 'mdy',
+		'default_year' => 1,
 		'time' => 'hhmm',
 		'minutes' => 5,
 		'show_hms' => undef,
@@ -75,7 +77,7 @@ sub pre_edit_options {
 # before FieldDay displays the config screen
 	my $class = shift;
 	my ($param) = @_;
-	for my $key (qw( date_order time minutes )) {
+	for my $key (qw( date_order time minutes input_type )) {
 		$param->{$param->{$key} . '_selected'} = 1;
 	}
 }
@@ -104,6 +106,9 @@ sub pre_render {
 		# and there's a text value in there
 	$param->{'value'} = $param->{'value'} ? (eval("$param->{'value'} + 0") || '') : '';
 	@{$param}{qw( y m d h min s )} = unpack('A4A2A2A2A2A2', $param->{'value'});
+	if (!$param->{'y'} && $param->{'default_year'}) {
+		$param->{'y'} = [localtime()]->[5] + 1900;
+	}
 	$param->{'y_loop'} = option_loop($param->{'y_start'}, $param->{'y_end'}, $param->{'y'});
 	$param->{'m_loop'} = option_loop(1, 12, $param->{'m'});
 	$param->{'d_loop'} = option_loop(1, 31, $param->{'d'});
@@ -145,7 +150,7 @@ sub choice_tmpl {
 	my ($type, $label) = @_;
 	my $tabindex = "<mt:var name=tabindex_$type>";
 	my $tmpl_text = <<TMPL;
-<select name="<mt:var name="field">_$type" id="<mt:var name="field">_$type" tabindex="$tabindex" onchange="setDirty()">
+<select name="<mt:var name="field">_$type" id="<mt:var name="field">_$type" tabindex="$tabindex" onchange="fd_date_menu_change(this);">
 <option value="">$label</option>
 <mt:loop name="${type}_loop">
 <option value="<mt:var name="label">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
