@@ -187,7 +187,7 @@ sub sort_objects {
 			if ($so eq 'descend') {
 				@$objects = sort { $vals{$b->id} cmp $vals{$a->id} } @$objects;
 			} else {
-				@$objects = sort { $vals{$a->id} cmp $vals{$b->id} } @$objects;
+				@$objects = sort { $vals{$a->id} cmp $vals{$a->id} } @$objects;
 			}
 		}
 		# don't want this passed along to the core tag handler
