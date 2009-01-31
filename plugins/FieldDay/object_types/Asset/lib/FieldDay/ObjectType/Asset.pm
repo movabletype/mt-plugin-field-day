@@ -16,10 +16,8 @@ sub object_form_id {
 sub stashed_id {
 	my $class = shift;
 	my ($ctx, $args) = @_;
-	my $e;
-	my $cat = ($ctx->stash('category') || $ctx->stash('archive_category'))
-		|| (($e = $ctx->stash('entry')) && $e->category);
-	return $cat ? $cat->id : 0;
+    my $asset = $ctx->stash('asset');
+    return $asset ? $asset->id : undef;
 }
 
 sub edit_template_source {
