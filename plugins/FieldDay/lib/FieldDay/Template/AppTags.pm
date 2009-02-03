@@ -111,6 +111,7 @@ TMPL
 				for my $key (keys %{$class->options}) {
 					$param->{$key} = $data->{'options'}->{$key};
 				}
+				$param->{'type'} = $data->{'type'};
 				if ($i > -1) {
 					if (my $value = $values->{$field->name}->[$i]) {
 						$param->{'value'} = $value->value;

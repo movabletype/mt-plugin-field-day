@@ -11,6 +11,7 @@ sub options {
 	return {
 		'autocomplete' => 1,
 		'autocomplete_fields' => undef,
+		'show_autocomplete_values' => undef,
 		'allow_create' => 1,
 		'create_fields' => undef,
 		'required_fields' => undef,
@@ -42,14 +43,18 @@ sub pre_render {
 	my @object_loop = ();
 	my %blog_ids = ();
 	if ($param->{'autocomplete'}) {
+		my $preview_str = '';
 		if ($param->{'value'}) {
 			if (my $obj = $class->load_objects({}, id => $param->{'value'})) {
+				my @values = $class->autocomplete_values($obj, $param);
+				$preview_str = join('; ', @values);
 				$param->{'value_label'} = $class->object_label($obj);
 				$param->{'blog_id'} = $obj->can('blog_id') ? $obj->blog_id : undef;
 			} else {
 				$param->{'value_label'} = '[object missing]';
 			}
 		}
+		$param->{'preview'} = qq{<div id="$param->{'field'}-preview" class="linked-object-preview">$preview_str</div>};
 	} else {
 		for my $obj ($class->load_objects($param)) {
 			my $value = $class->object_value($obj, $param);
@@ -142,6 +147,7 @@ function linkedObjectSelect(field, data) {
 	var ed = getByID(field + '-change');
 	var bl = getByID(field + '-blog_id');
 	var img = getByID(field + '-img');
+	var pr = getByID(field + '-preview');
 	var link = getByID(field + '-link');
 	var type = getByID(field + '-object_type');
 	f.value = data[1];
@@ -151,8 +157,17 @@ function linkedObjectSelect(field, data) {
 	bl.value = data[2];
 	getByID(field + '-view-link').href = '<mt:var name="script_url">?__mode=view&_type=' + type.value + '&id=' + f.value + '&blog_id=' + bl.value;
 	if (data[3]) {
-		img.src = data[3];
-		link.href = data[3]; 
+		if (img) {
+			img.src = data[3];
+			link.href = data[3]; 
+		} else {
+			var str = '';
+			for (var i = 3; i < data.length; i++) {
+				str += data[i];
+			}
+			pr.style.display = 'block';
+			pr.innerHTML = str;
+		}
 	}
 }
 function linkedObjectChange(field) {
@@ -165,6 +180,7 @@ function linkedObjectChange(field) {
 	ac.removeAttribute('disabled');
 	ac.value = '';
 	ed.style.display ='none';
+	pr.style.display ='none';
 	if (img) {
 		img.src = '';
 	}
@@ -241,8 +257,10 @@ YAHOO.widget.AutoComplete.prototype.formatResult = function(aResultItem, sQuery)
 	}
 	var matches = aResultItem[0].match(re);
 	var str = aResultItem[0].replace(re, function(str) { return '<span class="linked-object-highlight">' + str + '</span>'; });
-	if (aResultItem[3]) {
-		str += '<span class="linked-object-info">' + aResultItem[3] + '</span>';
+	if (aResultItem.length > 3) {
+		for (var i = 3; i < aResultItem.length; i++) {
+			str += '<span class="linked-object-info">' + aResultItem[i] + '&nbsp;</span>';
+		}
 	}
 	return str;
 };
@@ -269,6 +287,10 @@ padding:10px;
 .linked-object-info {
 position:absolute;
 left:300px;
+}
+.linked-object-preview {
+padding-top:2px;
+font-weight:bold;
 }
 input.ac-field[disabled] {
 color:#333;
