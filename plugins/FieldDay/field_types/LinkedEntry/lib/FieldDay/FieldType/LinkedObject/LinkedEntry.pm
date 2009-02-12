@@ -362,12 +362,20 @@ sub autocomplete_values {
 	my ($entry, $options) = @_;
 	my @values;
 	if ($options->{'autocomplete_fields'}) {
+		require FieldDay::Setting;
+		my %settings = map { $_->name => $_ }
+			FieldDay::Setting->load({
+				blog_id => $entry->blog_id,
+				object_type => 'entry',
+				type => 'field',
+			});
 		my $core_fields = $class->core_fields;
 		for my $field (split(/,/, $options->{'autocomplete_fields'})) {
 			if ($core_fields->{$field}) {
 				push(@values, $entry->$field);
 			} else {
-				push(@values, field_value_for_entry($entry, $field, $options));
+				my $data = $settings{$field} ? $settings{$field}->data : {};
+				push(@values, field_value_for_entry($entry, $field, $data));
 			}
 		}
 	}
