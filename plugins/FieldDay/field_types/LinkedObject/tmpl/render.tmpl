@@ -21,7 +21,7 @@
 	&nbsp;
 	<div id="<mt:var name="field">-change" style="display:<mt:if name="value">inline<mt:else>none</mt:if>;">
 	<a href="javascript:void(0);" name="<mt:var name="field">" id="<mt:var name="field">-change-link" onclick="linkedObjectChange(this.name);">Change</a> &nbsp; 
-	<a href="<mt:var name="script_url">?__mode=view&_type=<mt:var name="linked_object_type">&id=<mt:var name="value">&blog_id=<mt:var name="blog_id">" name="<mt:var name="field">-view-link" id="<mt:var name="field">-view-link">View</a>
+	<a href="<mt:var name="script_url">?__mode=edit&_type=<mt:var name="linked_object_type">&id=<mt:var name="value">&blog_id=<mt:var name="blog_id">" name="<mt:var name="field">-view-link" id="<mt:var name="field">-view-link" target="_blank">View</a>
 	 &nbsp;</div>
 	<mt:if name="allow_create">
 		<mt:unless name="read_only">

@@ -47,7 +47,7 @@ sub pre_render {
 		if ($param->{'value'}) {
 			if (my $obj = $class->load_objects({}, id => $param->{'value'})) {
 				my @values = $class->autocomplete_values($obj, $param);
-				$preview_str = join('; ', @values);
+				$preview_str = join('&nbsp;', @values);
 				$param->{'value_label'} = $class->object_label($obj);
 				$param->{'blog_id'} = $obj->can('blog_id') ? $obj->blog_id : undef;
 			} else {
@@ -163,7 +163,7 @@ function linkedObjectSelect(field, data) {
 		} else {
 			var str = '';
 			for (var i = 3; i < data.length; i++) {
-				str += data[i];
+				str += data[i] + '&nbsp;';
 			}
 			pr.style.display = 'block';
 			pr.innerHTML = str;
@@ -258,9 +258,11 @@ YAHOO.widget.AutoComplete.prototype.formatResult = function(aResultItem, sQuery)
 	var matches = aResultItem[0].match(re);
 	var str = aResultItem[0].replace(re, function(str) { return '<span class="linked-object-highlight">' + str + '</span>'; });
 	if (aResultItem.length > 3) {
+		str += '<span class="linked-object-info">';
 		for (var i = 3; i < aResultItem.length; i++) {
-			str += '<span class="linked-object-info">' + aResultItem[i] + '&nbsp;</span>';
+			str += aResultItem[i] + '&nbsp;';
 		}
+		str += '</span>';
 	}
 	return str;
 };
@@ -286,7 +288,7 @@ padding:10px;
 }
 .linked-object-info {
 position:absolute;
-left:300px;
+left:200px;
 }
 .linked-object-preview {
 padding-top:2px;

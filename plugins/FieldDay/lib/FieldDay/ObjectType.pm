@@ -81,6 +81,7 @@ sub cms_post_save {
 		# set this in case it's a newly saved object
 	$app->param('id', $obj->id);
 	my $use_type = $app->param('setting_object_type') || use_type($app->param('_type'));
+	my %existing;
 	for my $field (@fields) {
 		my $data = $field->data;
 		next if ($data->{'options'}->{'read_only'});
@@ -88,11 +89,8 @@ sub cms_post_save {
 		$data->{'type'} ||= 'Text';
 		my $class = require_type($app, 'field', $data->{'type'});
 		if ($data->{'group'}) {
-				# get rid of existing values; trying to keep track of which 
-				# submitted instances correspond to which existing ones 
-				# would be a huge pain, and this doesn't seem too expensive
-			for my $killme (FieldDay::Value->load(app_value_terms($app, $name))) {
-				$killme->remove || die $killme->errstr;
+			for my $val (FieldDay::Value->load(app_value_terms($app, $name))) {
+				$existing{$val->key . '=::=' . $val->value . '=::=' . $val->instance} = $val;
 			}
 			for my $i_name (grep { /^$name/ } @param) {
 				if ($i_name !~ /^$name-instance-(\d+)$/) {
@@ -104,24 +102,43 @@ sub cms_post_save {
 					&& ($i > $group_instances{$data->{'group'}}));
 				my $value = $class->pre_save_value($app, $i_name, $obj, $data->{'options'});
 				next unless $value;
-				my $value_obj = FieldDay::Value->new;
-				$value_obj->populate($app, $name, $value, $use_type, $i);
-				$value_obj->save || die $value_obj->errstr;
-				$class->post_save_value($app, $value_obj, $obj, $field);
+				my $val;
+				my $existing_key = $name . '=::=' . $value . '=::=' . $i;
+				if ($existing{$existing_key}) {
+					$val = $existing{$existing_key};
+					delete $existing{$existing_key};
+				} else {
+					$val = FieldDay::Value->new;
+					$val->populate($app, $name, $value, $use_type, $i);
+				}
+				$val->save || die $val->errstr;
+				$class->post_save_value($app, $val, $obj, $field);
 			}
 		} else {
 				# no group, don't need to worry about instances or delete existing
 			my $value = $class->pre_save_value($app, $name, $obj, $data->{'options'});
-			my $value_obj;
-			if ($value_obj = FieldDay::Value->load(app_value_terms($app, $name))) {
-				$value_obj->set_value($value);
-			} else {
-				$value_obj = FieldDay::Value->new;
-				$value_obj->populate($app, $name, $value, $use_type);
+			my $val;
+				# shouldn't be more than one value with this key, but just in case
+			my @vals = FieldDay::Value->load(app_value_terms($app, $name));
+			if (scalar @vals > 1) {
+				for my $i (1 .. $#vals) {
+					$vals[$i]->remove;
+				}
 			}
-			$value_obj->save || die $value_obj->errstr;
-			$class->post_save_value($app, $value_obj, $obj, $field);
+			$val = @vals ? $vals[0] : undef;
+			if ($val) {
+				$val->set_value($value);
+			} else {
+				$val = FieldDay::Value->new;
+				$val->populate($app, $name, $value, $use_type);
+			}
+			$val->save || die $val->errstr;
+			$class->post_save_value($app, $val, $obj, $field);
 		}
+	}
+	# anything left in %existing was not re-saved, so remove it
+	for my $key (keys %existing) {
+		$existing{$key}->remove;
 	}
 	return 1;
 }
