@@ -370,7 +370,7 @@ sub hdlr_LinkedObjects {
 				$iter = sub { pop @objs };
 				return $ot_class->block_loop($iter, $ctx, $args, $cond);
 			}
-			if ($ot->{'object_class'}->column_def($args->{'sort_by'}) || $ot->{'object_class'}->is_meta_column($args->{'sort_by'})) {
+			if ($ot->{'object_class'}->has_column($args->{'sort_by'}) || $ot->{'object_class'}->is_meta_column($args->{'sort_by'})) {
 				$load_args->{'sort'} = $args->{'sort_by'};
 			}
 		} else {

@@ -207,9 +207,6 @@ sub sort_objects {
 				@$objects = sort { $vals{$a->id} cmp $vals{$b->id} } @$objects;
 			}
 		}
-		# don't want this passed along to the core tag handler
-		delete $args->{'sort_by'};
-		delete $args->{'sort_order'};
 	}
 	$objects;
 }
