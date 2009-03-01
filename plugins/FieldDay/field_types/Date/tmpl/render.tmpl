@@ -1,38 +1,61 @@
+<div>
 <mtapp:setting
 	id="<mt:var name="field">"
-	label="<mt:var name="label">"
-    label_class="<mt:if name="label_above">top-label<mt:else>left-label</mt:else></mt:if>"
+	label="<mt:unless name="label_display" eq="hide"><mt:var name="label"></mt:unless>"
+    label_class="<mt:if name="label_display" like="/above|hide/">top-label<mt:else>left-label</mt:else></mt:if>"
 	>
 	<input type="hidden" name="<mt:var name="field">" id="<mt:var name="field">" value="dummy" />
-	<mt:if name="date_order" eq="mdy">
-		<mt:var name="m_select">
-		<mt:var name="d_select">
-		<mt:var name="y_select">
-	</mt:if>
-	<mt:if name="date_order" eq="dmy">
-		<mt:var name="d_select">
-		<mt:var name="m_select">
-		<mt:var name="y_select">
-	</mt:if>
-	<mt:if name="date_order" eq="ymd">
-		<mt:var name="y_select">
-		<mt:var name="m_select">
-		<mt:var name="d_select">
-	</mt:if>
-	<a href="javascript:void(0);" onmouseover="fd_cal_switch('<mt:var name="field">');" onclick="fd_calendar.showCalendar('fd_cal_<mt:var name="field">');return false;" name="fd_cal_<mt:var name="field">" id="fd_cal_<mt:var name="field">"><img src="<mt:var name="static_uri">plugins/FieldDay/cal.png" border="0" /></a>
-	<mt:if name="show_hms">
-		<mt:var name="h_select">
-		<mt:if name="time" ne="hh">
-			: <mt:var name="min_select">
-			<mt:if name="time" eq="hhmmss">
-				: <mt:var name="s_select">
+	<mt:if name="read_only">
+		<mt:if name="date_order" eq="mdy">
+			<mt:var name="m">-<mt:var name="d">-<mt:var name="y">
+		</mt:if>
+		<mt:if name="date_order" eq="dmy">
+			<mt:var name="d">-<mt:var name="m">-<mt:var name="y">
+		</mt:if>
+		<mt:if name="date_order" eq="ymd">
+			<mt:var name="y">-<mt:var name="m">-<mt:var name="d">
+		</mt:if>
+		<mt:if name="show_hms">
+			<mt:var name="h"><mt:if name="time" ne="hh">:<mt:var name="min"><mt:if name="time" eq="hhmmss">:<mt:var name="s"></mt:if></mt:if>
+			<mt:if name="ampm">
+				<mt:if name="am_selected">am<mt:else>pm</mt:if>
 			</mt:if>
 		</mt:if>
-		<mt:if name="ampm">
-			<select name="<mt:var name="field">_ampm" id="<mt:var name="field">_ampm">
-			<option value="am"<mt:if name="am_selected"> selected="selected"</mt:if>>am</option>
-			<option value="pm"<mt:if name="pm_selected"> selected="selected"</mt:if>>pm</option>			
-			</select>
+	<mt:else>
+		<mt:if name="text_entry">
+			<input type="text" id="<mt:var name="field">_text" value="<mt:var name="date_text">" onchange="fd_date_text_change(this);" class="fd-field-short" />
+		</mt:if>
+		<mt:if name="date_order" eq="mdy">
+			<mt:var name="m_select">
+			<mt:var name="d_select">
+			<mt:var name="y_select">
+		</mt:if>
+		<mt:if name="date_order" eq="dmy">
+			<mt:var name="d_select">
+			<mt:var name="m_select">
+			<mt:var name="y_select">
+		</mt:if>
+		<mt:if name="date_order" eq="ymd">
+			<mt:var name="y_select">
+			<mt:var name="m_select">
+			<mt:var name="d_select">
+		</mt:if>
+		<a href="javascript:void(0);" onmouseover="fd_cal_switch('<mt:var name="field">');" onclick="fd_calendar.showCalendar('fd_cal_<mt:var name="field">');return false;" name="fd_cal_<mt:var name="field">" id="fd_cal_<mt:var name="field">"><img src="<mt:var name="static_uri">plugins/FieldDay/cal.png" border="0" /></a>
+		<mt:if name="show_hms">
+			<mt:var name="h_select">
+			<mt:if name="time" ne="hh">
+				: <mt:var name="min_select">
+				<mt:if name="time" eq="hhmmss">
+					: <mt:var name="s_select">
+				</mt:if>
+			</mt:if>
+			<mt:if name="ampm">
+				<select name="<mt:var name="field">_ampm" id="<mt:var name="field">_ampm">
+				<option value="am"<mt:if name="am_selected"> selected="selected"</mt:if>>am</option>
+				<option value="pm"<mt:if name="pm_selected"> selected="selected"</mt:if>>pm</option>			
+				</select>
+			</mt:if>
 		</mt:if>
 	</mt:if>
 </mtapp:setting>
+</div>

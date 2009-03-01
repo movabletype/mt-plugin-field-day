@@ -17,35 +17,23 @@ sub tags {
 	};
 }
 
-sub options {
-	return {
-		'linked_blog_id' => undef,
-		'published' => 1,
-	};
-}
-
 sub label {
 	return 'Linked Page';
 }
 
+sub options_tmpl_type {
+	return 'LinkedEntry';
+}
+
+sub object_type {
+	return 'page';
+}
+
 sub load_objects {
 	my $class = shift;
-	my ($param) = @_;
-	require MT::Page;
-	require MT::Entry;
-	return () unless ($param->{'linked_blog_id'});
-	my $terms = {
-		 blog_id => $param->{'linked_blog_id'},
-	};
-	my $args = {};
-	if ($param->{'published'}) {
-		$terms->{'status'} = MT::Entry::RELEASE();
-	}
-	$args = {
-		'sort' => 'title',
-		'direction' => 'ascend',
-	};
-	return MT::Page->load($terms, $args)
+	my ($param, %terms) = @_;
+	$terms{'class'} = 'page';
+	return $class->SUPER::load_objects($param, %terms);
 }
 
 1;

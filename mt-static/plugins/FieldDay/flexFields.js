@@ -18,7 +18,7 @@ function ffInitialize() {
 	}
 }
 if (typeof(TC) != 'undefined') {
-	TC.attachLoadEvent(ffInitialize);
+	TC.attachLoadEvent(ffInitialize);	
 }
 function ffRenumberFields(node, old_re, new_str) {
 //recursively 

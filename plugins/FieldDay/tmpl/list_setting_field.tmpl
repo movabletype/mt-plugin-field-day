@@ -119,7 +119,7 @@ fd_setting_names['<mt:var name="field">'] = '<mt:var name="field">';
 <div><a href="javascript:void(0);" onclick="editOptions('<mt:var name="field">')">Options</a></div>
 </td>
 <td><input type="text" name="<mt:var name="field">_name" id="<mt:var name="field">_name" value="<mt:var name="field">" onchange="return nameChange(this, '<mt:var name="field">')" /></td>
-<td><input type="text" name="<mt:var name="field">_label" id="<mt:var name="field">_label" value="<mt:var name="label">" /></td>
+<td><input type="text" name="<mt:var name="field">_label" id="<mt:var name="field">_label" value="<mt:var name="label" escape="html">" /></td>
 <td>
 <select name="<mt:var name="field">_type" id="<mt:var name="field">_type" onchange="typeChange(this, '<mt:var name="field">')">
 <mt:loop name="type_loop">
@@ -131,7 +131,6 @@ fd_setting_names['<mt:var name="field">'] = '<mt:var name="field">';
 <select name="<mt:var name="field">_group" id="<mt:var name="field">_group">
 <mt:loop name="group_loop">
 <option value="<mt:var name="group">" <mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
-</mt:loop>
 </mt:loop>
 </select>
 </td>

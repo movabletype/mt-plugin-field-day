@@ -20,7 +20,7 @@ sub insert_before_html_head {
 sub stashed_id {
 	my $class = shift;
 	my ($ctx, $args) = @_;
-	return $ctx->stash('blog')->id;
+	return $ctx->stash('blog') ? $ctx->stash('blog')->id : 0;
 }
 
 sub load_terms {
@@ -43,6 +43,13 @@ sub block_loop {
 		$out .= $text;
 	}
 	return $out;
+}
+
+sub edit_template_source {
+	my $class = shift;
+	my ($cb, $app, $template) = @_;
+	$class->SUPER::edit_template_source($cb, $app, $template);
+	$$template =~ s/<form name="cfg_form"/<form name="cfg_form" id="cfg_form"/;
 }
 
 sub sort_by {

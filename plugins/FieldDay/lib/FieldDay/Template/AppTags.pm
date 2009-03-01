@@ -3,7 +3,7 @@ package FieldDay::Template::AppTags;
 use strict;
 use Data::Dumper;
 use FieldDay::YAML qw( field_type );
-use FieldDay::Util qw( app_setting_terms load_fields require_type mtlog );
+use FieldDay::Util qw( app_setting_terms load_fields require_type mtlog generic_options );
 
 sub hdlr_cmsfields {
 	my $class = shift;
@@ -20,15 +20,24 @@ sub hdlr_cmsfields {
 	my %group_initial_instances = ();
 	my $static_uri = MT->instance->static_path;
 	my $tabindex = 3;
+	my $blog_id = MT->instance->param('blog_id');
+	my $check_set = $blog_id && MT->component('blogset');
 	for my $group_id (sort {
 				$group_orders->{$a} <=> $group_orders->{$b}
 			} keys %$grouped_fields) {
-		#next unless ($groups_by_id->{$group_id});
-		my $group_out = qq{<div id="group-${group_id}-parent">};
 		my $g_data;
 		if ($group_id > 0) {
 			$g_data = $groups_by_id->{$group_id}->data;
+			if ($check_set && $g_data->{'set'}) {
+				require BlogSet::Util;
+				if (!BlogSet::Util::blog_in_set($blog_id, $g_data->{'set'})) {
+					delete $grouped_fields->{$group_id};
+					next;
+				}
+			}
 		}
+		my $class = $group_id ? ' class="fd-group-parent">' : '';
+		my $group_out = qq{<div id="group-${group_id}-parent"$class};
 		my $n = $group_need_ns->{$group_id} || 0;
 		if (!$n && $group_id) {
 			push(@group_need_initial, $group_id);
@@ -38,6 +47,9 @@ sub hdlr_cmsfields {
 			$group_max_instances{$group_id} = $g_data->{'instances'};
 		}
 		$instance_list{$group_id} = [];
+		if ($group_id > 0) {
+			$group_out .= qq{<h4 class="fd-group-head">$g_data->{'label'}</h4>};
+		}
 		for (my $i = -1; $i < $n; $i++) {
 				# don't need a prototype if no group
 			if (($i == -1) && ($group_id == 0)) {
@@ -62,17 +74,22 @@ sub hdlr_cmsfields {
 </span>
 TMPL
 				my $div;
+				my $class = ' class="fd-group"';
 				if ($i == -1) {
-					$div = qq{<div id="group-${group_id}-$i" style="display:none;">};
+					$div = qq{<div id="group-${group_id}-$i" style="display:none;"$class>};
 				} else {
-					$div = qq{<div id="group-${group_id}-$i">};
+					$div = qq{<div id="group-${group_id}-$i"$class>};
 					push(@{$instance_list{$group_id}}, "group-${group_id}-$i");
 				}
-				$group_out .= <<"TMPL";
-$div
-<h4 class="fd-group-head">$g_data->{'label'}$inst$buttons</h4>
+				$group_out .= $div;
+				if (($group_max_instances{$group_id} || 0) != 1) {
+					$group_out .= qq{
+<span class="fd-group-inst-buttons"><span class="fd-group-inst">$inst</span>$buttons</span>
+};
+				}
+				$group_out .= qq{
 <div id="group-${group_id}-fields-instance-$i">
-TMPL
+};
 			}
 			for my $field (@{$grouped_fields->{$group_id}}) {
 				my $data = $field->data;
@@ -87,13 +104,14 @@ TMPL
 					'field' => $field_name,
 					'js_field' => $js_field_name,
 					'label' => $data->{'label'} || $field_name,
-					'label_above' => $data->{'options'}->{'label_above'} ? 1 : 0,
+					map { $_ => $data->{'options'}->{$_} } generic_options(),
 					'tabindex' => ++$tabindex,
 				};
 				my $class = require_type(MT->instance, 'field', $data->{'type'});
 				for my $key (keys %{$class->options}) {
 					$param->{$key} = $data->{'options'}->{$key};
 				}
+				$param->{'type'} = $data->{'type'};
 				if ($i > -1) {
 					if (my $value = $values->{$field->name}->[$i]) {
 						$param->{'value'} = $value->value;
@@ -101,7 +119,7 @@ TMPL
 				}
 				$param->{'static_uri'} = $static_uri;
 				$param->{'setting_id'} = $field->id;
-				$class->pre_render($param);
+				$class->pre_render($param, $args);
 				$tmpl->param({ %$param, %$args });
 				$group_out .= $tmpl->output;
 					# the field type may increment this
@@ -109,7 +127,7 @@ TMPL
 			}
 			$group_out .= '</div></div>' if $group_id;
 		}
-		$group_out .= '</div>';
+		$group_out .= '</div><div style="clear:both;"></div>';
 		$out .= $group_out;
 	}
 	my $js = '';
@@ -154,7 +172,31 @@ padding:5px 0 5px 5px;
 margin-bottom:10px;
 }
 .fd-group-buttons {
-padding-left:5px;
+padding-right:5px;
+}
+.fd-group-inst-buttons {
+float:left;
+width:75px;
+padding-bottom:5px;
+}
+.fd-group-inst {
+font-weight:bold;
+font-size:12px;
+padding-right:5px;
+}
+.fd-group {
+padding-bottom:5px;
+margin-bottom:10px;
+border-bottom:1px solid #ccc;
+}
+.fd-group-parent {
+padding-bottom:10px;
+}
+.fd-group-parent .field {
+margin-bottom:.75em;
+}
+.fd-field-short {
+width:80px;
 }
 </style>
 $js

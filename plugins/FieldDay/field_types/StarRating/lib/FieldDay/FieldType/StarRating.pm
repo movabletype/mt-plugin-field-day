@@ -5,6 +5,7 @@ use strict;
 use base qw( FieldDay::FieldType );
 
 use FieldDay::YAML qw( types object_type );
+use FieldDay::Util qw( obj_stash_key );
 use Data::Dumper;
 
 sub label {
@@ -76,7 +77,7 @@ sub pre_edit_options {
 	for my $key (sort keys %$ots) {
 		push(@ot_loop, {
 			'name' => $key,
-			'selected' => ($key eq $param->{'average_object_type'}),
+			'selected' => ($key eq ($param->{'average_object_type'} || '')),
 		});
 	}
 	$param->{'object_type_loop'} = \@ot_loop;
@@ -103,7 +104,7 @@ sub pre_render {
 sub pre_publish {
 	my $class = shift;
 	my ($ctx, $args, $value, $field) = @_;
-	my $name = $field->name . (FieldDay::Template::PubTags::obj_stash_key($ctx, $args) || '');
+	my $name = $field->name . (obj_stash_key($ctx, $args) || '');
 	my $opts = $field->data->{'options'};
 	my $out = '';
 	if ($args->{'enter'}) {

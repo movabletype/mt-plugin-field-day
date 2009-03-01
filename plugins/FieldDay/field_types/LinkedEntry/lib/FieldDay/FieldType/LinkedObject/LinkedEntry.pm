@@ -20,6 +20,7 @@ sub tags {
 }
 
 sub options {
+	my $class = shift;
 	return {
 		'linked_blog_id' => undef,
 		'category_ids' => undef,
@@ -27,12 +28,7 @@ sub options {
 		'lastn' => undef,
 		'search' => undef,
 		'published' => 1,
-		'autocomplete' => 1,
-		'autocomplete_fields' => undef,
-		'allow_create' => 1,
-		'create_fields' => undef,
-		'required_fields' => undef,
-		'unique_fields' => undef,
+		%{$class->SUPER::options()}
 	};
 }
 
@@ -49,6 +45,7 @@ sub load_objects {
 	my ($param, %terms) = @_;
 	require MT::Entry;
 	my $terms = { %terms };
+	$terms->{'class'} ||= 'entry';
 	if ($param->{'linked_blog_id'}) {
 		$terms->{'blog_id'} = $param->{'linked_blog_id'};
 	}
@@ -101,6 +98,8 @@ sub object_label {
 }
 
 sub core_fields {
+	my $class = shift;
+	my ($blog_id) = @_;
 	return {
 		'title' => {
 			'type' => 'Text',
@@ -109,21 +108,42 @@ sub core_fields {
 		'text' => {
 			'type' => 'TextArea',
 			'label' => 'Body',
-			'label_above' => 1,
+			'options' => {
+				'label_display' => 'above',
+			},
 		},
 		'text_more' => {
 			'type' => 'TextArea',
 			'label' => 'Extended',
-			'label_above' => 1,
+			'options' => {
+				'label_display' => 'above',
+			},
 		},
 		'status' => {
 			'type' => 'RadioButtons',
-			'label' => '',
+			'label' => 'Status',
 			'options' => {
+				'label_display' => 'hide',
 				'choices' => "1=Unpublished\n2=Published",
 			},
-		}
+		},
+		'category' => {
+			'type' => 'SelectMenu',
+			'label' => 'Category',
+			'options' => {
+				'choices' => $class->cat_choices($blog_id),
+			},
+		},
 	};
+}
+
+sub cat_choices {
+	my $class = shift;
+	my ($blog_id) = @_;
+	my %terms;
+	$terms{blog_id} = $blog_id if $blog_id;
+	my @cats = MT->model('category')->load(\%terms);
+	return join("\n", map { $_->id . '=' . $_->label } @cats);
 }
 
 sub save_object {
@@ -196,7 +216,17 @@ sub save_object {
 	$entry->save || return $app->json_error($entry->errstr);
 	for my $field (split(/,/, $data->{'options'}->{'create_fields'})) {
 		if ($core_fields->{$field}) {
-			$entry->$field($app->param($field));
+			if ($field eq 'category') {
+				require MT::Placement;
+				my $place = MT::Placement->new;
+				$place->entry_id($entry->id);
+				$place->blog_id($entry->blog_id);
+				$place->category_id($app->param($field));
+				$place->is_primary(1);
+				$place->save || die $place->errstr;
+			} else {
+				$entry->$field($app->param($field));
+			}
 		} else {
 			save_field_for_entry($entry, $field, $app->param($field));
 		}
@@ -206,26 +236,44 @@ sub save_object {
 		code => 'added',
 		id => $entry->id,
 		label => $entry->title,
+		blog_id => $entry->blog_id,
 	});
 }
 
 sub save_linked_object {
 	my $class = shift;
-	my ($app, $i_name, $entry, $options) = @_;
+	my ($app, $i_name, $obj, $options) = @_;
 	my $core_fields = $class->core_fields;
 	require MT::Entry;
 	require FieldDay::Setting;
+	my $save = 0;
+	my %ef_values = ();
+	# create an entry, but we won't necessarily save it
+	# unless and until we have at least one field value
 	my $entry = MT::Entry->new;
 	$entry->author_id($app->user->id);
 	$entry->status(1);
 	$entry->blog_id($options->{'linked_blog_id'});
-	# have to save now so we have an ID
-	$entry->save || die $entry->errstr;
-	my $status = 1;
 	for my $field (split(/,/, $options->{'create_fields'})) {
 		my $param_key = $i_name . '-' . $field;
 		if ($core_fields->{$field}) {
-			$entry->$field($app->param($param_key));
+			if ($app->param($param_key)) {
+				if ($field eq 'category') {
+					if (!$entry->id) {
+						$entry->save || die $entry->errstr;
+					}
+					require MT::Placement;
+					my $place = MT::Placement->new;
+					$place->entry_id($entry->id);
+					$place->blog_id($entry->blog_id);
+					$place->category_id($app->param($param_key));
+					$place->is_primary(1);
+					$place->save || die $place->errstr;
+				} else {
+					$entry->$field($app->param($param_key));
+				}
+				$save = 1;
+			}
 		} else {
 			my $setting = FieldDay::Setting->load({
 				object_type => 'entry',
@@ -235,11 +283,20 @@ sub save_linked_object {
 			my $data = $setting->data;
 			my $class = require_type($app, 'field', $data->{'type'});
 			my $value = $class->pre_save_value($app, $param_key, $entry, $data->{'options'});
-			save_field_for_entry($entry, $field, $value);
+			if ($value) {
+				$save = 1;
+				$ef_values{$field} = $value;
+			}
 		}
 	}
-	$entry->save || die $entry->errstr;
-	return $entry->id;
+	if ($save) {
+		$entry->save || die $entry->errstr;
+		for my $field (keys %ef_values) {
+			save_field_for_entry($entry, $field, $ef_values{$field});
+		}
+		return $entry->id;
+	}
+	return undef;
 }
 
 sub save_field_for_entry {
@@ -260,7 +317,7 @@ sub save_field_for_entry {
 }
 
 sub field_value_for_entry {
-	my ($entry, $key) = @_;
+	my ($entry, $key, $data) = @_;
 	my $id = (ref $entry) ? $entry->id : $entry;
 	require FieldDay::Value;
 	my $val_obj = FieldDay::Value->load(
@@ -270,7 +327,13 @@ sub field_value_for_entry {
 			key => $key,
 		},
 	);
-	$val_obj ? $val_obj->value : '';
+	return '' unless $val_obj;
+	if ($data->{'type'} =~ /^Linked/) {
+		my $linked_class = require_type(MT->instance, 'field', $data->{'type'});
+		my $obj = MT->model($linked_class->object_type)->load($val_obj->value);
+		return $obj ? $linked_class->object_label($obj) : '';
+	}
+	return $val_obj->value;
 }
 
 sub do_query {
@@ -279,7 +342,9 @@ sub do_query {
 	my %terms = (
 		title => { like => '%' . $q->param('query') . '%' },
 	);
+	my $data = $setting->data;
 	my $options = $setting->data->{'options'};
+	$options->{'type'} = $data->{'type'};
 	my @entries = $class->load_objects($options, %terms);
 	return join("\n", map { $class->map_entry($_, $options) } @entries);
 }
@@ -288,17 +353,33 @@ sub map_entry {
 	my $class = shift;
 	my ($entry, $options) = @_;
 	my @values = ($entry->title, $entry->id, $entry->blog_id);
+	push(@values, $class->autocomplete_values($entry, $options));
+	return join("\t", @values);
+}
+
+sub autocomplete_values {
+	my $class = shift;
+	my ($entry, $options) = @_;
+	my @values;
 	if ($options->{'autocomplete_fields'}) {
+		require FieldDay::Setting;
+		my %settings = map { $_->name => $_ }
+			FieldDay::Setting->load({
+				blog_id => $entry->blog_id,
+				object_type => 'entry',
+				type => 'field',
+			});
 		my $core_fields = $class->core_fields;
 		for my $field (split(/,/, $options->{'autocomplete_fields'})) {
 			if ($core_fields->{$field}) {
 				push(@values, $entry->$field);
 			} else {
-				push(@values, field_value_for_entry($entry, $field));
+				my $data = $settings{$field} ? $settings{$field}->data : {};
+				push(@values, field_value_for_entry($entry, $field, $data));
 			}
 		}
 	}
-	return join("\t", @values);
+	return @values;
 }
 
 1;

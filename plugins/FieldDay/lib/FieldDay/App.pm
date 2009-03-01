@@ -3,7 +3,8 @@ package FieldDay::App;
 use strict;
 use Data::Dumper;
 use FieldDay::YAML qw( types object_type field_type );
-use FieldDay::Util qw( app_setting_terms require_type mtlog use_type );
+use FieldDay::Util qw( app_setting_terms require_type mtlog use_type generic_options
+					   can_edit );
 
 sub plugin {
     return MT->component('FieldDay');
@@ -24,10 +25,8 @@ sub save_linked_obj {
 sub cfg_fields {
 	my $class = shift;
 	my ($plugin, $app) = @_;
+	return $app->error('Permission denied') unless can_edit();
 	my $ot = FieldDay::YAML->object_type(use_type($app->param('_type')));
-	#if ($ot->{'object_mt_type'}) {
-	#	$app->param('setting_object_mt_type', $ot->{'object_mt_type'});
-	#}
 	require FieldDay::FieldType;
 	my $options_tmpls = FieldDay::FieldType::type_tmpls($plugin, $app, 'options');
 	require FieldDay::Setting;
@@ -44,8 +43,8 @@ sub cfg_fields {
 		my $ft_class = FieldDay::YAML->field_type($row->{'type'})->{'class'};
 		$row->{"is_$row->{'type'}"} = 1;
 		my $options = $ft_class->options;
-		for my $key (keys %$options, 'label_above') {
-			$row->{$key} = $data->{'options'}->{$key} || $options->{$key};
+		for my $key (keys %$options, generic_options()) {
+			$row->{$key} = exists $data->{'options'}->{$key} ? $data->{'options'}->{$key} : $options->{$key};
 		}
 		$row->{'type_loop'} = field_type_loop($row->{'type'});
 		$row->{'group_loop'} = group_loop($app, $data->{'group'});
@@ -108,32 +107,17 @@ sub cfg_fields {
 	});
 }
 
-sub group_loop {
-	my ($app, $selected) = @_;
-	my @loop = ({ 'label' => 'Select', 'group' => 0 });
-	for my $group (FieldDay::Setting->load(app_setting_terms($app, 'group'))) {
-		my $data = $group->data;
-		push(@loop, {
-			'group' => $group->id,
-			'label'=> $data->{'label'} || $group->name,
-			'selected' => ($selected && ($selected == $group->id)) ? 1 : 0
-		});
-	}
-	return \@loop;
-}
-
 sub cfg_groups {
 	my $class = shift;
 	my ($plugin, $app) = @_;
+	return $app->error('Permission denied') unless can_edit();
 	my $ot = FieldDay::YAML->object_type($app->param('_type'));
-	#if ($ot->{'object_mt_type'}) {
-	#	$app->param('setting_object_mt_type', $ot->{'object_mt_type'});
-	#}
 	require FieldDay::Setting;
 	my $options = {
 		'label' => '',
 		'instances' => 1,
 		'initial' => 1,
+		'set' => 0,
 	};
 	my $hasher = sub {
 		my ($obj, $row) = @_;
@@ -145,6 +129,9 @@ sub cfg_groups {
 			$row->{$key} = exists($data->{$key}) ? $data->{$key} : $options->{$key};
 		}
 		$row->{'new'} = 0;
+		if (MT->component('blogset')) {
+			$row->{'set_loop'} = set_loop($app, $data->{'set'});
+		}
 	};
 	$app->mode('fd_cfg_groups');
 	return $app->listing({
@@ -170,6 +157,7 @@ sub cfg_groups {
 				'is_text' => 1,
 				'prototype' => 1,
 				'order' => 0,
+				MT->component('blogset') ? ('set_loop' => set_loop($app)) : (),
 				%$options,
 			};
 			unshift(@{$param->{'object_loop'}}, $row);
@@ -183,6 +171,7 @@ sub cfg_groups {
 			'setting_label' => 'Field Group',
 			'setting_label_pl' => 'Field Groups',
 			'saved' => $app->param('saved') ? 1 : 0,
+			'has_sets' => MT->component('blogset') ? 1 : 0,
 			default_params($app),
 		}
 	});
@@ -191,6 +180,7 @@ sub cfg_groups {
 sub save_fields {
 	my $class = shift;
 	my ($plugin, $app) = @_;
+	return $app->error('Permission denied') unless can_edit();
 	require FieldDay::Setting;
 	my $type_options = type_options($app);
 	for my $row_name (split(/,/, $app->param('fd_setting_list'))) {
@@ -206,7 +196,7 @@ sub save_fields {
 			$data->{$key} = $app->param($row_name . '_' . $key);
 		}
 		$data->{'options'} = {};
-		for my $option (keys %{$type_options->{$row_name_type}}, 'label_above') {
+		for my $option (keys %{$type_options->{$row_name_type}}, generic_options()) {
 			$data->{'options'}->{$option} = $app->param($row_name . "_$option");
 		}
 		FieldDay::YAML->field_type($row_name_type)->{'class'}->pre_save_options($app, $row_name, $data->{'options'});
@@ -217,23 +207,28 @@ sub save_fields {
 			$setting->remove || die $setting->errstr;
 		}
 	}
-	return $app->redirect($app->uri . '?' . $app->param('return_args'));
+	return $app->redirect($app->uri . '?' . $app->param('return_args') . '&saved=1');
 }
 
 sub save_groups {
 	my $class = shift;
 	my ($plugin, $app) = @_;
+	return $app->error('Permission denied') unless can_edit();
 	require FieldDay::Setting;
 	my $options = {
 		'label' => '',
 		'instances' => 1,
 		'initial' => 1,
+		'set' => 0,
 	};
 	for my $row_name (split(/,/, $app->param('fd_setting_list'))) {
 		next unless $row_name;
 		next if ($row_name eq 'prototype__');
 		next unless $app->param($row_name . '_name');
 		my $data = {};
+		if (!$app->param($row_name . '_label')) {
+			$app->param($row_name . '_label', $app->param($row_name . '_name'));
+		}
 		for my $key (keys %$options) {
 			$data->{$key} = $app->param($row_name . '_' . $key);
 		}
@@ -244,12 +239,57 @@ sub save_groups {
 			$setting->remove || die $setting->errstr;
 		}
 	}
+	return $app->redirect($app->uri . '?' . $app->param('return_args') . '&saved=1');
+}
+
+sub copy_settings {
+	my $class = shift;
+	my ($plugin, $app) = @_;
+	return $app->error('Permission denied') unless can_edit();
+	my $blog_id = $app->param('blog_id');
+	my $from_blog_id = $app->param('from_blog_id');
+	return $app->error('Invalid blog_id') unless ($blog_id =~ /^\d+$/);
+	return $app->error('Invalid from_blog_id') unless ($from_blog_id =~ /^\d+$/);
+	my $ot = FieldDay::YAML->object_type($app->param('_type'));
+	my %terms = (
+		blog_id => $blog_id,
+		object_type => $ot->{'object_type'},
+	);
+	require FieldDay::Setting;
+	for my $setting (FieldDay::Setting->load(\%terms)) {
+		$setting->remove;
+	}
+	$terms{blog_id} = $from_blog_id;
+	$terms{type} = 'group';
+	my %group_map;
+	for my $orig (FieldDay::Setting->load(\%terms)) {
+		my $old_id = $orig->id;
+		my $new = $orig->clone;
+		$new->id(undef);
+		$new->blog_id($blog_id);
+		$new->save || die $new->errstr;
+		$group_map{$old_id} = $new->id;
+	}
+	$terms{type} = 'field';
+	for my $orig (FieldDay::Setting->load(\%terms)) {
+		my $old_id = $orig->id;
+		my $new = $orig->clone;
+		$new->id(undef);
+		$new->blog_id($blog_id);
+		my $data = $new->data;
+		if ($data->{group}) {
+			$data->{group} = $group_map{$data->{group}};
+			$new->data($data);
+		}
+		$new->save || die $new->errstr;
+	}
 	return $app->redirect($app->uri . '?' . $app->param('return_args'));
 }
 
 sub set_default {
 	my $class = shift;
 	my ($plugin, $app) = @_;
+	return $app->error('Permission denied') unless can_edit();
 	return $app->error('No blog_id passed') unless $app->param('blog_id');
 	require FieldDay::Setting;
 	my $ot = FieldDay::YAML->object_type($app->param('_type'));
@@ -266,6 +306,7 @@ sub set_default {
 sub clear_default {
 	my $class = shift;
 	my ($plugin, $app) = @_;
+	return $app->error('Permission denied') unless can_edit();
 	return $app->error('No blog_id passed') unless $app->param('blog_id');
 	require FieldDay::Setting;
 	my $ot = FieldDay::YAML->object_type($app->param('_type'));
@@ -280,6 +321,7 @@ sub clear_default {
 sub override_default {
 	my $class = shift;
 	my ($plugin, $app) = @_;
+	return $app->error('Permission denied') unless can_edit();
 	return $app->error('No blog_id passed') unless $app->param('blog_id');
 	require FieldDay::Setting;
 	my $ot = FieldDay::YAML->object_type($app->param('_type'));
@@ -296,6 +338,7 @@ sub override_default {
 sub use_default {
 	my $class = shift;
 	my ($plugin, $app) = @_;
+	return $app->error('Permission denied') unless can_edit();
 	return $app->error('No blog_id passed') unless $app->param('blog_id');
 	require FieldDay::Setting;
 	my $ot = FieldDay::YAML->object_type($app->param('_type'));
@@ -389,6 +432,34 @@ sub field_type_loop {
 	}
 	return \@loop;
 }
+
+sub group_loop {
+	my ($app, $selected) = @_;
+	my @loop = ({ 'label' => 'Select', 'group' => 0 });
+	for my $group (FieldDay::Setting->load(app_setting_terms($app, 'group'))) {
+		my $data = $group->data;
+		push(@loop, {
+			'group' => $group->id,
+			'label'=> $data->{'label'} || $group->name,
+			'selected' => ($selected && ($selected == $group->id)) ? 1 : 0
+		});
+	}
+	return \@loop;
+}
+
+sub set_loop {
+	my ($app, $selected) = @_;
+	my @loop = ({ 'label' => 'Select', 'set' => 0 });
+	for my $set (MT->model('blog_set')->load) {
+		push(@loop, {
+			'set' => $set->id,
+			'label'=> $set->name,
+			'selected' => ($selected && ($selected == $set->id)) ? 1 : 0
+		});
+	}
+	return \@loop;
+}
+
 
 sub content_nav_loop {
 	my ($active) = @_;

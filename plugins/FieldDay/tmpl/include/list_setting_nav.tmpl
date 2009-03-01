@@ -1,3 +1,45 @@
+<mt:if name="blog_id">
+<style type="text/css">
+.fd-copy-blog {
+display:none;
+}
+#fd-copy-blog-buttons {
+padding-top:10px;
+}
+.fd-copy-blog input.text-field {
+width:40px;
+}
+</style>
+<script type="text/javascript">
+function confirmUseDefault() {
+	if (confirm('Use default settings? This will overwrite any existing settings for this blog.')) {
+		window.location = '<mt:var name="script_url">?__mode=fd_use_default&_type=<mt:var name="setting_object_type">&blog_id=<mt:var name="blog_id">&return_args=<mt:var name="return_args" encode_url="1">';
+	}
+	return false;
+}
+function showCopyBlog() {
+	getByID('fd-copy-blog').style.display = 'block';
+}
+function hideCopyBlog() {
+	getByID('fd-copy-blog').style.display = 'none';
+}
+function submitCopyBlog() {
+	var to_blog = getByID('from_blog_id').value;
+	if (!to_blog) {
+		alert('Please enter a blog ID.');
+		return false;
+	}
+	if (to_blog == <mt:var name="blog_id">) {
+		alert("Same blog.");
+		return false;
+	}
+	if (!confirm("Copy settings? This will replace your settings for this blog and could lead to the loss of existing data.")) {
+		return false;
+	}
+	getByID('fd-copy-form').submit();
+}
+</script>
+</mt:if>
 <h3>Configure:</h3>
 <ul>
 <mt:loop name="content_nav_loop">
@@ -6,12 +48,16 @@
 <mt:if name="blog_id">
 <li>
 <mt:if name="is_default">
+<mt:if name="is_administrator">
 <a href="<mt:var name="script_url">?__mode=fd_clear_default&_type=<mt:var name="setting_object_type">&blog_id=<mt:var name="blog_id">&return_args=<mt:var name="return_args" encode_url="1">">Remove "<mt:var name="blog_name">" Settings as Default</a>
+</mt:if>
 <mt:else>
 <mt:unless name="using_default">
-<a href="<mt:var name="script_url">?__mode=fd_use_default&_type=<mt:var name="setting_object_type">&blog_id=<mt:var name="blog_id">&return_args=<mt:var name="return_args" encode_url="1">">Use Default Settings</a>
+<a href="javascript:void(0);" onclick="confirmUseDefault();">Use Default Settings</a>
 </mt:unless>
+<mt:if name="is_administrator">
 <a href="<mt:var name="script_url">?__mode=fd_set_default&_type=<mt:var name="setting_object_type">&blog_id=<mt:var name="blog_id">&return_args=<mt:var name="return_args" encode_url="1">">Use "<mt:var name="blog_name">" Settings as Default</a>
+</mt:if>
 </mt:else>
 </mt:if>
 </li>
@@ -19,4 +65,22 @@
 </ul>
 <h3>Tools</h3>
 <ul>
+<mt:if name="blog_id">
+<li>
+<a href="javascript:void(0);" onclick="showCopyBlog();">Copy Settings from Blog</a>
+<div id="fd-copy-blog" class="fd-copy-blog">
+<form action="<mt:var name="script_url">" method="POST" id="fd-copy-form">
+<input type="hidden" name="__mode" value="fd_copy_settings" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+<input type="hidden" name="_type" value="<mt:var name="setting_object_type">" />
+<input type="hidden" name="return_args" value="<mt:var name="return_args">" />
+<strong>Blog ID:</strong>&nbsp; <input type="text" name="from_blog_id" id="from_blog_id" value="" class="text-field" />
+<div id="fd-copy-blog-buttons">
+<input type="button" onclick="submitCopyBlog();" value="Copy" />
+<input type="button" onclick="hideCopyBlog();" value="Cancel" />
+</div>
+</form>
+</div>
+</li>
+</mt:if>
 </ul>

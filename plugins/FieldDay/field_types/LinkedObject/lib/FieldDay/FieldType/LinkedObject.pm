@@ -3,9 +3,21 @@ package FieldDay::FieldType::LinkedObject;
 use strict;
 use Data::Dumper;
 use FieldDay::YAML qw( field_type object_type );
-use FieldDay::Util qw( app_setting_terms load_fields require_type mtlog );
+use FieldDay::Util qw( app_setting_terms load_fields require_type mtlog obj_stash_key );
 
 use base qw( FieldDay::FieldType );
+
+sub options {
+	return {
+		'autocomplete' => 1,
+		'autocomplete_fields' => undef,
+		'show_autocomplete_values' => undef,
+		'allow_create' => 1,
+		'create_fields' => undef,
+		'required_fields' => undef,
+		'unique_fields' => undef,
+	};
+}
 
 sub pre_edit_options {
 # before FieldDay displays the config screen
@@ -27,17 +39,22 @@ sub pre_edit_options {
 
 sub pre_render {
 	my $class = shift;
-	my ($param) = @_;
+	my ($param, $args) = @_;
 	my @object_loop = ();
 	my %blog_ids = ();
 	if ($param->{'autocomplete'}) {
+		my $preview_str = '';
 		if ($param->{'value'}) {
-			push(@object_loop, {
-				'value' => $param->{'value'},
-				'selected' => 1,
-				'label' => $class->object_label($class->load_objects({}, id => $param->{'value'})),
-			});
+			if (my $obj = $class->load_objects({}, id => $param->{'value'})) {
+				my @values = $class->autocomplete_values($obj, $param);
+				$preview_str = join('&nbsp;', @values);
+				$param->{'value_label'} = $class->object_label($obj);
+				$param->{'blog_id'} = $obj->can('blog_id') ? $obj->blog_id : undef;
+			} else {
+				$param->{'value_label'} = '[object missing]';
+			}
 		}
+		$param->{'preview'} = qq{<div id="$param->{'field'}-preview" class="linked-object-preview">$preview_str</div>};
 	} else {
 		for my $obj ($class->load_objects($param)) {
 			my $value = $class->object_value($obj, $param);
@@ -63,7 +80,7 @@ sub pre_render {
 		my $static_uri = MT->instance->static_path;
 		my $render_tmpls = FieldDay::FieldType::type_tmpls(MT->instance, MT->instance, 'render');
 		for my $name (split(/,/, $param->{'create_fields'})) {
-			my $core_fields = $class->core_fields;
+			my $core_fields = $class->core_fields($param->{'linked_blog_id'});
 			my $data;
 			if ($core_fields->{$name}) {
 				$data = $core_fields->{$name};
@@ -84,9 +101,10 @@ sub pre_render {
 			push(@field_list, $field_name);
 			my $f_param = {
 				'field' => $field_name,
-				'label' => $data->{'label'} || '',
-				'label_above' => $data->{'options'}->{'label_above'} ? 1 : 0,
+				'label' => $data->{'label'} || $name,
+				'label_display' => $data->{'options'}->{'label_display'},
 				'tabindex' => ++$param->{'tabindex'},
+				%$args
 			};
 			my $f_class = require_type(MT->instance, 'field', $data->{'type'});
 			for my $key (keys %{$f_class->options}) {
@@ -100,6 +118,7 @@ sub pre_render {
 		$param->{'field_list'} = join(',', map { "'" . $_ . "'" } @field_list);
 	}
 	$param->{'object_loop'} = \@object_loop;
+	$param->{'linked_object_type'} = $class->object_type;
 }
 
 sub render_tmpl_type {
@@ -118,12 +137,59 @@ sub html_head {
 <script type="text/javascript" src="http://yui.yahooapis.com/2.5.2/build/connection/connection-min.js"></script> 
 <script type="text/javascript" src="http://yui.yahooapis.com/2.5.2/build/autocomplete/autocomplete-min.js"></script>
 <script type="text/javascript">
+function fdFileFixForm() {
+document.getElementById('<mt:var name="object_form_id">').enctype = 'multipart/form-data';
+}
+TC.attachLoadEvent(fdFileFixForm);
 function linkedObjectSelect(field, data) {
 	var f = getByID(field);
-	f.options.length = 1;
-	f.options[0] = new Option(data[0], data[1]);
-	var tx = getByID(field + '-text');
-	tx.value = '';
+	var ac = getByID(field + '-ac');
+	var ed = getByID(field + '-change');
+	var bl = getByID(field + '-blog_id');
+	var img = getByID(field + '-img');
+	var pr = getByID(field + '-preview');
+	var link = getByID(field + '-link');
+	var type = getByID(field + '-object_type');
+	f.value = data[1];
+	ac.value = data[0];
+	ac.setAttribute('disabled', 'disabled');
+	ed.style.display = 'inline';
+	bl.value = data[2];
+	getByID(field + '-view-link').href = '<mt:var name="script_url">?__mode=view&_type=' + type.value + '&id=' + f.value + '&blog_id=' + bl.value;
+	if (data[3]) {
+		if (img) {
+			img.src = data[3];
+			link.href = data[3]; 
+		} else {
+			var str = '';
+			for (var i = 3; i < data.length; i++) {
+				str += data[i] + '&nbsp;';
+			}
+			pr.style.display = 'block';
+			pr.innerHTML = str;
+		}
+	}
+}
+function linkedObjectChange(field) {
+	var f = getByID(field);
+	var ac = getByID(field + '-ac');
+	var ed = getByID(field + '-change');
+	var pr = getByID(field + '-preview');
+	var img = getByID(field + '-img');
+	f.value = '';
+	ac.removeAttribute('disabled');
+	ac.value = '';
+	ed.style.display ='none';
+	pr.style.display ='none';
+	if (img) {
+		img.src = '';
+	}
+}
+function linkedObjectView(field) {
+	var f = getByID(field);
+	var bl = getByID(field + '-blog_id');
+	var url = '<mt:var name="script_url">?__mode=view&_type=entry&id=' + f.value + '&blog_id=' + bl.value;
+	window.location = url;
 }
 function linkedObjectToggleCreate(field, on) {
 	var fieldsDiv = getByID(field + '-create-fields');
@@ -132,8 +198,9 @@ function linkedObjectToggleCreate(field, on) {
 		linkDiv.style.display = 'none';
 		fieldsDiv.style.display = 'block';
 	} else {
-		linkDiv.style.display = 'block';
+		linkDiv.style.display = 'inline';
 		fieldsDiv.style.display = 'none';
+		var img = getByID(field + '-img');
 	}
 }
 function linkedObjectSubmit(field, setting_id, blog_id, ac) {
@@ -170,12 +237,12 @@ function linkedObjectReturn(c, field, ac) {
     if (result.code == 'added') {
     	linkedObjectToggleCreate(field, false);
     	if (ac) {
-    		linkedObjectSelect(field, new Array(result.label, result.id));
+    		linkedObjectSelect(field, new Array(result.label, result.id, result.blog_id));
     	}
     } else if (result.code == 'found') {
     	linkedObjectToggleCreate(field, false);
     	if (ac) {
-    		linkedObjectSelect(field, new Array(result.label, result.id));
+    		linkedObjectSelect(field, new Array(result.label, result.id, result.blog_id));
     	}
     	alert(result.msg);
     }
@@ -185,10 +252,17 @@ var myServer = "<mt:var name="script_path">plugins/FieldDay/mt-linkedobj-flat.cg
 var mySchema = ["\\n", "\\t"]; 
 YAHOO.widget.AutoComplete.prototype.formatResult = function(aResultItem, sQuery) {
 	var re = new RegExp('(' + sQuery + ')', 'ig');
+	if (aResultItem[0].length > 50) {
+		aResultItem[0] = aResultItem[0].substring(0, 50) + '...';
+	}
 	var matches = aResultItem[0].match(re);
 	var str = aResultItem[0].replace(re, function(str) { return '<span class="linked-object-highlight">' + str + '</span>'; });
-	if (aResultItem[3]) {
-		str += '<span class="linked-object-info">' + aResultItem[3] + '</span>';
+	if (aResultItem.length > 3) {
+		str += '<span class="linked-object-info">';
+		for (var i = 3; i < aResultItem.length; i++) {
+			str += aResultItem[i] + '&nbsp;';
+		}
+		str += '</span>';
 	}
 	return str;
 };
@@ -206,9 +280,6 @@ width:50%;
 font-weight:bold;
 color:#33789c;
 }
-.linked-object-create-link {
-padding:5px 0 0 0;
-}
 .linked-object-create-fields {
 display:none;
 border:1px solid #999;
@@ -217,7 +288,15 @@ padding:10px;
 }
 .linked-object-info {
 position:absolute;
-left:300px;
+left:200px;
+}
+.linked-object-preview {
+padding-top:2px;
+font-weight:bold;
+}
+input.ac-field[disabled] {
+color:#333;
+font-weight:bold;
 }
 </style>
 HTML
@@ -226,8 +305,13 @@ HTML
 sub pre_save_value {
 # before the CMS saves a value from the editing screen
 	my $class = shift;
-	my $linked_object_id = $class->save_linked_object(@_);
-	return $linked_object_id;
+	my ($app, $i_name, $obj, $options) = @_;
+	# template should have hidden field with value -1
+	if ($app->param($i_name) < 0) {
+		my $linked_object_id = $class->save_linked_object(@_);
+		return $linked_object_id;
+	}
+	return $app->param($i_name);
 }
 
 sub hdlr_LinkedObjects {
@@ -244,11 +328,14 @@ sub hdlr_LinkedObjects {
 	my $linking_ot = FieldDay::YAML->object_type($linking_type);
 	my $object_id = $linking_ot_class->stashed_id($ctx, $args);
 	my $pass_args = { %$args, 'object_type' => $linking_type };
-	my $stash_key = FieldDay::Template::PubTags::obj_stash_key($ctx, $pass_args);
+	my $stash_key = obj_stash_key($ctx, $pass_args);
 	my $instance = $ctx->stash("$stash_key:instance");
 	my $iter;
+	my $fd_data;	
+	if (defined $instance || (($args->{'sort_by'} || '') eq 'instance')) {
+		$fd_data = FieldDay::Template::PubTags::get_fd_data(MT::Plugin::FieldDay->instance, $ctx, $pass_args, $cond);
+	}
 	if (defined $instance) {
-		my $fd_data = FieldDay::Template::PubTags::get_fd_data(MT::Plugin::FieldDay->instance, $ctx, $pass_args, $cond);
 		my $values = $fd_data->{'values'}->{$args->{'field'}};
 		if ($values && @$values && $values->[$instance] && $values->[$instance]->value) {
 			$iter = $ot->{'object_class'}->load_iter({ id => $values->[$instance]->value });
@@ -266,15 +353,29 @@ sub hdlr_LinkedObjects {
 			{
 				'value'        => \"= $id_col", #"
 				'key' => $args->{'field'},
-				'object_type' => $linking_ot->{'object_mt_type'} || $linking_ot->{'object_type'},
+				'object_type' => $linking_ot->{'object_type'},
 				'object_id' => $object_id,
 			}
 		);
 		eval("require $ot->{'object_class'};");
+		die $@ if $@;
 		if ($ctx->stash('tag') =~ /IfLinked/) {
 			return $ot->{'object_class'}->count($terms, $load_args) ? 1 : 0;
 		}
-		$load_args->{'sort'} = $args->{'sort_by'} || $ot_class->sort_by;
+		if ($args->{'sort_by'}) {
+			if ($args->{'sort_by'} eq 'instance') {
+				my @objs = $ot->{'object_class'}->load($terms, $load_args);
+				my %vs_by_obj_id = map { $_->value => $_ } @{$fd_data->{'values'}->{$args->{'field'}}};
+				@objs = sort { $vs_by_obj_id{$b->id}->instance <=> $vs_by_obj_id{$a->id}->instance } @objs;
+				$iter = sub { pop @objs };
+				return $ot_class->block_loop($iter, $ctx, $args, $cond);
+			}
+			if ($ot->{'object_class'}->has_column($args->{'sort_by'}) || $ot->{'object_class'}->is_meta_column($args->{'sort_by'})) {
+				$load_args->{'sort'} = $args->{'sort_by'};
+			}
+		} else {
+			$load_args->{'sort'} = $ot_class->sort_by;
+		}
 		$load_args->{'direction'} = $args->{'sort_order'} || $ot_class->sort_order;
 		$iter = $ot->{'object_class'}->load_iter($terms, $load_args);
 	}
@@ -292,7 +393,7 @@ sub hdlr_LinkingObjects {
 	my $ot = FieldDay::YAML->object_type($linked_type);
 	my $linking_ot = FieldDay::YAML->object_type($linking_type);
 	my $linking_ot_class = require_type(MT->instance, 'object', $linking_type);
-	my $linked_object_id = $ot_class->stashed_id($ctx, $args);
+	my $linked_object_id = $ot_class->stashed_id($ctx, $args) || $ctx->var('id');
 	require FieldDay::Value;
 	my $load_args = {};
 	my $terms = $linking_ot_class->load_terms($ctx, $args);
@@ -310,15 +411,23 @@ sub hdlr_LinkingObjects {
 			'object_id' => \"= $id_col", #"
 			'value'        => $linked_object_id,
 			'key' => $args->{'field'},
-			'object_type' => $linking_ot->{'object_mt_type'} || $linking_ot->{'object_type'},
+			'object_type' => $linking_ot->{'object_type'},
 		}
 	);
 	eval("require $ot->{'object_class'};");
 	die $@ if $@;
+	eval("require $linking_ot->{'object_class'};");
+	die $@ if $@;
 	if ($ctx->stash('tag') =~ /IfLinking/) {
 		return $linking_ot->{'object_class'}->count($terms, $load_args) ? 1 : 0;
 	}
-	$load_args->{'sort'} = $args->{'sort_by'} || $linking_ot_class->sort_by;
+	if ($args->{'sort_by'}) {
+		if ($linking_ot->{'object_class'}->has_column($args->{'sort_by'}) || $linking_ot->{'object_class'}->is_meta_column($args->{'sort_by'})) {
+			$load_args->{'sort'} = $args->{'sort_by'};
+		}
+	} else {
+		$load_args->{'sort'} = $ot_class->sort_by;
+	}
 	$load_args->{'direction'} = $args->{'sort_order'} || $linking_ot_class->sort_order;
 	my $iter = $linking_ot->{'object_class'}->load_iter($terms, $load_args);
 	return $linking_ot_class->block_loop($iter, $ctx, $args, $cond);

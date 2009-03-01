@@ -1,12 +1,15 @@
+<div style="<mt:if name="label_display" eq="hide">float:left;margin-left:55px;<mt:else>clear:both;</mt:if>">
 <mtapp:setting
 	id="<mt:var name="field">"
-	label="<mt:var name="label">"
-    label_class="<mt:if name="label_above">top-label<mt:else>left-label</mt:else></mt:if>"
+	label="<mt:unless name="label_display" eq="hide"><mt:var name="label"></mt:unless>"
+    label_class="<mt:if name="label_display" like="/above|hide/">top-label<mt:else>left-label</mt:else></mt:if>"
 	>
-<select name="<mt:var name="field">" id="<mt:var name="field">" tabindex="<mt:var name="tabindex">">
+<select name="<mt:var name="field">" id="<mt:var name="field">" tabindex="<mt:var name="tabindex">"<mt:if name="read_only"> disabled="disabled"</mt:if>>
 <option value="">Select</option>
 <mt:loop name="choice_loop">
 <option value="<mt:var name="value">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
 </mt:loop>
 </select>
 </mtapp:setting>
+</div>
+<mt:if name="label_display" eq="hide"><div style="clear:both;"></div></mt:if>

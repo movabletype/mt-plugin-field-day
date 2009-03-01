@@ -10,7 +10,7 @@ sub label {
 
 sub options {
 	return {
-		'width' => undef,
+		'width' => 400,
 		'length' => undef
 	};
 }

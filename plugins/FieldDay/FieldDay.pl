@@ -4,14 +4,14 @@ use strict;
 use Data::Dumper;
 
 use vars qw( $VERSION $SCHEMA_VERSION );
-$VERSION = '1.2.0';
+$VERSION = '1.2.20goat';
 $SCHEMA_VERSION = '0.1594';
 
 use base qw( MT::Plugin );
 
 use MT;
 use FieldDay::YAML qw( types load_yamls );
-use FieldDay::Util qw( require_type );
+use FieldDay::Util qw( require_type can_edit );
 
 my $plugin = MT::Plugin::FieldDay->new({
 	'id' => 'FieldDay',
@@ -31,6 +31,12 @@ sub init_registry {
 	load_yamls();
 	my ($callbacks, $page_actions, $menus, $pub_tags) = init_object_types(@_);
 	my $reg = {
+		'settings' => new MT::PluginSettings(
+            [
+                [ 'settings_role', { Default => 'Blog Administrator', Scope => 'system' } ],
+            ]
+        ),
+        'system_config_template' => 'system_config.tmpl',
 		'object_types' => {
 			'fdsetting' => 'FieldDay::Setting',
 			'fdvalue' => 'FieldDay::Value',
@@ -50,6 +56,7 @@ sub init_registry {
 						my $action = $_;
 						"fd_${_}_default" => sub { mode_dispatch("${action}_default", @_) }			
 					} qw( set clear override use )),
+					'fd_copy_settings' => sub { mode_dispatch('copy_settings', @_) },
 					'fd_save_linked_obj' => sub { mode_dispatch('save_linked_obj', @_) },
 				},
 				'page_actions' => $page_actions,
@@ -151,6 +158,7 @@ sub init_object_types {
 			'mode' => "fd_cfg_fields",
 			'args' => { '_type' => $ot->{'object_type'} },
 			'order' => $order,
+			'condition' => sub { can_edit() },
 			$ot->{'has_blog_id'}
 				? ('permission' => 'administer_blog',
 					'view' => 'blog')

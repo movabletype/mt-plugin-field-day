@@ -12,14 +12,14 @@
 
 <mtapp:setting
 	id="<mt:var name="field">_category_ids"
-	label="Category IDs"
+	label="<mt:if name="type" eq="LinkedPage">Folder<mt:else>Category</mt:if> IDs"
 	content_class="field-content-text">
 	<input type="text" name="<mt:var name="field">_category_ids" value="<mt:var name="category_ids">" />
 </mtapp:setting>
 
 <mtapp:setting
 	id="<mt:var name="field">_subcats"
-	label="Include Subcategories"
+	label="Include <mt:if name="type" eq="LinkedPage">Subfolders<mt:else>Subcategories</mt:if>"
 	content_class="field-content-text">
 	<input type="checkbox" name="<mt:var name="field">_subcats"<mt:if name="subcats"> checked="checked"</mt:if> />
 </mtapp:setting>
@@ -52,6 +52,13 @@
 	show_hint="1"
 	content_class="field-content-text">
 	<input type="text" name="<mt:var name="field">_autocomplete_fields" value="<mt:var name="autocomplete_fields">" class="full-width" />
+</mtapp:setting>
+
+<mtapp:setting
+	id="<mt:var name="field">_show_autocomplete_values"
+	label="Show Autocomplete Values"
+	content_class="field-content-text">
+	<input type="checkbox" name="<mt:var name="field">_show_autocomplete_values"<mt:if name="show_autocomplete_fields"> checked="checked"</mt:if> />
 </mtapp:setting>
 
 <mtapp:setting

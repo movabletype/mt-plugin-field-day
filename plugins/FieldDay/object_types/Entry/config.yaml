@@ -5,5 +5,3 @@ plural: entries
 has_blog_id: 1
 edit_template: edit_entry
 list_template: list_entry
-other_templates:
-    preview_entry: list_fields
