@@ -16,6 +16,14 @@ function ffInitialize() {
 			ffAddInstance(group_need_initial[i], j);
 		}
 	}
+	// set this beacon only after page is loaded, to guard against situation
+	// where form might be submitted before all fields are rendered
+	for (var i = 0; i < document.forms.length; i++) {
+		var fld = document.forms[i].elements['fieldday'];
+		if (fld) {
+			fld.value = '1';
+		}
+	}
 }
 if (typeof(TC) != 'undefined') {
 	TC.attachLoadEvent(ffInitialize);	

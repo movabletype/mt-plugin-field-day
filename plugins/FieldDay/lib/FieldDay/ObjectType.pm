@@ -40,8 +40,8 @@ $html_head
 </mt:setvarblock>
 HTML
 	$$template =~ s/($old)/$html_head$1/;
-	$old = qq{<form .*?name="$form_id".*?"script_url".*?">};
-	$$template =~ s#($old)#$1<input type="hidden" name="fieldday" value="1" />#;
+	$old = qq{</form>};
+	$$template =~ s#($old)#<input type="hidden" name="fieldday" value="" /></form>#g;
 }
 
 sub insert_before_html_head {

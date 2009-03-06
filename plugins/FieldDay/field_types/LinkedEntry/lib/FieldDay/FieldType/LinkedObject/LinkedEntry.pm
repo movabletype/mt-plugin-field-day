@@ -316,26 +316,6 @@ sub save_field_for_entry {
 	$val_obj->save || die $val_obj->errstr;
 }
 
-sub field_value_for_entry {
-	my ($entry, $key, $data) = @_;
-	my $id = (ref $entry) ? $entry->id : $entry;
-	require FieldDay::Value;
-	my $val_obj = FieldDay::Value->load(
-		{
-			object_id => $id,
-			object_type => 'entry',
-			key => $key,
-		},
-	);
-	return '' unless $val_obj;
-	if ($data->{'type'} =~ /^Linked/) {
-		my $linked_class = require_type(MT->instance, 'field', $data->{'type'});
-		my $obj = MT->model($linked_class->object_type)->load($val_obj->value);
-		return $obj ? $linked_class->object_label($obj) : '';
-	}
-	return $val_obj->value;
-}
-
 sub do_query {
 	my $class = shift;
 	my ($setting, $q) = @_;
@@ -346,40 +326,15 @@ sub do_query {
 	my $options = $setting->data->{'options'};
 	$options->{'type'} = $data->{'type'};
 	my @entries = $class->load_objects($options, %terms);
-	return join("\n", map { $class->map_entry($_, $options) } @entries);
+	return join("\n", map { $class->map_obj($_, $options) } @entries);
 }
 
-sub map_entry {
+sub map_obj {
 	my $class = shift;
 	my ($entry, $options) = @_;
 	my @values = ($entry->title, $entry->id, $entry->blog_id);
 	push(@values, $class->autocomplete_values($entry, $options));
 	return join("\t", @values);
-}
-
-sub autocomplete_values {
-	my $class = shift;
-	my ($entry, $options) = @_;
-	my @values;
-	if ($options->{'autocomplete_fields'}) {
-		require FieldDay::Setting;
-		my %settings = map { $_->name => $_ }
-			FieldDay::Setting->load({
-				blog_id => $entry->blog_id,
-				object_type => 'entry',
-				type => 'field',
-			});
-		my $core_fields = $class->core_fields;
-		for my $field (split(/,/, $options->{'autocomplete_fields'})) {
-			if ($core_fields->{$field}) {
-				push(@values, $entry->$field);
-			} else {
-				my $data = $settings{$field} ? $settings{$field}->data : {};
-				push(@values, field_value_for_entry($entry, $field, $data));
-			}
-		}
-	}
-	return @values;
 }
 
 1;

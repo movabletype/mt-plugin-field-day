@@ -119,6 +119,7 @@ sub pre_render {
 	}
 	$param->{'object_loop'} = \@object_loop;
 	$param->{'linked_object_type'} = $class->object_type;
+	$param->{'linked_object_view_mode'} = 'view';
 }
 
 sub render_tmpl_type {
@@ -149,13 +150,14 @@ function linkedObjectSelect(field, data) {
 	var img = getByID(field + '-img');
 	var pr = getByID(field + '-preview');
 	var link = getByID(field + '-link');
+	var view_link = getByID(field + '-view-link');
 	var type = getByID(field + '-object_type');
 	f.value = data[1];
 	ac.value = data[0];
 	ac.setAttribute('disabled', 'disabled');
 	ed.style.display = 'inline';
 	bl.value = data[2];
-	getByID(field + '-view-link').href = '<mt:var name="script_url">?__mode=view&_type=' + type.value + '&id=' + f.value + '&blog_id=' + bl.value;
+	view_link.href = view_link.href.replace(/&id=[0-9]+/, '&id=' + f.value).replace(/&blog_id=[0-9]+/, '&blog_id=' + bl.value);
 	if (data[3]) {
 		if (img) {
 			img.src = data[3];
@@ -184,12 +186,6 @@ function linkedObjectChange(field) {
 	if (img) {
 		img.src = '';
 	}
-}
-function linkedObjectView(field) {
-	var f = getByID(field);
-	var bl = getByID(field + '-blog_id');
-	var url = '<mt:var name="script_url">?__mode=view&_type=entry&id=' + f.value + '&blog_id=' + bl.value;
-	window.location = url;
 }
 function linkedObjectToggleCreate(field, on) {
 	var fieldsDiv = getByID(field + '-create-fields');
@@ -272,6 +268,9 @@ YAHOO.widget.AutoComplete.prototype.formatResult = function(aResultItem, sQuery)
 background-color:#cddee7;
 color:#33789c;
 }
+li.yui-ac-highlight .linked-object-info {
+background-color:#cddee7;
+}
 .yui-skin-sam .yui-ac-input {
 position:relative;
 width:50%;
@@ -288,7 +287,9 @@ padding:10px;
 }
 .linked-object-info {
 position:absolute;
-left:200px;
+left:220px;
+background-color:#fff;
+padding-left:5px;
 }
 .linked-object-preview {
 padding-top:2px;
@@ -456,6 +457,53 @@ sub save_object {
 
 sub core_fields {
 	return {};
+}
+
+sub autocomplete_values {
+	my $class = shift;
+	my ($obj, $options) = @_;
+	my $type = 
+	my @values;
+	if ($options->{'autocomplete_fields'}) {
+		require FieldDay::Setting;
+		my %settings = map { $_->name => $_ }
+			FieldDay::Setting->load({
+				$class->has_blog_id ? (blog_id => $obj->blog_id) : (),
+				object_type => $class->object_type,
+				type => 'field',
+			});
+		my $core_fields = $class->core_fields;
+		for my $field (split(/,/, $options->{'autocomplete_fields'})) {
+			if ($core_fields->{$field}) {
+				push(@values, $obj->$field);
+			} else {
+				my $data = $settings{$field} ? $settings{$field}->data : {};
+				push(@values, $class->field_value_for_obj($obj, $field, $data));
+			}
+		}
+	}
+	return @values;
+}
+
+sub field_value_for_obj {
+	my $class = shift;
+	my ($obj, $key, $data) = @_;
+	my $id = (ref $obj) ? $obj->id : $obj;
+	require FieldDay::Value;
+	my $val_obj = FieldDay::Value->load(
+		{
+			object_id => $id,
+			object_type => $class->object_type,
+			key => $key,
+		},
+	);
+	return '' unless $val_obj;
+	if ($data->{'type'} =~ /^Linked/) {
+		my $linked_class = require_type(MT->instance, 'field', $data->{'type'});
+		my $obj = MT->model($linked_class->object_type)->load($val_obj->value);
+		return $obj ? $linked_class->object_label($obj) : '';
+	}
+	return $val_obj->value;
 }
 
 1;

@@ -92,7 +92,7 @@ sub pre_render {
 # before the field is rendered in the CMS
 	my $class = shift;
 	my ($param) = @_;
-	my $tabindex = $param->{'tabindex'} - 1;
+	my $tabindex = $param->{'tabindex'} ? ($param->{'tabindex'} - 1) : '';
 	$param->{'show_min'} = $param->{'show_hms'};
 	$param->{'show_sec'} = ($param->{'time'} eq 'hhmmss') ? 1 : 0;
 	$param->{'date_order'} ||= 'mdy';
@@ -205,6 +205,7 @@ sub params_to_ts {
 			$date{'h'} = 12;
 		}
 	}
+	return '' unless ($date{'y'} && $date{'m'} && $date{'d'});
 	my $ts = sprintf("%04d%02d%02d%02d%02d%02d", @date{qw( y m d h min s )});
 	return ($ts ne '00000000000000') ? $ts : '';
 }

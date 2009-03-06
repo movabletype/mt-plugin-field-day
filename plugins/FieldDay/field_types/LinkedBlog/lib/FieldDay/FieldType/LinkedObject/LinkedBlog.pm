@@ -18,8 +18,11 @@ sub tags {
 }
 
 sub options {
+	my $class = shift;
 	return {
 		'limit_fields' => undef,
+		%{$class->SUPER::options()},
+		'allow_create' => 0, # override default
 	};
 }
 
@@ -29,8 +32,9 @@ sub label {
 
 sub load_objects {
 	my $class = shift;
-	my ($param) = @_;
+	my ($param, %terms) = @_;
 	require MT::Blog;
+	my $terms = { %terms };
 	my $args = {};
 	if ($param->{'limit_fields'}) {
 		my ($key, $value) = split(/=/, $param->{'limit_fields'});
@@ -46,7 +50,7 @@ sub load_objects {
 			},
 		);
 	}
-	return MT::Blog->load(undef, $args);
+	return MT::Blog->load($terms, $args);
 }
 
 sub has_blog_id {
@@ -59,5 +63,34 @@ sub object_label {
 	return $obj->name;
 }
 
+sub pre_render {
+	my $class = shift;
+	$class->SUPER::pre_render(@_);
+	my ($param) = @_;
+	$param->{'linked_object_view_mode'} = 'dashboard';
+	$param->{'blog_id'} = $param->{'value'};
+}
+
+sub do_query {
+	my $class = shift;
+	my ($setting, $q) = @_;
+	my %terms = (
+		name => { like => '%' . $q->param('query') . '%' },
+	);
+	my $data = $setting->data;
+	my $options = $setting->data->{'options'};
+	$options->{'type'} = $data->{'type'};
+	my @blogs = $class->load_objects($options, %terms);
+	return join("\n", map { $class->map_obj($_, $options) } @blogs);
+}
+
+sub map_obj {
+	my $class = shift;
+	my ($blog, $options) = @_;
+	# use blog's id where blog_id expected
+	my @values = ($blog->name, $blog->id, $blog->id);
+	push(@values, $class->autocomplete_values($blog, $options));
+	return join("\t", @values);
+}
 
 1;
