@@ -136,7 +136,10 @@ sub pre_save_value {
 			}
 			$asset_path = $options->{url_path_relative} ? '%r' : '';
 			$base_url = $root_path;
-			$asset_base_url = $options->{url_path_relative} ? '%r' : '';
+			$asset_base_url = $options->{url_path_relative} ? '%r/' : '';
+			$asset_base_url .= '/' unless (!$asset_base_url || ($asset_base_url =~ m{/$}));
+			$asset_base_url .= $options->{url_path};
+			$asset_base_url =~ s{/$}{};
 			$path = File::Spec->catdir($root_path, $relative_path);
 			# untaint
             ($path) = $path =~ /(.+)/s;
@@ -165,7 +168,6 @@ sub pre_save_value {
 			$relative_path = _build_path($app, $obj, $options->{upload_path});
 			$path = File::Spec->catdir($base_path, $relative_path);
 		}
-		$asset_base_url = File::Spec->catdir($asset_base_url, $relative_path);
 		require File::Basename;
 		my ($stem, undef, $type) = File::Basename::fileparse( $basename,
 			qr/\.[A-Za-z0-9]+$/ );
