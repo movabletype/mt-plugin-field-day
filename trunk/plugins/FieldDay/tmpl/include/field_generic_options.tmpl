@@ -1,0 +1,14 @@
+<mtapp:setting
+	id="<mt:var name="field">_label_display"
+	label="Label display"
+	content_class="field-content-text">
+		<input type="radio" id="<mt:var name="field">_label_display_left" name="<mt:var name="field">_label_display" value="left"<mt:if name="label_display" eq="left"> checked="checked"</mt:if><mt:unless name="label_display"> checked="checked"</mt:unless> /> Left &nbsp;
+		<input type="radio" id="<mt:var name="field">_label_display_above" name="<mt:var name="field">_label_display" value="above"<mt:if name="label_display" eq="above"> checked="checked"</mt:if> /> Above &nbsp;
+		<input type="radio" id="<mt:var name="field">_label_display_hide" name="<mt:var name="field">_label_display" value="hide"<mt:if name="label_display" eq="hide"> checked="checked"</mt:if> /> Hide 
+</mtapp:setting>
+<mtapp:setting
+	id="<mt:var name="field">_read_only"
+	label="Read-only"
+	content_class="field-content-text">
+		<input type="checkbox" id="<mt:var name="field">_read_only" name="<mt:var name="field">_read_only" <mt:if name="read_only"> checked="checked"</mt:if> />
+</mtapp:setting>

@@ -1,0 +1,3 @@
+field_type: File
+class: FieldDay::FieldType::File
+label: File

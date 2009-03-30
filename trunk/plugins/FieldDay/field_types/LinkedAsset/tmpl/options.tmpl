@@ -1,0 +1,88 @@
+<mtapp:setting
+	id="<mt:var name="field">_linked_blog_id"
+	label="Blog"
+	content_class="field-content-text">
+	<select name="<mt:var name="field">_linked_blog_id"> id="<mt:var name="field">_linked_blog_id">
+	<option value="">Select</option>
+	<mt:loop name="linked_blog_loop">
+	<option value="<mt:var name="value">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
+	</mt:loop>
+	</select>
+</mtapp:setting>
+
+<mtapp:setting
+	id="<mt:var name="field">_asset_type"
+	label="Asset Type"
+	content_class="field-content-text">
+	<select name="<mt:var name="field">_asset_type"> id="<mt:var name="field">_asset_type">
+	<option value="">Any</option>
+	<mt:loop name="asset_type_loop">
+	<option value="<mt:var name="value">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
+	</mt:loop>
+	</select>
+</mtapp:setting>
+
+<mtapp:setting
+	id="<mt:var name="field">_autocomplete"
+	label="Autocomplete"
+	content_class="field-content-text">
+	<input type="checkbox" name="<mt:var name="field">_autocomplete"<mt:if name="autocomplete"> checked="checked"</mt:if> />
+</mtapp:setting>
+
+<mtapp:setting
+	id="<mt:var name="field">_allow_create"
+	label="Allow Upload"
+	content_class="field-content-text">
+	<input type="checkbox" name="<mt:var name="field">_allow_create"<mt:if name="allow_create"> checked="checked"</mt:if> />
+</mtapp:setting>
+
+<mtapp:setting
+	id="<mt:var name="field">_create_fields"
+	label="Upload Fields"
+	hint="Comma-separated list"
+	show_hint="1"
+	content_class="field-content-text">
+	<input type="text" name="<mt:var name="field">_create_fields" value="<mt:var name="create_fields">" class="full-width" />
+</mtapp:setting>
+
+<mtapp:setting
+	id="<mt:var name="field">_overwrite"
+	label="Overwrite Existing Files"
+	content_class="field-content-text">
+	<input type="checkbox" name="<mt:var name="field">_overwrite"<mt:if name="overwrite"> checked="checked"</mt:if> />
+</mtapp:setting>
+
+<mtapp:setting
+	id="<mt:var name="field">_upload_path"
+	label="Upload Path"
+	content_class="field-content-text"
+	hint="Can include tags and specifiers."
+	show_hint="1"
+	>
+		<input type="text" id="<mt:var name="field">_upload_path" name="<mt:var name="field">_upload_path" value="<mt:var name="upload_path" encode_html="1">" class="full-width" />
+</mtapp:setting>
+
+<mtapp:setting
+	id="<mt:var name="field">_upload_path_relative"
+	label="Relative to Site Path"
+	content_class="field-content-text">
+	<input type="checkbox" name="<mt:var name="field">_upload_path_relative"<mt:if name="upload_path_relative"> checked="checked"</mt:if> />
+</mtapp:setting>
+
+<mtapp:setting
+	id="<mt:var name="field">_url_path"
+	label="URL Path"
+	content_class="field-content-text"
+	hint="Can include tags and specifiers."
+	show_hint="1"
+	>
+		<input type="text" id="<mt:var name="field">_url_path" name="<mt:var name="field">_url_path" value="<mt:var name="url_path" encode_html="1">" class="full-width" />
+</mtapp:setting>
+
+<mtapp:setting
+	id="<mt:var name="field">_url_path_relative"
+	label="Relative to Site URL"
+	content_class="field-content-text">
+	<input type="checkbox" name="<mt:var name="field">_url_path_relative"<mt:if name="url_path_relative"> checked="checked"</mt:if> />
+</mtapp:setting>
+

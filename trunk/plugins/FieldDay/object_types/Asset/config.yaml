@@ -1,0 +1,6 @@
+object_type: asset
+class: FieldDay::ObjectType::Asset
+object_class: MT::Asset
+plural: assets
+has_blog_id: 1
+edit_template: edit_asset

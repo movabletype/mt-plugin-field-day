@@ -1,0 +1,6 @@
+object_type: comment
+class: FieldDay::ObjectType::Comment
+object_class: MT::Comment
+plural: comments
+has_blog_id: 1
+edit_template: edit_comment

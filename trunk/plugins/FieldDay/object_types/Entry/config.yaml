@@ -1,0 +1,7 @@
+object_type: entry
+class: FieldDay::ObjectType::Entry
+object_class: MT::Entry
+plural: entries
+has_blog_id: 1
+edit_template: edit_entry
+list_template: list_entry

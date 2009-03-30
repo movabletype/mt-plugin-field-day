@@ -1,0 +1,131 @@
+<mt:setvarblock name="page_title">Configure <mt:var name="setting_object_type_uc" /> Field Groups</mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
+<link rel="stylesheet" href="<mt:var name="static_uri">plugins/FieldDay/cms-styles.css" type="text/css" />
+<script type="text/javascript">
+<!--
+var tableSelect;
+function init()
+{
+        // setup
+        tableSelect = new TC.TableSelect( "setting-table" );
+        tableSelect.rowSelect = true;
+}
+
+TC.attachLoadEvent( init );
+function addRow(hidden_div_key) {
+	hideOptions();
+	var row_names = frAddRow('fdsetting-listing-table', hidden_div_key ? hidden_div_key : false, fd_setting_list, fd_new_settings);
+	new_name = getByID(row_names.new_name + '_name');
+	new_name.value = '';
+	getByID(row_names.new_name + '_label').value = '';
+	new_name.focus();
+}
+//-->
+</script>
+<style type="text/css">
+.fd-settings {
+display:none;
+position:absolute;
+top:0px;
+padding:10px;
+background:#fff;
+border:1px solid #000;
+}
+</style>
+<script type="text/javascript" src="<mt:var name="static_uri">plugins/FieldDay/flexRows.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">plugins/FieldDay/fdSettings.js"></script> 
+<script type="text/javascript">
+var fd_new_settings = [];
+var fd_setting_list = [];
+var fd_deleted_settings = [];
+<mt:loop name="object_loop">
+fd_setting_list[fd_setting_list.length] = '<mt:var name="group">';
+</mt:loop>
+</script>
+</mt:setvarblock>
+<mt:setvarblock name="content_header">
+    <mt:if name="saved">
+        <mtapp:statusmsg
+            id="saved"
+            class="success">
+            <__trans phrase="Your changes have been saved.">
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:setvarblock>
+<mt:setvarblock name="action_buttons">
+<mt:if name="using_default">
+
+<mt:include name="include/list_using_default.tmpl">
+
+<mt:else>
+
+    <input onclick="addRow()" type="button" value="<__trans phrase="Add Group">" accesskey="+" title="<__trans phrase="Add Group (+)">" />
+    <input onclick="saveSettings(this.form, 'groups')" type="button" value="<__trans phrase="Save Settings">" accesskey="+" title="<__trans phrase="Save Settings">" />
+
+</mt:else>
+</mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="content_nav">
+<mt:include name="include/list_setting_nav.tmpl">
+</mt:setvarblock>
+
+<mt:include name="include/header.tmpl">
+
+<mtapp:listing>
+<mt:unless name="using_default">
+<mt:if __first__>
+<input type="hidden" name="fd_setting_list" value="<mt:loop name="object_loop" glue=","><mt:var name="group"></mt:loop>" />
+<input type="hidden" name="fd_new_settings" value="" />
+<input type="hidden" name="fd_deleted_settings" value="" />
+<input type="hidden" name="setting_object_type" value="<mt:var name="setting_object_type">" />
+<thead>
+<tr>
+<th id="fd-actions">&nbsp;</th>
+<th id="fd-name">Name</th>
+<th id="fd-label">Label</th>
+<th id="fd-instances">Instances</th>
+<th id="fd-initial">Initial</th>
+<mt:if name="has_sets"><th id="fd-initial">Blog Set</th></mt:if>
+</tr>
+</thead>
+<tbody>
+</mt:if>
+<tr class="<mt:if name="__odd__">even<mt:else>odd</mt:if>" id="<mt:var name="group">_row"<mt:if name="prototype"> style="display:none;"</mt:if>>
+<td>
+<input type="hidden" name="<mt:var name="group">_order" id="<mt:var name="group">_order" value="<mt:var name="order">" />
+<a href="javascript:void(0);" onclick="deleteRow('<mt:var name="group">')" id="<mt:var name="group">_delete"><img src="<mt:var name="static_uri">plugins/FieldDay/nav-delete.gif" border="0" /></a>
+<a href="javascript:void(0);" onclick="moveRow('up', '<mt:var name="group">')"><img src="<mt:var name="static_uri">plugins/FieldDay/nav-arrow-up.gif" border="0" /></a> 
+<a href="javascript:void(0);" onclick="moveRow('down', '<mt:var name="group">')"><img src="<mt:var name="static_uri">plugins/FieldDay/nav-arrow-down.gif" border="0" /></a>
+</td>
+<td><input type="text" name="<mt:var name="group">_name" id="<mt:var name="group">_name" value="<mt:var name="group">" onchange="nameChange('<mt:var name="group">')" /></td>
+<td><input type="text" name="<mt:var name="group">_label" id="<mt:var name="group">_label" value="<mt:var name="label" escape="html">" /></td>
+<td><input type="text" class="tiny-width" name="<mt:var name="group">_instances" id="<mt:var name="group">_instances" value="<mt:var name="instances">" /></td>
+<td><input type="text" class="tiny-width" name="<mt:var name="group">_initial" id="<mt:var name="group">_initial" value="<mt:var name="initial">" /></td>
+<mt:if name="has_sets">
+<td>
+<select name="<mt:var name="group">_set" id="<mt:var name="group">_set">
+<mt:loop name="set_loop">
+<option value="<mt:var name="set">" <mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
+</mt:loop>
+</select>
+</td>
+</mt:if>
+</tr>
+<mt:if __last__>
+</tbody>
+<div id="fr_all_hidden_divs">
+<mt:loop name="object_loop">
+<div id="<mt:var name="group">_options_div" class="fd-settings">
+<div id="<mt:var name="group">_options_div_inner">
+<mt:var name="options_tmpl">
+</div>
+<div><input type="button" value="OK" onclick="hideOptions('<mt:var name="group">')" /></div>
+</div>
+</mt:loop>
+</div>
+</mt:if>
+</mt:unless>
+</mtapp:listing>
+
+<mt:include name="include/footer.tmpl">
