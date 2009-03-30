@@ -378,8 +378,6 @@ sub hdlr_ByValue {
 		],
 		\%join_args
 	);
-	eval("require $ot->{'object_class'};");
-	die $@ if $@;
 	my $iter = $ot->{'object_class'}->load_iter($terms, $load_args);
 	return $ot_class->block_loop($iter, $ctx, $args, $cond);
 }

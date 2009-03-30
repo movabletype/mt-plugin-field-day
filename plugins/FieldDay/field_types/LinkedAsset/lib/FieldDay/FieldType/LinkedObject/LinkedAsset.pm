@@ -369,6 +369,7 @@ sub _build_path {
 	my ($app, $obj, $path) = @_;
 	my $tmpl_text = qq{<mt:FileTemplate format="$path">};
 	my $tmpl = MT->model('template')->new('type' => 'scalarref', 'source' => \$tmpl_text);
+	require MT::Template::Context;
 	my $ctx = MT::Template::Context->new;
 	if ($app->param('blog_id')) {
 		$ctx->stash('blog', MT->model('blog')->load($app->param('blog_id')));

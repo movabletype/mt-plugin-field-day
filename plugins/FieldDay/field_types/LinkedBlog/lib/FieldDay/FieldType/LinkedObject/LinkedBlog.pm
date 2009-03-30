@@ -30,10 +30,6 @@ sub label {
 	return 'Linked Blog';
 }
 
-sub object_type {
-	return 'blog';
-}
-
 sub load_objects {
 	my $class = shift;
 	my ($param, %terms) = @_;
