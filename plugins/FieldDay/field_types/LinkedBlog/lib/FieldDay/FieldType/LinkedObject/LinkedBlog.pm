@@ -38,7 +38,10 @@ sub load_objects {
 	my $args = {};
 	if ($param->{'limit_fields'}) {
 		my ($key, $value) = split(/=/, $param->{'limit_fields'});
-		$value ||= [1, 'on'];
+		my @values = split(/,/, $value || '');
+		if (!@values) {
+			@values = (1, 'on');
+		}
 		require FieldDay::Value;
 		$args->{'join'} = FieldDay::Value->join_on(
 			undef,
@@ -46,7 +49,7 @@ sub load_objects {
 				object_id => \'= blog_id', #'
 				object_type => 'blog',
 				key => $key,
-				value => $value,
+				value => \@values,
 			},
 		);
 	}

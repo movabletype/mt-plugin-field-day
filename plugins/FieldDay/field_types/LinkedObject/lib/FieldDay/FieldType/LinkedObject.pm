@@ -157,7 +157,7 @@ function linkedObjectSelect(field, data) {
 	ac.setAttribute('disabled', 'disabled');
 	ed.style.display = 'inline';
 	bl.value = data[2];
-	view_link.href = view_link.href.replace(/&id=[0-9]+/, '&id=' + f.value).replace(/&blog_id=[0-9]+/, '&blog_id=' + bl.value);
+	view_link.href = view_link.href.replace(/&id=[0-9]*/, '&id=' + f.value).replace(/&blog_id=[0-9]*/, '&blog_id=' + bl.value);
 	if (data[3]) {
 		if (img) {
 			img.src = data[3];
