@@ -38,7 +38,8 @@ sub obj_stash_key {
 	my ($ctx, $args) = @_;
 	my $class = require_type(MT->instance, 'object', $args->{'object_type'});
 	my $id = $args->{'id'} ? $args->{'id'} : $class->stashed_id($ctx, $args);
-	return ("fd:$args->{'object_type'}:$id", $id);
+	my $key = "fd:$args->{'object_type'}:$id";
+	return wantarray ? ($key, $id) : $key;
 }
 
 sub app_setting_terms {
