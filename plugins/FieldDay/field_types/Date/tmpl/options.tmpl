@@ -39,6 +39,14 @@
 </mtapp:setting>
 
 <mtapp:setting
+	id="<mt:var name="field">_ampm_default"
+	label="Default"
+	content_class="field-content-text">
+	<input type="radio" name="<mt:var name="field">_ampm_default" value="am"<mt:if name="am_selected"> checked="checked"</mt:if> /> am&nbsp;
+	<input type="radio" name="<mt:var name="field">_ampm_default" value="pm"<mt:if name="pm_selected"> checked="checked"</mt:if> /> pm&nbsp;
+</mtapp:setting>
+
+<mtapp:setting
 	id="<mt:var name="field">_minutes"
 	label="Show every"
 	content_class="field-content-text">

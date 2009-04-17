@@ -18,6 +18,7 @@ sub options {
 		'minutes' => 5,
 		'show_hms' => undef,
 		'ampm' => 1,
+		'ampm_default' => 'pm',
 		'y_start' => 2008,
 		'y_end' => 2010,
 	};
@@ -77,7 +78,7 @@ sub pre_edit_options {
 # before FieldDay displays the config screen
 	my $class = shift;
 	my ($param) = @_;
-	for my $key (qw( date_order time minutes input_type )) {
+	for my $key (qw( date_order time minutes input_type ampm_default )) {
 		$param->{$param->{$key} . '_selected'} = 1;
 	}
 }
@@ -118,8 +119,10 @@ sub pre_render {
 			if ($param->{'h'} && ($param->{'h'} > 12)) {
 				$param->{'pm_selected'} = 1;
 				$param->{'h'} = $param->{'h'} - 12;
-			} else {
+			} elsif (($param->{'ampm_default'} || '') eq 'am') {
 				$param->{'am_selected'} = 1;
+			} else {
+				$param->{'pm_selected'} = 1;
 			}
 		}
 		$param->{'h_loop'} = option_loop($start_h, $end_h, $param->{'h'});
