@@ -309,7 +309,6 @@ sub hdlr_ByValue {
 		delete $args->{'blog_id'};
 		delete $args->{'include_blogs'};		
 	}
-	my $load_args = {};
 	my $id_col = ($ot->{'object_datasource'} || $ot->{'object_mt_type'} || $object_type) . '_id';
 	my @keys = grep { /^(eq|ne)/ } keys %$args;
 	my %use_args;

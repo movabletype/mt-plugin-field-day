@@ -208,6 +208,8 @@ sub sort_objects {
 			}
 		}
 	}
+	delete $args->{'sort_by'};
+	delete $args->{'sort_order'};
 	$objects;
 }
 
