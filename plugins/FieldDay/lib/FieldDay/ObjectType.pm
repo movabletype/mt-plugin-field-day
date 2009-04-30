@@ -207,9 +207,9 @@ sub sort_objects {
 				@$objects = sort { $vals{$a->id} cmp $vals{$b->id} } @$objects;
 			}
 		}
+		delete $args->{'sort_by'};
+		delete $args->{'sort_order'};
 	}
-	delete $args->{'sort_by'};
-	delete $args->{'sort_order'};
 	$objects;
 }
 
