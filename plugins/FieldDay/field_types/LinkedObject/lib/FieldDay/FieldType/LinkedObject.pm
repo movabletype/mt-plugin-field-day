@@ -427,7 +427,7 @@ sub hdlr_LinkingObjects {
 			$load_args->{'sort'} = $args->{'sort_by'};
 		}
 	} else {
-		$load_args->{'sort'} = $ot_class->sort_by;
+		$load_args->{'sort'} = $linking_ot_class->sort_by;
 	}
 	$load_args->{'direction'} = $args->{'sort_order'} || $linking_ot_class->sort_order;
 	my $iter = $linking_ot->{'object_class'}->load_iter($terms, $load_args);
