@@ -104,7 +104,7 @@ sub pre_render {
 sub pre_publish {
 	my $class = shift;
 	my ($ctx, $args, $value, $field) = @_;
-	my $name = $field->name . (obj_stash_key($ctx, $args) || '');
+	my $name = $field->name;
 	my $opts = $field->data->{'options'};
 	my $out = '';
 	if ($args->{'enter'}) {
@@ -118,9 +118,9 @@ field_stars['$name'] = $opts->{'stars'};
 		my $src = star_url($value, $i, $opts);
 		my $attrs = !$args->{'enter'} ? '' : qq{ name="${name}_$i" id="${name}_$i" onmouseover="star_over('$name', $i, $on_off)" onmouseout="star_out('$name', $i, $on_off)" onclick="star_click('$name', $i, $on_off)"};
 		$out .= qq{<img src="$src"$attrs />};
-		if ($args->{'enter'}) {
-			$out .= qq{<input type="hidden" name="$name" id="$name" value="$value" />};
-		}
+	}
+	if ($args->{'enter'}) {
+		$out .= qq{<input type="hidden" name="$name" id="$name" value="$value" />};
 	}
 	return $out;
 }
