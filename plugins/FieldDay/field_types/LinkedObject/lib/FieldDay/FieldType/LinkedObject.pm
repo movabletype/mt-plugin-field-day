@@ -142,6 +142,40 @@ function fdFileFixForm() {
 document.getElementById('<mt:var name="object_form_id">').enctype = 'multipart/form-data';
 }
 TC.attachLoadEvent(fdFileFixForm);
+function linkedObjectKey(field, oSelf) {
+	var st = document.getElementById(field + '-status');
+	var ac = getByID(field + '-ac');
+	if (ac.value) {
+		var sti = document.getElementById(field + '-status-icon');
+		var stt = document.getElementById(field + '-status-text');
+		stt.innerHTML = 'Searching...';
+		sti.style.display = 'inline';
+		st.style.display = 'inline';
+	} else {
+		st.style.display = 'none';
+	}
+}
+function linkedObjectDataReturn(field, aResults) {
+	var st = document.getElementById(field + '-status');
+	var ac = getByID(field + '-ac');
+	if (ac.value) {
+		if (aResults[2] != '') {
+			st.style.display = 'none';		
+		} else {
+			var sti = document.getElementById(field + '-status-icon');
+			var stt = document.getElementById(field + '-status-text');
+			stt.innerHTML = 'Not found';
+			sti.style.display = 'none';
+			st.style.display = 'inline';
+		}
+	} else {
+		st.style.display = 'none';
+	}
+}
+function linkedObjectUnmatched(field, oSelf) {
+	var st = document.getElementById(field + '-status');
+	st.style.display = 'none';
+}
 function linkedObjectSelect(field, data) {
 	var f = getByID(field);
 	var ac = getByID(field + '-ac');
@@ -152,6 +186,8 @@ function linkedObjectSelect(field, data) {
 	var link = getByID(field + '-link');
 	var view_link = getByID(field + '-view-link');
 	var type = getByID(field + '-object_type');
+	var st = document.getElementById(field + '-status');
+	st.style.display = 'none';
 	f.value = data[1];
 	ac.value = data[0];
 	ac.setAttribute('disabled', 'disabled');
@@ -293,6 +329,9 @@ padding-left:5px;
 }
 .linked-object-preview {
 padding-top:2px;
+font-weight:bold;
+}
+.linked-object-status {
 font-weight:bold;
 }
 input.ac-field[disabled] {

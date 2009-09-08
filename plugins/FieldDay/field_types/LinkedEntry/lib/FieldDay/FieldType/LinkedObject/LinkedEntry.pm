@@ -325,6 +325,7 @@ sub do_query {
 	my $data = $setting->data;
 	my $options = $setting->data->{'options'};
 	$options->{'type'} = $data->{'type'};
+	$options->{'lastn'} = 20;
 	my @entries = $class->load_objects($options, %terms);
 	return join("\n", map { $class->map_obj($_, $options) } @entries);
 }

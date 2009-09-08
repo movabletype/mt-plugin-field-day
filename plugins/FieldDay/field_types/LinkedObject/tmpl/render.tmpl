@@ -23,6 +23,9 @@
 	<a href="javascript:void(0);" name="<mt:var name="field">" id="<mt:var name="field">-change-link" onclick="linkedObjectChange(this.name);">Change</a> &nbsp; 
 	<a href="<mt:var name="script_url">?__mode=<mt:var name="linked_object_view_mode">&_type=<mt:var name="linked_object_type">&id=<mt:var name="value">&blog_id=<mt:var name="blog_id">" name="<mt:var name="field">-view-link" id="<mt:var name="field">-view-link" target="_blank">View</a>
 	 &nbsp;</div>
+	<span id="<mt:var name="field">-status" style="display:none;"><img src="<mt:StaticWebPath>images/ani-rebuild.gif" id="<mt:var name="field">-status-icon" />
+	<span id="<mt:var name="field">-status-text" class="linked-object-status"></span>
+	</span>
 	<mt:if name="allow_create">
 		<mt:unless name="read_only">
 		<span id="<mt:var name="field">-create-link" class="linked-object-create-link"><a href="javascript:void(0);" onclick="linkedObjectToggleCreate('<mt:var name="field">', true)"><mt:var name="create_label"></a></span>
@@ -41,7 +44,18 @@
 	var itemSelectHandler<mt:var name="js_field"> = function(sType, aArgs) {
 		linkedObjectSelect('<mt:var name="field">', aArgs[2]);
 	};
+	var textboxKeyHandler<mt:var name="js_field"> = function(oSelf, nKeycode) {
+		linkedObjectKey('<mt:var name="field">');
+	}
+	var unmatchedHandler<mt:var name="js_field"> = function(oSelf, sSelection) {
+		linkedObjectUnmatched('<mt:var name="field">');
+	}
+	var dataReturnHandler<mt:var name="js_field"> = function(oSelf, aResults) {
+		linkedObjectDataReturn('<mt:var name="field">', aResults);
+	}
 	autoComp<mt:var name="js_field">.itemSelectEvent.subscribe(itemSelectHandler<mt:var name="js_field">);
+	autoComp<mt:var name="js_field">.textboxKeyEvent.subscribe(textboxKeyHandler<mt:var name="js_field">);
+	autoComp<mt:var name="js_field">.dataReturnEvent.subscribe(dataReturnHandler<mt:var name="js_field">);
 	</script>
 	
 	<mt:unless name="allow_create">
