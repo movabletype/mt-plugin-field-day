@@ -1,9 +1,9 @@
 var fr_new_row_i = 0;
-Node.prototype.swapNode = function(node) {
-	var nextSibling = this.nextSibling;
-	var parentNode = this.parentNode;
-	parentNode.replaceChild(this, node);
-	parentNode.insertBefore(node, nextSibling);  
+function swapNode(node1, node2) {
+	var nextSibling = node1.nextSibling;
+	var parentNode = node1.parentNode;
+	parentNode.replaceChild(node1, node2);
+	parentNode.insertBefore(node2, nextSibling);  
 }
 Array.prototype.swap = function(a, b) {
 	var tmp = this[a];
@@ -100,7 +100,7 @@ function ffMoveInstance(dir, group_id, i) {
 			return true;
 		}
 		var other_instance = getByID(group_id + '-' + (i - 1));
-		instance.swapNode(other_instance);
+		swapNode(instance, other_instance);
 		//need to get it out of there temporarily
 		ffRenumberInstance(group_id, i - 1, -99);
 		ffRenumberInstance(group_id, i, i - 1);
@@ -111,7 +111,7 @@ function ffMoveInstance(dir, group_id, i) {
 			return true;
 		}
 		var other_instance = getByID(group_id + '-' + (i + 1));
-		other_instance.swapNode(instance);
+		swapNode(other_instance, instance);
 		//need to get it out of there temporarily
 		ffRenumberInstance(group_id, i + 1, -99);
 		ffRenumberInstance(group_id, i, i + 1);
