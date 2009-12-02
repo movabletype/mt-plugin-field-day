@@ -18,7 +18,11 @@ function frAddRow(table_id, hidden_div_key, item_list, new_item_list) {
 	table.tBodies[0].appendChild(new_row);
 	new_row.id = row_name;
 	new_row.name = row_name;
-	new_row.style.display = 'table-row';
+	if ( navigator.appName == "Microsoft Internet Explorer" ) {
+		new_row.style.display = 'block';
+	} else {
+		new_row.style.display = 'table-row';
+	}
 	var old_name = 'prototype__';
 	var re = new RegExp(old_name, 'g');
 	for (var i = 0; i < new_row.cells.length; i++) {
