@@ -1,9 +1,9 @@
 var fr_new_row_i = 0;
-Node.prototype.swapNode = function(node) {
-	var nextSibling = this.nextSibling;
-	var parentNode = this.parentNode;
-	parentNode.replaceChild(this, node);
-	parentNode.insertBefore(node, nextSibling);  
+function swapNode(node1, node2) {
+	var nextSibling = node1.nextSibling;
+	var parentNode = node1.parentNode;
+	parentNode.replaceChild(node1, node2);
+	parentNode.insertBefore(node2, nextSibling);  
 }
 Array.prototype.swap = function(a, b) {
 	var tmp = this[a];
@@ -59,7 +59,7 @@ function frMoveRow(table_id, dir, row_name, item_list) {
 		}
 		swap_i = i - 1;
 		swap_row = table.tBodies[0].rows[swap_i];
-		table.tBodies[0].rows[i].swapNode(swap_row);
+		swapNode(table.tBodies[0].rows[i], swap_row);
 	}
 	if (dir == 'down') {
 		if (i == item_list.length) {
@@ -67,7 +67,7 @@ function frMoveRow(table_id, dir, row_name, item_list) {
 		}
 		swap_i = i + 1;
 		swap_row = table.tBodies[0].rows[swap_i];
-		swap_row.swapNode(table.tBodies[0].rows[i]);
+		swapNode(swap_row, table.tBodies[0].rows[i]);
 	}
 	var swap_order_field = getByID(item_list[swap_i] + '_order');
 	item_list.swap(i, swap_i);
