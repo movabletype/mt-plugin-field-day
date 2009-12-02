@@ -116,22 +116,23 @@ sub pre_save_value {
 
 sub save_upload {
 	my ($fh, $path, $file, $overwrite) = @_;
-	$path =~ s#/$##;
-		# if no path, don't add a slash before filename
-		# (i.e., filename itself is absolute path)
-	$path = "$path/" if $path;
-	my $filename = "$path$file";
+
+    use File::Spec;
+    $path = File::Spec->canonpath($path);
+    my $filename = File::Spec->catfile($path, $file);
+
 	my $newfile;
-		# generate unique filename (add number if it exists)
+	# generate unique filename (add number if it exists)
 	unless ($overwrite) {
 		my $i = 0;
 		while (-e $filename) {
 			$i++;
 			$newfile = $file;
 			$newfile =~ s/\.(\w+)$/_$i.$1/;
-			$filename = "$path$newfile";
+			$filename = File::Spec->catfile($path, $newfile);
 		}
 	}
+
 	seek($fh, 0, 0);
 	open(UPLOAD, ">$filename");
 	binmode(UPLOAD);
