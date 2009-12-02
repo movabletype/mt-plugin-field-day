@@ -15,6 +15,7 @@ function frAddRow(table_id, hidden_div_key, item_list, new_item_list) {
 	var row_name = 'new_row_' + fr_new_row_i;
 	var table = getByID(table_id);
 	var new_row = getByID('prototype___row').cloneNode(true);
+	table.tBodies[0].appendChild(new_row);
 	new_row.id = row_name;
 	new_row.name = row_name;
 	new_row.style.display = 'table-row';
@@ -39,7 +40,6 @@ function frAddRow(table_id, hidden_div_key, item_list, new_item_list) {
 		new_div.id = row_name + '_' + hidden_div_key + '_div';
 		getByID('fr_all_hidden_divs').appendChild(new_div);
 	}
-	table.tBodies[0].appendChild(new_row);
 	var order = getByID(row_name + '_order');
 	item_list[item_list.length] = row_name;
 	order.value = item_list.length - 1;
