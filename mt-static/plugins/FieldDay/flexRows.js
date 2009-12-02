@@ -66,7 +66,7 @@ function frMoveRow(table_id, dir, row_name, item_list) {
 		swapNode(table.tBodies[0].rows[i], swap_row);
 	}
 	if (dir == 'down') {
-		if (i == item_list.length) {
+		if (i == item_list.length - 1) {
 			return true;
 		}
 		swap_i = i + 1;
