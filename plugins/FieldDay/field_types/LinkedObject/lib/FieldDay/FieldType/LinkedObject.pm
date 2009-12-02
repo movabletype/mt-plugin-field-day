@@ -218,7 +218,9 @@ function linkedObjectChange(field) {
 	ac.removeAttribute('disabled');
 	ac.value = '';
 	ed.style.display ='none';
-	pr.style.display ='none';
+    if (pr) {
+	    pr.style.display ='none';
+    }
 	if (img) {
 		img.src = '';
 	}
