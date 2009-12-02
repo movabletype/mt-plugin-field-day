@@ -133,13 +133,20 @@ sub save_upload {
 		}
 	}
 
-	seek($fh, 0, 0);
-	open(UPLOAD, ">$filename");
-	binmode(UPLOAD);
-	while (<$fh>) {
-		print UPLOAD;
-	}
-	close UPLOAD;
+    my $fmgr;
+    require MT::FileMgr;
+    $fmgr = MT::FileMgr->new('Local');
+    return undef unless $fmgr;
+    unless ( defined $fmgr->put( $fh, $filename, 'upload' ) ) {
+        my $plugin_name = MT->component('fieldday')->name;
+        MT->log({
+            message => MT->translate(
+                "[_1]: Writing to '[_2]' failed: [_3]", $plugin_name, $filename, $fmgr->errstr ),
+            level => MT::Log::ERROR(),
+        });
+        return undef;
+    }
+
 	return $newfile ? $newfile : $file;
 }
 
