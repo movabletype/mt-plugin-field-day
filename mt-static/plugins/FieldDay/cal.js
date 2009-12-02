@@ -110,8 +110,14 @@ function getAnchorWindowPosition(anchorname) {
 	var y=0;
 	if (document.getElementById) {
 		if (isNaN(window.screenX)) {
-			x=coordinates.x-document.body.scrollLeft+window.screenLeft;
-			y=coordinates.y-document.body.scrollTop+window.screenTop;
+			if( document.body && ( document.body.scrollLeft || document.body.scrollTop ) ) {
+				x=coordinates.x-document.body.scrollLeft+window.screenLeft;
+				y=coordinates.y-document.body.scrollTop+window.screenTop;
+				}
+			else if ( document.documentElement && ( document.documentElement.scrollLeft || document.documentElement.scrollTop ) ) {
+				x=coordinates.x-document.documentElement.scrollLeft+window.screenLeft;
+				y=coordinates.y-document.documentElement.scrollTop+window.screenTop;
+				}
 			}
 		else {
 			x=coordinates.x+window.screenX+(window.outerWidth-window.innerWidth)-window.pageXOffset;
