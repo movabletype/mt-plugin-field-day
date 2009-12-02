@@ -646,7 +646,7 @@ function PopupWindow_showPopup(anchorname) {
 					}
 				}
 			var avoidAboutBlank = window.opera || ( document.layers && !navigator.mimeTypes['*'] ) || navigator.vendor == 'KDE' || ( document.childNodes && !document.all && !navigator.taintEnabled );
-			this.popupWindow = window.open(avoidAboutBlank?"":"about:blank","window_"+anchorname,this.windowProperties+",width="+this.width+",height="+this.height+",screenX="+this.x+",left="+this.x+",screenY="+this.y+",top="+this.y+"");
+			this.popupWindow = window.open(avoidAboutBlank?"":"about:blank","window_"+anchorname.replace(/-/g,"_"),this.windowProperties+",width="+this.width+",height="+this.height+",screenX="+this.x+",left="+this.x+",screenY="+this.y+",top="+this.y+"");
 			}
 		this.refresh();
 		}
