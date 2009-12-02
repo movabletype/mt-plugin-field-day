@@ -36,7 +36,7 @@ sub hdlr_cmsfields {
 				}
 			}
 		}
-		my $class = $group_id ? ' class="fd-group-parent">' : '';
+        my $class = $group_id ? ' class="fd-group-parent">' : '>';
 		my $group_out = qq{<div id="group-${group_id}-parent"$class};
 		my $n = $group_need_ns->{$group_id} || 0;
 		if (!$n && $group_id) {
