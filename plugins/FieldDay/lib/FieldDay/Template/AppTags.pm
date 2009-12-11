@@ -60,16 +60,16 @@ sub hdlr_cmsfields {
 				my $buttons = ($g_data->{'instances'} && ($g_data->{'instances'} == 1)) ? '' : <<"TMPL";
 <span class="fd-group-buttons" id="group-${group_id}-buttons-instance-$i">
 <span class="fd-group-button">
-<a href="javascript:void(0);" onclick="ffDeleteInstance('group-$group_id', $i);"><img src="${static_uri}plugins/FieldDay/nav-delete.gif" border="0" /></a>
+<a href="javascript:void(0);" onclick="ffDeleteInstance('group-$group_id', $i);return false;"><img src="${static_uri}plugins/FieldDay/nav-delete.gif" border="0" /></a>
 </span>
 <span class="fd-group-button">
-<a href="javascript:void(0);" onclick="ffMoveInstance('up', 'group-$group_id', $i);"><img src="${static_uri}plugins/FieldDay/nav-arrow-up.gif" border="0" /></a>
+<a href="javascript:void(0);" onclick="ffMoveInstance('up', 'group-$group_id', $i);return false;"><img src="${static_uri}plugins/FieldDay/nav-arrow-up.gif" border="0" /></a>
 </span>
 <span class="fd-group-button">
-<a href="javascript:void(0);" onclick="ffMoveInstance('down', 'group-$group_id', $i);"><img src="${static_uri}plugins/FieldDay/nav-arrow-down.gif" border="0" /></a>
+<a href="javascript:void(0);" onclick="ffMoveInstance('down', 'group-$group_id', $i);return false;"><img src="${static_uri}plugins/FieldDay/nav-arrow-down.gif" border="0" /></a>
 </span>
 <span class="fd-group-button">
-<a href="javascript:void(0);" onclick="ffAddInstance('group-$group_id');"><img src="${static_uri}images/status_icons/create.gif" border="0" /></a>
+<a href="javascript:void(0);" onclick="ffAddInstance('group-$group_id');return false;"><img src="${static_uri}images/status_icons/create.gif" border="0" /></a>
 </span>
 </span>
 TMPL
