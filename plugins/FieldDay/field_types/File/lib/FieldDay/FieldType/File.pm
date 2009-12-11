@@ -110,7 +110,7 @@ sub pre_save_value {
 		}
 	}
 	
-	return save_upload($q->param($upload_field),
+	return save_upload($q->upload($upload_field),
 		$options->{'upload_path'}, $upload_file, $options->{'overwrite'});
 }
 
