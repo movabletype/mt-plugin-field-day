@@ -32,6 +32,7 @@ sub html_head {
 <script type="text/javascript">
 function fdFileFixForm() {
 document.getElementById('<mt:var name="object_form_id">').enctype = 'multipart/form-data';
+document.getElementById('<mt:var name="object_form_id">').encoding = 'multipart/form-data';
 }
 TC.attachLoadEvent(fdFileFixForm);
 </script>
