@@ -106,7 +106,6 @@ sub pre_save_value {
 		# uploaded file
 		require MT::Asset;
 		my ($fh, $info) = $app->upload_info($i_name . '-file');
-        $fh = $app->param($i_name . '-file') unless defined $fh;
 		my $mimetype;
 		if ($info) {
 			$mimetype = $info->{'Content-Type'};
