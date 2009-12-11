@@ -75,7 +75,7 @@ function ffAddInstance(group_id) {
 	new_instance.style.display = 'block';
 	var re = new RegExp('instance-' + i, 'g');
 	new_instance.innerHTML = new_instance.innerHTML.replace(re, 'instance-' + new_i);
-	new_instance.innerHTML = new_instance.innerHTML.replace(/<span class="instance-i" id="[^"]+">[0-9]+<\/span>/, '<span class="instance-i" id="' + group_id + '-display-instance-' + new_i + '">' + (new_i + 1) + '</span>');
+	new_instance.innerHTML = new_instance.innerHTML.replace(/<span class="?instance-i"? id="?[^"]+"?>[0-9]+<\/span>/i, '<span class="instance-i" id="' + group_id + '-display-instance-' + new_i + '">' + (new_i + 1) + '</span>');
 	re = new RegExp("'" + group_id + "', " + i, 'g');
 	new_instance.innerHTML = new_instance.innerHTML.replace(re, "'" + group_id + "', " + new_i);	
 	parent.appendChild(new_instance);
