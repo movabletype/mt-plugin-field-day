@@ -71,6 +71,12 @@ function ffRenumberInstance(group_id, old_i, new_i) {
 	ffRenumberFields(node, re, 'instance-' + new_i);
 	node.id = group_id + '-fields-instance-' + new_i;
 	instance_list[group_id].swap(old_i, new_i);
+	var div_array = node.getElementsByTagName('div');
+	for (var i in div_array) {
+		if (/autocomplete/.test(div_array[i].className)) {
+			div_array[i].style.zIndex = 10000 - new_i;
+		}
+	}
 }
 function ffAddInstance(group_id) {
 	var i = -1;
@@ -92,6 +98,12 @@ function ffAddInstance(group_id) {
 	re = new RegExp("'" + group_id + "', " + i, 'g');
 	new_instance.innerHTML = new_instance.innerHTML.replace(re, "'" + group_id + "', " + new_i);	
 	parent.appendChild(new_instance);
+	var div_array = new_instance.getElementsByTagName('div');
+	for (var i in div_array) {
+		if (/autocomplete/.test(div_array[i].className)) {
+			div_array[i].style.zIndex = 10000 - new_i;
+		}
+	}
 }
 function ffDeleteInstance(group_id, i) {
 	if (instance_list[group_id].length == 1) {
