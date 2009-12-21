@@ -98,6 +98,16 @@ function ffAddInstance(group_id) {
 	re = new RegExp("'" + group_id + "', " + i, 'g');
 	new_instance.innerHTML = new_instance.innerHTML.replace(re, "'" + group_id + "', " + new_i);	
 	parent.appendChild(new_instance);
+	var event_js = instance.getElementsByTagName('script')[0].innerHTML;
+	if (event_js) {
+		var find_str = 'instance-' + i;
+		var re2 = new RegExp(find_str, 'g');
+		event_js = event_js.replace(re2, 'instance-' + new_i);
+		find_str = find_str.replace(/-/g, '_');
+		re2 = new RegExp(find_str, 'g');
+		event_js = event_js.replace(re2, 'instance_' + new_i);
+		eval(event_js);
+	}
 	var div_array = new_instance.getElementsByTagName('div');
 	for (var i in div_array) {
 		if (/autocomplete/.test(div_array[i].className)) {
