@@ -143,6 +143,9 @@ document.getElementById('<mt:var name="object_form_id">').enctype = 'multipart/f
 document.getElementById('<mt:var name="object_form_id">').encoding = 'multipart/form-data';
 }
 TC.attachLoadEvent(fdFileFixForm);
+function linkedObjectField(objectId) {
+	return objectId.replace(/-[-a-z]+\$/, '');
+}
 function linkedObjectKey(field, oSelf) {
 	var st = document.getElementById(field + '-status');
 	var ac = getByID(field + '-ac');

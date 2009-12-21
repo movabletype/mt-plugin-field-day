@@ -20,7 +20,7 @@
 	<input id="<mt:var name="field">-object_type" name="<mt:var name="field">-object_type" type="hidden" value="<mt:var name="linked_object_type">" />
 	&nbsp;
 	<div id="<mt:var name="field">-change" style="display:<mt:if name="value">inline<mt:else>none</mt:if>;">
-	<a href="javascript:void(0);" name="<mt:var name="field">" id="<mt:var name="field">-change-link" onclick="linkedObjectChange(this.name);return false;">Change</a> &nbsp; 
+	<a href="javascript:void(0);" id="<mt:var name="field">-change-link" onclick="linkedObjectChange(linkedObjectField(this.id));return false;">Change</a> &nbsp; 
 	<a href="<mt:var name="script_url">?__mode=<mt:var name="linked_object_view_mode">&_type=<mt:var name="linked_object_type">&id=<mt:var name="value">&blog_id=<mt:var name="blog_id">" name="<mt:var name="field">-view-link" id="<mt:var name="field">-view-link" target="_blank">View</a>
 	 &nbsp;</div>
 	<span id="<mt:var name="field">-status" style="display:none;"><img src="<mt:StaticWebPath>images/ani-rebuild.gif" id="<mt:var name="field">-status-icon" />
@@ -28,7 +28,7 @@
 	</span>
 	<mt:if name="allow_create">
 		<mt:unless name="read_only">
-		<span id="<mt:var name="field">-create-link" class="linked-object-create-link"><a href="javascript:void(0);" onclick="linkedObjectToggleCreate('<mt:var name="field">', true);return false;"><mt:var name="create_label"></a></span>
+		<span id="<mt:var name="field">-create-link" class="linked-object-create-link"><a href="javascript:void(0);" id="<mt:var name="field">-create-link-link" onclick="linkedObjectToggleCreate(linkedObjectField(this.id), true);return false;"><mt:var name="create_label"></a></span>
 		</mt:unless>
 	</mt:if>
 	<mt:var name="preview">
@@ -81,7 +81,7 @@
 	linkedObjectFormFields['<mt:var name="field">'] = new Array(<mt:var name="field_list">);
 	</script>
 	<mt:unless name="autocomplete">
-	&nbsp; <span id="<mt:var name="field">-create-link" class="linked-object-create-link"><a href="javascript:void(0);" onclick="linkedObjectToggleCreate('<mt:var name="field">', true);return false;"><mt:var name="create_label"></a></span>
+	&nbsp; <span id="<mt:var name="field">-create-link" class="linked-object-create-link"><a href="javascript:void(0);" id="<mt:var name="field">-create-link-link" onclick="linkedObjectToggleCreate(linkedObjectField(this.id), true);return false;"><mt:var name="create_label"></a></span>
 	</mt:unless>
 	
 	<mt:unless name="read_only">
@@ -93,13 +93,15 @@
 					<button
 							type="button"
 							title="<mt:var name="create_label">"
-							onclick="linkedObjectSubmit('<mt:var name="field">', <mt:var name="setting_id">, <mt:var name="linked_blog_id">, <mt:if name="autocomplete">true<mt:else>false</mt:else></mt:if>)"
+							id="<mt:var name="field">-submit"
+							onclick="linkedObjectSubmit(linkedObjectField(this.id), <mt:var name="setting_id">, <mt:var name="linked_blog_id">, <mt:if name="autocomplete">true<mt:else>false</mt:else></mt:if>)"
 					><mt:var name="create_label"></button>
 				</mt:unless>		
 				<button
 						type="button"
 						title="Cancel"
-						onclick="linkedObjectToggleCreate('<mt:var name="field">', false)"
+						id="<mt:var name="field">-cancel"
+						onclick="linkedObjectToggleCreate(linkedObjectField(this.id), false)"
 				>Cancel</button>
 				</div>
 			</div>
