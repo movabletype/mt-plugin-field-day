@@ -37,6 +37,19 @@ function ffRenumberFields(node, old_re, new_str) {
 	if (node.name) {
 		node.name = node.name.replace(old_re, new_str);
 	}
+	if (document.all) {
+		if (node.tagName) {
+			if (node.tagName.toLowerCase() == 'input') {
+				var newInput = document.createElement('input');
+				newInput.id = node.id;
+				newInput.name = node.name;
+				newInput.type = node.type;
+				newInput.value = node.value;
+				newInput.mergeAttributes(node);
+				node = node.replaceNode(newInput);
+			}
+		}
+	}
 	while (node.childNodes[i]) {
 		ffRenumberFields(node.childNodes[i], old_re, new_str);
 		i++;
