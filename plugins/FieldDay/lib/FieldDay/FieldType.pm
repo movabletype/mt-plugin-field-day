@@ -8,16 +8,16 @@ use Data::Dumper;
 our $type_tmpls;
 
 sub label {
-	return 'Unknown';
+    return 'Unknown';
 }
 
 sub options {
-	return {};
+    return {};
 }
 
 sub html_head {
 # code to go into html_head of template
-	return '';
+    return '';
 }
 
 sub pre_edit_options {
@@ -38,28 +38,28 @@ sub pre_save_default {
 
 sub pre_render {
 # before the field is rendered in the CMS
-	my $class = shift;
-	my ($param) = @_;
+    my $class = shift;
+    my ($param) = @_;
 }
 
 sub pre_publish {
 # before the field value is output on a template
-	my $class = shift;
-	my ($ctx, $args, $value, $field) = @_;
-	return $value;
+    my $class = shift;
+    my ($ctx, $args, $value, $field) = @_;
+    return $value;
 }
 
 sub pre_save_value {
 # before the CMS saves a value from the editing screen
-	my $class = shift;
-	my ($app, $field_name) = @_;
-	return $app->param($field_name);
+    my $class = shift;
+    my ($app, $field_name) = @_;
+    return $app->param($field_name);
 }
 
 sub post_save_value {
 # after the CMS saves a value
-	my $class = shift;
-	my ($app, $value_obj, $obj, $field) = @_;
+    my $class = shift;
+    my ($app, $value_obj, $obj, $field) = @_;
 }
 
 sub pre_display_value {
@@ -78,25 +78,25 @@ sub html_head_type {
 }
 
 sub type_tmpls {
-	my ($plugin, $app, $tmpl_type) = @_;
-	$type_tmpls ||= {};
-	return $type_tmpls->{$tmpl_type} if $type_tmpls->{$tmpl_type};
-	my $field_types = types('field');
-	my %options = ();
-	my $ft_path = $app->{'cfg'}->pluginpath . '/FieldDay/field_types';
-	for my $key (keys %$field_types) {
-		require_type($app, 'field', $key);
-		my $yaml = $field_types->{$key}->[0];
-		next if ($yaml->{'abstract'});
-		my $meth = $tmpl_type . '_tmpl_type';
-		my $tmpl_dir = $yaml->{'class'}->$meth || $key;
-		my $tmpl_path = "$ft_path/$tmpl_dir/tmpl";
-		my $tmpl = $plugin->load_tmpl("$tmpl_path/$tmpl_type.tmpl");
-		die Dumper($yaml) unless $tmpl;
-		$options{$yaml->{'field_type'}} = $tmpl->text;
-	}
-	$type_tmpls->{$tmpl_type} = \%options;
-	return \%options;
+    my ($plugin, $app, $tmpl_type) = @_;
+    $type_tmpls ||= {};
+    return $type_tmpls->{$tmpl_type} if $type_tmpls->{$tmpl_type};
+    my $field_types = types('field');
+    my %options = ();
+    my $ft_path = $app->{'cfg'}->pluginpath . '/FieldDay/field_types';
+    for my $key (keys %$field_types) {
+        require_type($app, 'field', $key);
+        my $yaml = $field_types->{$key}->[0];
+        next if ($yaml->{'abstract'});
+        my $meth = $tmpl_type . '_tmpl_type';
+        my $tmpl_dir = $yaml->{'class'}->$meth || $key;
+        my $tmpl_path = "$ft_path/$tmpl_dir/tmpl";
+        my $tmpl = $plugin->load_tmpl("$tmpl_path/$tmpl_type.tmpl");
+        die Dumper($yaml) unless $tmpl;
+        $options{$yaml->{'field_type'}} = $tmpl->text;
+    }
+    $type_tmpls->{$tmpl_type} = \%options;
+    return \%options;
 }
 
 sub tags {
@@ -104,23 +104,23 @@ sub tags {
 }
 
 sub field_options {
-	my ($tag_name, $ctx, $args) = @_;
-	require FieldDay::Setting;
-	my $tag = $ctx->stash('tag');
-	$tag =~ /^(.+)$tag_name/i;
-	my $ot = FieldDay::YAML->object_type(lc($1));
-	my $object_type = $ot->{'object_mt_type'} || $ot->{'object_type'};
-	my %terms = (
-		'type' => 'field',
-		'object_type' => $object_type,
-		'name' => $args->{'field'},
-	);
-	if ($ot->{'has_blog_id'} && $ctx->stash('blog')) {
-		$terms{'blog_id'} = $ctx->stash('blog')->id;
-	}
-	my $setting = FieldDay::Setting->load(\%terms);
-	return {} unless $setting;
-	return $setting->data->{'options'};
+    my ($tag_name, $ctx, $args) = @_;
+    require FieldDay::Setting;
+    my $tag = $ctx->stash('tag');
+    $tag =~ /^(.+)$tag_name/i;
+    my $ot = FieldDay::YAML->object_type(lc($1));
+    my $object_type = $ot->{'object_mt_type'} || $ot->{'object_type'};
+    my %terms = (
+        'type' => 'field',
+        'object_type' => $object_type,
+        'name' => $args->{'field'},
+    );
+    if ($ot->{'has_blog_id'} && $ctx->stash('blog')) {
+        $terms{'blog_id'} = $ctx->stash('blog')->id;
+    }
+    my $setting = FieldDay::Setting->load(\%terms);
+    return {} unless $setting;
+    return $setting->data->{'options'};
 }
 
 1;

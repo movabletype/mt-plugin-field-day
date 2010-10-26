@@ -5,195 +5,195 @@ use Data::Dumper;
 
 my $plugin_key = 'rightfields';
 my @standard_elems = qw( label type rows width length choices weblog 
-	upload_path url_path overwrite date_order date_y_start date_y_end
-	date_show_hms date_time	date_minutes date_ampm
-	filenames category_ids show_buttons text_filters );
+    upload_path url_path overwrite date_order date_y_start date_y_end
+    date_show_hms date_time date_minutes date_ampm
+    filenames category_ids show_buttons text_filters );
 
-	# types that we can't just ucfirst
+    # types that we can't just ucfirst
 my %type_map = (
-	'entry' => 'LinkedEntry',
-	'radio' => 'RadioButtons',
-	'menu' => 'SelectMenu',
-	'textarea' => 'TextArea',
+    'entry' => 'LinkedEntry',
+    'radio' => 'RadioButtons',
+    'menu' => 'SelectMenu',
+    'textarea' => 'TextArea',
 );
 
 my %option_map = (
-	'checkbox' => {
-	},
-	'date' => {
-		'date_order' => 'date_order',
-		'date_time' => 'time',
-		'date_minutes' => 'minutes',
-		'date_show_hms' => 'show_hms',
-		'date_ampm' => 'ampm',
-		'date_y_start' => 'y_start',
-		'date_y_end' => 'y_end',
-	},
-	'file' => {
-		'upload_path' => 'upload_path',
-		'url_path' => 'url_path',
-		'overwrite' => 'overwrite',
-		'filenames' => 'filenames',
-	},
-	'entry' => {
-		'weblog' => 'linked_blog_id',
-		'category_ids' => 'category_ids',
-	},
-	'radio' => {
-		'choices' => 'choices',
-	},
-	'menu' => {
-		'choices' => 'choices',
-	},
-	'text' => {
-		'width' => 'width',
-		'length' => 'length',
-	},
-	'textarea' => {
-		'rows' => 'height',
-		'width' => 'width',
-	},
+    'checkbox' => {
+    },
+    'date' => {
+        'date_order' => 'date_order',
+        'date_time' => 'time',
+        'date_minutes' => 'minutes',
+        'date_show_hms' => 'show_hms',
+        'date_ampm' => 'ampm',
+        'date_y_start' => 'y_start',
+        'date_y_end' => 'y_end',
+    },
+    'file' => {
+        'upload_path' => 'upload_path',
+        'url_path' => 'url_path',
+        'overwrite' => 'overwrite',
+        'filenames' => 'filenames',
+    },
+    'entry' => {
+        'weblog' => 'linked_blog_id',
+        'category_ids' => 'category_ids',
+    },
+    'radio' => {
+        'choices' => 'choices',
+    },
+    'menu' => {
+        'choices' => 'choices',
+    },
+    'text' => {
+        'width' => 'width',
+        'length' => 'length',
+    },
+    'textarea' => {
+        'rows' => 'height',
+        'width' => 'width',
+    },
 );
 
 sub do_upgrade {
-	my $upg = shift;
-	require MT::Blog;
-	require FieldDay::Setting;
-		# first get default settings
-	my $cfg_key = config_key(-1, 'extra');
-	my $default_cfg = load_plugindata($cfg_key);
-	my $saved_defaults = 0;
-	my $iter = MT::Blog->load_iter;
-	my $debug;
-	while (my $blog = $iter->()) {
-		my $cfg_key = config_key($blog->id, 'extra');
-		my $cfg = load_plugindata($cfg_key);
-		my $is_default = 0;
-		if (!$cfg && $default_cfg && !$saved_defaults) {
-				# assign defaults to this blog
-			$cfg = $default_cfg;
-			$is_default = 1;
-			my $setting = FieldDay::Setting->set_by_key({
-				'object_type' => 'entry',
-				'type' => 'default',
-			}, {
-				'blog_id' => $blog->id,
-				'name' => 'default'
-			});
-			$saved_defaults = 1;
-		}
-		if ($cfg) {
-			if ($default_cfg && !$is_default) {
-				my $setting = FieldDay::Setting->set_by_key({
-					'object_type' => 'entry',
-					'type' => 'override',
-				}, {
-					'blog_id' => $blog->id,
-					'name' => 'override'
-				});
-			}
-			for my $field (keys %{$cfg->{'cols'}}) {
-				my $col = $cfg->{'cols'}->{$field};
-				my $rf_type = $col->{'type'};
-				my $fd_type = $type_map{$rf_type} || ucfirst($rf_type);
-				my $options = {};
-				for my $option (keys %{$option_map{$rf_type}}) {
-					if (($rf_type eq 'textarea') && ($option eq 'rows')) {
-							# convert from rows to pixels
-						$col->{$option} *= 18;
-					}
-					$options->{$option_map{$rf_type}{$option}} = $col->{$option};
-				}
-				my $data = {
-					'label' => $col->{'label'},
-					'type' => $fd_type,
-					'options' => $options,
-				};
-				my $terms = {
-					'type' => 'field',
-					'blog_id' => $blog->id,
-					'object_type' => 'entry',
-					'name' => $field,
-				};
-				my $setting = FieldDay::Setting->get_by_key($terms);
-				$setting->order($col->{'sort'});
-				$setting->data($data);
-				$setting->save || die $setting->errstr;
-			}
-		}
-		if ($cfg || $default_cfg) {
-			$cfg ||= $default_cfg;
-			require MT::Entry;
-			require FieldDay::Value;
-			my $iter = MT::Entry->load_iter({ 'blog_id' => $blog->id });
-			while (my $entry = $iter->()) {
-				my $rf = load_obj($cfg, $entry->id);
-				next unless $rf;
-				$debug .= Dumper($rf);
-				for my $field (keys %{$cfg->{'cols'}}) {
-					next unless $rf->$field;
-					my $terms = {
-						'object_type' => 'entry',
-						'blog_id' => $blog->id,
-						'object_id' => $entry->id,
-						'key' => $field,
-						'instance' => 1,
-					};
-					my $value = FieldDay::Value->get_by_key($terms);
-					$value->set_value($rf->$field);
-					$value->save || die $value->errstr;
-				}
-			}
-		}
-	}
+    my $upg = shift;
+    require MT::Blog;
+    require FieldDay::Setting;
+        # first get default settings
+    my $cfg_key = config_key(-1, 'extra');
+    my $default_cfg = load_plugindata($cfg_key);
+    my $saved_defaults = 0;
+    my $iter = MT::Blog->load_iter;
+    my $debug;
+    while (my $blog = $iter->()) {
+        my $cfg_key = config_key($blog->id, 'extra');
+        my $cfg = load_plugindata($cfg_key);
+        my $is_default = 0;
+        if (!$cfg && $default_cfg && !$saved_defaults) {
+                # assign defaults to this blog
+            $cfg = $default_cfg;
+            $is_default = 1;
+            my $setting = FieldDay::Setting->set_by_key({
+                'object_type' => 'entry',
+                'type' => 'default',
+            }, {
+                'blog_id' => $blog->id,
+                'name' => 'default'
+            });
+            $saved_defaults = 1;
+        }
+        if ($cfg) {
+            if ($default_cfg && !$is_default) {
+                my $setting = FieldDay::Setting->set_by_key({
+                    'object_type' => 'entry',
+                    'type' => 'override',
+                }, {
+                    'blog_id' => $blog->id,
+                    'name' => 'override'
+                });
+            }
+            for my $field (keys %{$cfg->{'cols'}}) {
+                my $col = $cfg->{'cols'}->{$field};
+                my $rf_type = $col->{'type'};
+                my $fd_type = $type_map{$rf_type} || ucfirst($rf_type);
+                my $options = {};
+                for my $option (keys %{$option_map{$rf_type}}) {
+                    if (($rf_type eq 'textarea') && ($option eq 'rows')) {
+                            # convert from rows to pixels
+                        $col->{$option} *= 18;
+                    }
+                    $options->{$option_map{$rf_type}{$option}} = $col->{$option};
+                }
+                my $data = {
+                    'label' => $col->{'label'},
+                    'type' => $fd_type,
+                    'options' => $options,
+                };
+                my $terms = {
+                    'type' => 'field',
+                    'blog_id' => $blog->id,
+                    'object_type' => 'entry',
+                    'name' => $field,
+                };
+                my $setting = FieldDay::Setting->get_by_key($terms);
+                $setting->order($col->{'sort'});
+                $setting->data($data);
+                $setting->save || die $setting->errstr;
+            }
+        }
+        if ($cfg || $default_cfg) {
+            $cfg ||= $default_cfg;
+            require MT::Entry;
+            require FieldDay::Value;
+            my $iter = MT::Entry->load_iter({ 'blog_id' => $blog->id });
+            while (my $entry = $iter->()) {
+                my $rf = load_obj($cfg, $entry->id);
+                next unless $rf;
+                $debug .= Dumper($rf);
+                for my $field (keys %{$cfg->{'cols'}}) {
+                    next unless $rf->$field;
+                    my $terms = {
+                        'object_type' => 'entry',
+                        'blog_id' => $blog->id,
+                        'object_id' => $entry->id,
+                        'key' => $field,
+                        'instance' => 1,
+                    };
+                    my $value = FieldDay::Value->get_by_key($terms);
+                    $value->set_value($rf->$field);
+                    $value->save || die $value->errstr;
+                }
+            }
+        }
+    }
 }
 
 sub config_key {
-	my ($blog_id, $type) = @_;
-	if ($blog_id == -1) {
-		return "default_$type";
-	} else {
-		return "blog_${blog_id}_cfg_$type";
-	}
+    my ($blog_id, $type) = @_;
+    if ($blog_id == -1) {
+        return "default_$type";
+    } else {
+        return "blog_${blog_id}_cfg_$type";
+    }
 }
 
 sub load_plugindata {
-	my ($key) = @_;
-	require MT::PluginData;
-	my $data = MT::PluginData->load({
-		plugin => $plugin_key, key => $key
-	});
-	return 0 unless $data;
-	return $data->data;
+    my ($key) = @_;
+    require MT::PluginData;
+    my $data = MT::PluginData->load({
+        plugin => $plugin_key, key => $key
+    });
+    return 0 unless $data;
+    return $data->data;
 }
 
 sub load_obj {
-	my ($blog_config, $entry_id) = @_;
-	my $obj;
-	my $class = ($blog_config->{'datasource'} eq '_pseudo')
-		? 'RightFieldsPseudo' : 'RightFieldsObject';
-	{
-	# need to clear previously installed props
-	no strict 'refs';
-	*{"${class}::__properties"} = sub { {} };
-	}
-	$class->set_properties(obj_properties($blog_config));
-	if ($entry_id) {
-		$obj = $class->load(
-			($class eq 'RightFieldsPseudo') ? { 'key' => $entry_id } : $entry_id
-		);
-	}
-	return $obj;
+    my ($blog_config, $entry_id) = @_;
+    my $obj;
+    my $class = ($blog_config->{'datasource'} eq '_pseudo')
+        ? 'RightFieldsPseudo' : 'RightFieldsObject';
+    {
+    # need to clear previously installed props
+    no strict 'refs';
+    *{"${class}::__properties"} = sub { {} };
+    }
+    $class->set_properties(obj_properties($blog_config));
+    if ($entry_id) {
+        $obj = $class->load(
+            ($class eq 'RightFieldsPseudo') ? { 'key' => $entry_id } : $entry_id
+        );
+    }
+    return $obj;
 }
 
 sub obj_properties {
-	my ($blog_config) = @_;
-	my @e_id = ($blog_config->{'datasource'} eq '_pseudo') ? ('entry_id' => 'integer') : ();
-	return {
-		'column_defs' => { 'id' => 'integer', @e_id, map { $_ => 'text' } keys %{$blog_config->{'cols'}} },
-		'datasource', $blog_config->{'datasource'},
-		'primary_key', 'id'
-	};
+    my ($blog_config) = @_;
+    my @e_id = ($blog_config->{'datasource'} eq '_pseudo') ? ('entry_id' => 'integer') : ();
+    return {
+        'column_defs' => { 'id' => 'integer', @e_id, map { $_ => 'text' } keys %{$blog_config->{'cols'}} },
+        'datasource', $blog_config->{'datasource'},
+        'primary_key', 'id'
+    };
 }
 
 
@@ -205,19 +205,19 @@ use strict;
 use MT::Object;
 @RightFieldsObject::ISA = qw( MT::Object );
 {
-	local $SIG{__WARN__} = sub {  }; 
-	__PACKAGE__->install_properties({});
+    local $SIG{__WARN__} = sub {  }; 
+    __PACKAGE__->install_properties({});
 }
 
 sub set_properties {
-	my $class = shift;
-	my ($properties) = @_;
-	$properties->{'audit'} = 0;
-	__PACKAGE__->install_properties($properties);
+    my $class = shift;
+    my ($properties) = @_;
+    $properties->{'audit'} = 0;
+    __PACKAGE__->install_properties($properties);
 }
 
-	# need to override this to get rid of the "unknown column" check
-	# introduced in MT 3.3
+    # need to override this to get rid of the "unknown column" check
+    # introduced in MT 3.3
 use vars qw( $AUTOLOAD );
 sub AUTOLOAD {
     my $obj = $_[0];
@@ -233,25 +233,25 @@ package RightFieldsPseudo;
 use strict;
 @RightFieldsPseudo::ISA = qw( MT::Object::Pseudo );
 {
-	local $SIG{__WARN__} = sub {  }; 
-	__PACKAGE__->install_properties({});
+    local $SIG{__WARN__} = sub {  }; 
+    __PACKAGE__->install_properties({});
 }
 
 sub set_properties {
-	my $class = shift;
-	my ($properties) = @_;
-	$properties->{'audit'} = 0;
-	__PACKAGE__->install_properties($properties);
+    my $class = shift;
+    my ($properties) = @_;
+    $properties->{'audit'} = 0;
+    __PACKAGE__->install_properties($properties);
 }
 
 sub key {
-	my $obj = shift;
-	return $obj->entry_id;
+    my $obj = shift;
+    return $obj->entry_id;
 }
 
 sub blog_id {
 # to prevent callbacks from dying in MT::App::cb_mark_blog()
-	return 0;
+    return 0;
 }
 
 # Copyright 2004-2005 Appnel Internet Solutions LLC, Timothy
