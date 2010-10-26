@@ -5,12 +5,12 @@ use strict;
 use base qw( FieldDay::FieldType::ChoiceList );
 
 sub label {
-	return 'Select Menu';
+    return 'Select Menu';
 }
 
 sub options_tmpl_type {
 # the field type that contains the options template, used for subclasses
-	return 'ChoiceList';
+    return 'ChoiceList';
 }
 
 1;

@@ -1,5 +1,5 @@
-
 package FieldDay::ObjectType::Folder;
+
 use strict;
 use Data::Dumper;
 

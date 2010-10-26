@@ -1,117 +1,117 @@
 <mt:unless name="create_label"><mt:var name="create_label" value="Create"></mt:unless>
 <mt:unless name="ac_field_width"><mt:var name="ac_field_width" value="300"></mt:unless>
 <mtapp:setting
-	id="<mt:var name="field">"
-	label="<mt:unless name="label_display" eq="hide"><mt:var name="label"></mt:unless>"
+    id="<mt:var name="field">"
+    label="<mt:unless name="label_display" eq="hide"><mt:var name="label"></mt:unless>"
     label_class="<mt:if name="label_display" like="/above|hide/">top-label<mt:else>left-label</mt:else></mt:if>"
-	>
+    >
 
 <mt:if name="autocomplete">
 
-	<mt:if name="value"><mt:setvarblock name="disabled"> disabled="disabled"</mt:setvarblock></mt:if>
-	<mt:if name="read_only"><mt:setvarblock name="disabled"> disabled="disabled"</mt:setvarblock></mt:if>
-	<div style="float:left;">
-	
-	<div class="yui-skin-sam">
-	<div id="<mt:var name="field">-div" class="autocomplete">
-	<input id="<mt:var name="field">-ac" name="<mt:var name="field">-ac" type="text" class="ac-field" tabindex="<mt:var name="tabindex">" value="<mt:var name="value_label" encode_html="1">"<mt:var name="disabled"> style="width:<mt:var name="ac_field_width">px;" />
-	<input id="<mt:var name="field">" name="<mt:var name="field">" type="hidden" value="<mt:var name="value">" />
-	<input id="<mt:var name="field">-blog_id" name="<mt:var name="field">-blog_id" type="hidden" value="<mt:var name="blog_id">" />
-	<input id="<mt:var name="field">-object_type" name="<mt:var name="field">-object_type" type="hidden" value="<mt:var name="linked_object_type">" />
-	&nbsp;
-	<div id="<mt:var name="field">-change" style="display:<mt:if name="value">inline<mt:else>none</mt:if>;">
-	<a href="javascript:void(0);" id="<mt:var name="field">-change-link" onclick="linkedObjectChange(linkedObjectField(this.id));return false;">Change</a> &nbsp; 
-	<a href="<mt:var name="script_url">?__mode=<mt:var name="linked_object_view_mode">&_type=<mt:var name="linked_object_type">&id=<mt:var name="value">&blog_id=<mt:var name="blog_id">" name="<mt:var name="field">-view-link" id="<mt:var name="field">-view-link" target="_blank">View</a>
-	 &nbsp;</div>
-	<span id="<mt:var name="field">-status" style="display:none;"><img src="<mt:StaticWebPath>images/ani-rebuild.gif" id="<mt:var name="field">-status-icon" />
-	<span id="<mt:var name="field">-status-text" class="linked-object-status"></span>
-	</span>
-	<mt:if name="allow_create">
-		<mt:unless name="read_only">
-		<span id="<mt:var name="field">-create-link" class="linked-object-create-link"><a href="javascript:void(0);" id="<mt:var name="field">-create-link-link" onclick="linkedObjectToggleCreate(linkedObjectField(this.id), true);return false;"><mt:var name="create_label"></a></span>
-		</mt:unless>
-	</mt:if>
-	<mt:var name="preview">
-	<div id="<mt:var name="field">-container" style="width:<mt:if name="label_display" like="/above|hide/">565<mt:else>440</mt:if>px;"></div>
-	</div>
-	</div>
-	
-	<script type="text/javascript">
-	var myDataSource<mt:var name="js_field"> = new YAHOO.widget.DS_XHR(myServer, mySchema);
-	myDataSource<mt:var name="js_field">.responseType = YAHOO.widget.DS_XHR.TYPE_FLAT; 
-	myDataSource<mt:var name="js_field">.scriptQueryAppend = 'setting_id=<mt:var name="setting_id">';
-	var autoComp<mt:var name="js_field"> = new YAHOO.widget.AutoComplete('<mt:var name="field">-ac', '<mt:var name="field">-container', myDataSource<mt:var name="js_field">);
-	var itemSelectHandler<mt:var name="js_field"> = function(sType, aArgs) {
-		linkedObjectSelect('<mt:var name="field">', aArgs[2]);
-	};
-	var textboxKeyHandler<mt:var name="js_field"> = function(oSelf, nKeycode) {
-		linkedObjectKey('<mt:var name="field">');
-	}
-	var unmatchedHandler<mt:var name="js_field"> = function(oSelf, sSelection) {
-		linkedObjectUnmatched('<mt:var name="field">');
-	}
-	var dataReturnHandler<mt:var name="js_field"> = function(oSelf, aResults) {
-		linkedObjectDataReturn('<mt:var name="field">', aResults);
-	}
-	autoComp<mt:var name="js_field">.itemSelectEvent.subscribe(itemSelectHandler<mt:var name="js_field">);
-	autoComp<mt:var name="js_field">.textboxKeyEvent.subscribe(textboxKeyHandler<mt:var name="js_field">);
-	autoComp<mt:var name="js_field">.dataReturnEvent.subscribe(dataReturnHandler<mt:var name="js_field">);
-	</script>
-	
-	<mt:unless name="allow_create">
-	</div>
-	<div style="clear:both;"></div>
-	</mt:unless>
+    <mt:if name="value"><mt:setvarblock name="disabled"> disabled="disabled"</mt:setvarblock></mt:if>
+    <mt:if name="read_only"><mt:setvarblock name="disabled"> disabled="disabled"</mt:setvarblock></mt:if>
+    <div style="float:left;">
+    
+    <div class="yui-skin-sam">
+    <div id="<mt:var name="field">-div" class="autocomplete">
+    <input id="<mt:var name="field">-ac" name="<mt:var name="field">-ac" type="text" class="ac-field" tabindex="<mt:var name="tabindex">" value="<mt:var name="value_label" encode_html="1">"<mt:var name="disabled"> style="width:<mt:var name="ac_field_width">px;" />
+    <input id="<mt:var name="field">" name="<mt:var name="field">" type="hidden" value="<mt:var name="value">" />
+    <input id="<mt:var name="field">-blog_id" name="<mt:var name="field">-blog_id" type="hidden" value="<mt:var name="blog_id">" />
+    <input id="<mt:var name="field">-object_type" name="<mt:var name="field">-object_type" type="hidden" value="<mt:var name="linked_object_type">" />
+    &nbsp;
+    <div id="<mt:var name="field">-change" style="display:<mt:if name="value">inline<mt:else>none</mt:if>;">
+    <a href="javascript:void(0);" id="<mt:var name="field">-change-link" onclick="linkedObjectChange(linkedObjectField(this.id));return false;">Change</a> &nbsp; 
+    <a href="<mt:var name="script_url">?__mode=<mt:var name="linked_object_view_mode">&_type=<mt:var name="linked_object_type">&id=<mt:var name="value">&blog_id=<mt:var name="blog_id">" name="<mt:var name="field">-view-link" id="<mt:var name="field">-view-link" target="_blank">View</a>
+     &nbsp;</div>
+    <span id="<mt:var name="field">-status" style="display:none;"><img src="<mt:StaticWebPath>images/ani-rebuild.gif" id="<mt:var name="field">-status-icon" />
+    <span id="<mt:var name="field">-status-text" class="linked-object-status"></span>
+    </span>
+    <mt:if name="allow_create">
+        <mt:unless name="read_only">
+        <span id="<mt:var name="field">-create-link" class="linked-object-create-link"><a href="javascript:void(0);" id="<mt:var name="field">-create-link-link" onclick="linkedObjectToggleCreate(linkedObjectField(this.id), true);return false;"><mt:var name="create_label"></a></span>
+        </mt:unless>
+    </mt:if>
+    <mt:var name="preview">
+    <div id="<mt:var name="field">-container" style="width:<mt:if name="label_display" like="/above|hide/">565<mt:else>440</mt:if>px;"></div>
+    </div>
+    </div>
+    
+    <script type="text/javascript">
+    var myDataSource<mt:var name="js_field"> = new YAHOO.widget.DS_XHR(myServer, mySchema);
+    myDataSource<mt:var name="js_field">.responseType = YAHOO.widget.DS_XHR.TYPE_FLAT; 
+    myDataSource<mt:var name="js_field">.scriptQueryAppend = 'setting_id=<mt:var name="setting_id">';
+    var autoComp<mt:var name="js_field"> = new YAHOO.widget.AutoComplete('<mt:var name="field">-ac', '<mt:var name="field">-container', myDataSource<mt:var name="js_field">);
+    var itemSelectHandler<mt:var name="js_field"> = function(sType, aArgs) {
+        linkedObjectSelect('<mt:var name="field">', aArgs[2]);
+    };
+    var textboxKeyHandler<mt:var name="js_field"> = function(oSelf, nKeycode) {
+        linkedObjectKey('<mt:var name="field">');
+    }
+    var unmatchedHandler<mt:var name="js_field"> = function(oSelf, sSelection) {
+        linkedObjectUnmatched('<mt:var name="field">');
+    }
+    var dataReturnHandler<mt:var name="js_field"> = function(oSelf, aResults) {
+        linkedObjectDataReturn('<mt:var name="field">', aResults);
+    }
+    autoComp<mt:var name="js_field">.itemSelectEvent.subscribe(itemSelectHandler<mt:var name="js_field">);
+    autoComp<mt:var name="js_field">.textboxKeyEvent.subscribe(textboxKeyHandler<mt:var name="js_field">);
+    autoComp<mt:var name="js_field">.dataReturnEvent.subscribe(dataReturnHandler<mt:var name="js_field">);
+    </script>
+    
+    <mt:unless name="allow_create">
+    </div>
+    <div style="clear:both;"></div>
+    </mt:unless>
 
 <mt:else>
 
-	<select name="<mt:var name="field">" id="<mt:var name="field">" tabindex="<mt:var name="tabindex">">
-	<option value="">Select</option>
-	<mt:loop name="object_loop">
-	<option value="<mt:var name="value">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" trim_to="50"></option>
-	</mt:loop>
-	</select>
+    <select name="<mt:var name="field">" id="<mt:var name="field">" tabindex="<mt:var name="tabindex">">
+    <option value="">Select</option>
+    <mt:loop name="object_loop">
+    <option value="<mt:var name="value">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" trim_to="50"></option>
+    </mt:loop>
+    </select>
 
 </mt:else>
 </mt:if>
 
 <mt:if name="allow_create">
 
-	<script type="text/javascript">
-	linkedObjectFormFields['<mt:var name="field">'] = new Array(<mt:var name="field_list">);
-	</script>
-	<mt:unless name="autocomplete">
-	&nbsp; <span id="<mt:var name="field">-create-link" class="linked-object-create-link"><a href="javascript:void(0);" id="<mt:var name="field">-create-link-link" onclick="linkedObjectToggleCreate(linkedObjectField(this.id), true);return false;"><mt:var name="create_label"></a></span>
-	</mt:unless>
-	
-	<mt:unless name="read_only">
-		<div id="<mt:var name="field">-create-fields" class="linked-object-create-fields">
-			<mt:var name="create_form">
-			<div class="actions-bar pkg">
-				<div class="button-actions actions">
-				<mt:unless name="no_ajax">
-					<button
-							type="button"
-							title="<mt:var name="create_label">"
-							id="<mt:var name="field">-submit"
-							onclick="linkedObjectSubmit(linkedObjectField(this.id), <mt:var name="setting_id">, <mt:var name="linked_blog_id">, <mt:if name="autocomplete">true<mt:else>false</mt:else></mt:if>)"
-					><mt:var name="create_label"></button>
-				</mt:unless>		
-				<button
-						type="button"
-						title="Cancel"
-						id="<mt:var name="field">-cancel"
-						onclick="linkedObjectToggleCreate(linkedObjectField(this.id), false)"
-				>Cancel</button>
-				</div>
-			</div>
-		</div>
-	</mt:unless>
-	
-	<mt:if name="autocomplete">
-		</div>
-		<div style="clear:both;"></div>
-	</mt:if>
+    <script type="text/javascript">
+    linkedObjectFormFields['<mt:var name="field">'] = new Array(<mt:var name="field_list">);
+    </script>
+    <mt:unless name="autocomplete">
+    &nbsp; <span id="<mt:var name="field">-create-link" class="linked-object-create-link"><a href="javascript:void(0);" id="<mt:var name="field">-create-link-link" onclick="linkedObjectToggleCreate(linkedObjectField(this.id), true);return false;"><mt:var name="create_label"></a></span>
+    </mt:unless>
+    
+    <mt:unless name="read_only">
+        <div id="<mt:var name="field">-create-fields" class="linked-object-create-fields">
+            <mt:var name="create_form">
+            <div class="actions-bar pkg">
+                <div class="button-actions actions">
+                <mt:unless name="no_ajax">
+                    <button
+                            type="button"
+                            title="<mt:var name="create_label">"
+                            id="<mt:var name="field">-submit"
+                            onclick="linkedObjectSubmit(linkedObjectField(this.id), <mt:var name="setting_id">, <mt:var name="linked_blog_id">, <mt:if name="autocomplete">true<mt:else>false</mt:else></mt:if>)"
+                    ><mt:var name="create_label"></button>
+                </mt:unless>        
+                <button
+                        type="button"
+                        title="Cancel"
+                        id="<mt:var name="field">-cancel"
+                        onclick="linkedObjectToggleCreate(linkedObjectField(this.id), false)"
+                >Cancel</button>
+                </div>
+            </div>
+        </div>
+    </mt:unless>
+    
+    <mt:if name="autocomplete">
+        </div>
+        <div style="clear:both;"></div>
+    </mt:if>
 
 </mt:if>
 

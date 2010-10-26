@@ -13,12 +13,12 @@ function init()
 
 TC.attachLoadEvent( init );
 function addRow(hidden_div_key) {
-	hideOptions();
-	var row_names = frAddRow('fdsetting-listing-table', hidden_div_key ? hidden_div_key : false, fd_setting_list, fd_new_settings);
-	new_name = getByID(row_names.new_name + '_name');
-	new_name.value = '';
-	getByID(row_names.new_name + '_label').value = '';
-	new_name.focus();
+    hideOptions();
+    var row_names = frAddRow('fdsetting-listing-table', hidden_div_key ? hidden_div_key : false, fd_setting_list, fd_new_settings);
+    new_name = getByID(row_names.new_name + '_name');
+    new_name.value = '';
+    getByID(row_names.new_name + '_label').value = '';
+    new_name.focus();
 }
 //-->
 </script>

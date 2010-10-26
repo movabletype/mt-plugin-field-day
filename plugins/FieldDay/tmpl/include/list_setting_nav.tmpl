@@ -12,31 +12,31 @@ width:40px;
 </style>
 <script type="text/javascript">
 function confirmUseDefault() {
-	if (confirm('Use default settings? This will overwrite any existing settings for this blog.')) {
-		window.location = '<mt:var name="script_url">?__mode=fd_use_default&_type=<mt:var name="setting_object_type">&blog_id=<mt:var name="blog_id">&return_args=<mt:var name="return_args" encode_url="1">';
-	}
-	return false;
+    if (confirm('Use default settings? This will overwrite any existing settings for this blog.')) {
+        window.location = '<mt:var name="script_url">?__mode=fd_use_default&_type=<mt:var name="setting_object_type">&blog_id=<mt:var name="blog_id">&return_args=<mt:var name="return_args" encode_url="1">';
+    }
+    return false;
 }
 function showCopyBlog() {
-	getByID('fd-copy-blog').style.display = 'block';
+    getByID('fd-copy-blog').style.display = 'block';
 }
 function hideCopyBlog() {
-	getByID('fd-copy-blog').style.display = 'none';
+    getByID('fd-copy-blog').style.display = 'none';
 }
 function submitCopyBlog() {
-	var to_blog = getByID('from_blog_id').value;
-	if (!to_blog) {
-		alert('Please enter a blog ID.');
-		return false;
-	}
-	if (to_blog == <mt:var name="blog_id">) {
-		alert("Same blog.");
-		return false;
-	}
-	if (!confirm("Copy settings? This will replace your settings for this blog and could lead to the loss of existing data.")) {
-		return false;
-	}
-	getByID('fd-copy-form').submit();
+    var to_blog = getByID('from_blog_id').value;
+    if (!to_blog) {
+        alert('Please enter a blog ID.');
+        return false;
+    }
+    if (to_blog == <mt:var name="blog_id">) {
+        alert("Same blog.");
+        return false;
+    }
+    if (!confirm("Copy settings? This will replace your settings for this blog and could lead to the loss of existing data.")) {
+        return false;
+    }
+    getByID('fd-copy-form').submit();
 }
 </script>
 </mt:if>

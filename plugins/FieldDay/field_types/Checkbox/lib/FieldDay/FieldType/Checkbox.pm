@@ -5,19 +5,19 @@ use strict;
 use base qw( FieldDay::FieldType );
 
 sub label {
-	return 'Text';
+    return 'Text';
 }
 
 sub options {
-	return {
-	};
+    return {
+    };
 }
 
 sub pre_render {
 # before the field is rendered in the CMS
-	my $class = shift;
-	my ($param) = @_;
-	
+    my $class = shift;
+    my ($param) = @_;
+    
 }
 
 1;

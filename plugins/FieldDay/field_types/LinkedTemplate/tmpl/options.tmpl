@@ -1,11 +1,11 @@
 <mtapp:setting
-	id="<mt:var name="field">_linked_blog_id"
-	label="Blog"
-	content_class="field-content-text">
-	<select name="<mt:var name="field">_linked_blog_id"> id="<mt:var name="field">_linked_blog_id">
-	<option value="">Select</option>
-	<mt:loop name="linked_blog_loop">
-	<option value="<mt:var name="value">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
-	</mt:loop>
-	</select>
+    id="<mt:var name="field">_linked_blog_id"
+    label="Blog"
+    content_class="field-content-text">
+    <select name="<mt:var name="field">_linked_blog_id"> id="<mt:var name="field">_linked_blog_id">
+    <option value="">Select</option>
+    <mt:loop name="linked_blog_loop">
+    <option value="<mt:var name="value">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
+    </mt:loop>
+    </select>
 </mtapp:setting>

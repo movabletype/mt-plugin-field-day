@@ -1,70 +1,70 @@
 <mtapp:setting
-	id="<mt:var name="field">_text_entry"
-	label="Display text field for entry"
-	content_class="field-content-text">
-	<input type="checkbox" name="<mt:var name="field">_text_entry" id="<mt:var name="field">_text_entry" <mt:if name="text_entry"> checked="checked"</mt:if> />
+    id="<mt:var name="field">_text_entry"
+    label="Display text field for entry"
+    content_class="field-content-text">
+    <input type="checkbox" name="<mt:var name="field">_text_entry" id="<mt:var name="field">_text_entry" <mt:if name="text_entry"> checked="checked"</mt:if> />
 </mtapp:setting>
 
 <mtapp:setting
-	id="<mt:var name="field">_default_year"
-	label="Default to current year"
-	content_class="field-content-text">
-	<input type="checkbox" name="<mt:var name="field">_default_year" id="<mt:var name="field">_default_year" <mt:if name="default_year"> checked="checked"</mt:if> />
+    id="<mt:var name="field">_default_year"
+    label="Default to current year"
+    content_class="field-content-text">
+    <input type="checkbox" name="<mt:var name="field">_default_year" id="<mt:var name="field">_default_year" <mt:if name="default_year"> checked="checked"</mt:if> />
 </mtapp:setting>
 
 <mtapp:setting
-	id="<mt:var name="field">_date_order"
-	label="Date Order"
-	content_class="field-content-text">
-	<input type="radio" name="<mt:var name="field">_date_order" value="mdy"<mt:if name="mdy_selected"> checked="checked"</mt:if> /> M-D-Y&nbsp;
-	<input type="radio" name="<mt:var name="field">_date_order" value="dmy"<mt:if name="dmy_selected"> checked="checked"</mt:if> /> D-M-Y&nbsp;
-	<input type="radio" name="<mt:var name="field">_date_order" value="ymd"<mt:if name="ymd_selected"> checked="checked"</mt:if> /> Y-M-D&nbsp;
+    id="<mt:var name="field">_date_order"
+    label="Date Order"
+    content_class="field-content-text">
+    <input type="radio" name="<mt:var name="field">_date_order" value="mdy"<mt:if name="mdy_selected"> checked="checked"</mt:if> /> M-D-Y&nbsp;
+    <input type="radio" name="<mt:var name="field">_date_order" value="dmy"<mt:if name="dmy_selected"> checked="checked"</mt:if> /> D-M-Y&nbsp;
+    <input type="radio" name="<mt:var name="field">_date_order" value="ymd"<mt:if name="ymd_selected"> checked="checked"</mt:if> /> Y-M-D&nbsp;
 </mtapp:setting>
 
 <mtapp:setting
-	id="<mt:var name="field">_time"
-	label="Include Time"
-	content_class="field-content-text">
-	<input type="checkbox" name="<mt:var name="field">_show_hms" id="<mt:var name="field">_show_hms" <mt:if name="show_hms"> checked="checked"</mt:if> />
-	<input type="radio" name="<mt:var name="field">_time" value="hh"<mt:if name="hh_selected"> checked="checked"</mt:if> /> HH&nbsp;
-	<input type="radio" name="<mt:var name="field">_time" value="hhmm"<mt:if name="hhmm_selected"> checked="checked"</mt:if> /> HH:MM&nbsp;
-	<input type="radio" name="<mt:var name="field">_time" value="hhmmss"<mt:if name="hhmmss_selected"> checked="checked"</mt:if> /> HH:MM:SS&nbsp;
+    id="<mt:var name="field">_time"
+    label="Include Time"
+    content_class="field-content-text">
+    <input type="checkbox" name="<mt:var name="field">_show_hms" id="<mt:var name="field">_show_hms" <mt:if name="show_hms"> checked="checked"</mt:if> />
+    <input type="radio" name="<mt:var name="field">_time" value="hh"<mt:if name="hh_selected"> checked="checked"</mt:if> /> HH&nbsp;
+    <input type="radio" name="<mt:var name="field">_time" value="hhmm"<mt:if name="hhmm_selected"> checked="checked"</mt:if> /> HH:MM&nbsp;
+    <input type="radio" name="<mt:var name="field">_time" value="hhmmss"<mt:if name="hhmmss_selected"> checked="checked"</mt:if> /> HH:MM:SS&nbsp;
 </mtapp:setting>
 
 <mtapp:setting
-	id="<mt:var name="field">_ampm"
-	label="12-Hour Clock"
-	content_class="field-content-text">
-	<input type="checkbox" name="<mt:var name="field">_ampm" id="<mt:var name="field">_ampm" <mt:if name="ampm"> checked="checked"</mt:if> />
+    id="<mt:var name="field">_ampm"
+    label="12-Hour Clock"
+    content_class="field-content-text">
+    <input type="checkbox" name="<mt:var name="field">_ampm" id="<mt:var name="field">_ampm" <mt:if name="ampm"> checked="checked"</mt:if> />
 </mtapp:setting>
 
 <mtapp:setting
-	id="<mt:var name="field">_ampm_default"
-	label="Default"
-	content_class="field-content-text">
-	<input type="radio" name="<mt:var name="field">_ampm_default" value="am"<mt:if name="am_selected"> checked="checked"</mt:if> /> am&nbsp;
-	<input type="radio" name="<mt:var name="field">_ampm_default" value="pm"<mt:if name="pm_selected"> checked="checked"</mt:if> /> pm&nbsp;
+    id="<mt:var name="field">_ampm_default"
+    label="Default"
+    content_class="field-content-text">
+    <input type="radio" name="<mt:var name="field">_ampm_default" value="am"<mt:if name="am_selected"> checked="checked"</mt:if> /> am&nbsp;
+    <input type="radio" name="<mt:var name="field">_ampm_default" value="pm"<mt:if name="pm_selected"> checked="checked"</mt:if> /> pm&nbsp;
 </mtapp:setting>
 
 <mtapp:setting
-	id="<mt:var name="field">_minutes"
-	label="Show every"
-	content_class="field-content-text">
-	<select name="<mt:var name="field">_minutes">
-	<option value="1"<mt:if name="1_selected"> selected="selected"</mt:if>>1</option>
-	<option value="5"<mt:if name="5_selected"> selected="selected"</mt:if>>5</option>
-	<option value="10"<mt:if name="10_selected"> selected="selected"</mt:if>>10</option>
-	<option value="15"<mt:if name="15_selected"> selected="selected"</mt:if>>15</option>
-	<option value="30"<mt:if name="30_selected"> selected="selected"</mt:if>>30</option>
-	</select>
-	minutes in menu
+    id="<mt:var name="field">_minutes"
+    label="Show every"
+    content_class="field-content-text">
+    <select name="<mt:var name="field">_minutes">
+    <option value="1"<mt:if name="1_selected"> selected="selected"</mt:if>>1</option>
+    <option value="5"<mt:if name="5_selected"> selected="selected"</mt:if>>5</option>
+    <option value="10"<mt:if name="10_selected"> selected="selected"</mt:if>>10</option>
+    <option value="15"<mt:if name="15_selected"> selected="selected"</mt:if>>15</option>
+    <option value="30"<mt:if name="30_selected"> selected="selected"</mt:if>>30</option>
+    </select>
+    minutes in menu
 </mtapp:setting>
 
 <mtapp:setting
-	id="<mt:var name="field">_y_range"
-	label="Year Range"
-	content_class="field-content-text">
-	<input type="text" name="<mt:var name="field">_y_start" value="<mt:var name="y_start">" class="tiny-width" />
-	to
-	<input type="text" name="<mt:var name="field">_y_end" value="<mt:var name="y_end">" class="tiny-width" />
+    id="<mt:var name="field">_y_range"
+    label="Year Range"
+    content_class="field-content-text">
+    <input type="text" name="<mt:var name="field">_y_start" value="<mt:var name="y_start">" class="tiny-width" />
+    to
+    <input type="text" name="<mt:var name="field">_y_end" value="<mt:var name="y_end">" class="tiny-width" />
 </mtapp:setting>
