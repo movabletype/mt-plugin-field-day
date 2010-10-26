@@ -73,7 +73,8 @@ sub cms_post_save {
     # so we don't end up saving any fields that aren't actually defined
     # (i.e. if settings were changed between form display and save)
     my @fields = FieldDay::Setting->load_with_default(app_setting_terms(MT->instance, 'field'));
-    return 1 unless @fields; # ´ optionally (plugin setting) delete any existing values
+    # optionally (plugin setting) delete any existing values
+    return 1 unless @fields;
     my @param = $app->param;
     require FieldDay::Value;
     my %group_instances = map {
