@@ -79,7 +79,7 @@ sub cms_pre_preview {
     my ($cb, $app, $obj, $data) = @_;
     return 1 unless ($app->param('fieldday'));
     for my $param ($app->param()) {
-        
+
     }
 }
 

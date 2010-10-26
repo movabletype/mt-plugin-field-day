@@ -153,7 +153,7 @@ sub pre_save_value {
             $base_url       = $app->static_path . 'support/uploads';
             my $base_path =
               File::Spec->catdir( $app->static_file_path, 'support', 'uploads' );
-    
+
             require MT::FileMgr;
             $fmgr = MT::FileMgr->new('Local');
             unless ( $fmgr->exists( $base_path ) ) {
@@ -182,10 +182,10 @@ sub pre_save_value {
         }
 
         my $unique_basename = $unique_stem . $type;
-        $asset_file = File::Spec->catfile( $asset_path, $relative_path, $unique_basename );         
+        $asset_file = File::Spec->catfile( $asset_path, $relative_path, $unique_basename );
         $relative_path  = $unique_basename;
         $relative_url   = encode_url($unique_basename);
-        
+
         # untaint
         ($local_file) = $local_file =~ /(.+)/s;
 
@@ -193,10 +193,10 @@ sub pre_save_value {
         my ($w, $h, $id, $write_file) = MT::Image->check_upload(
             Fh => $fh, Fmgr => $fmgr, Local => $local_file,
         );
-    
+
         die (MT::Image->errstr)
             unless $write_file;
-    
+
         ## File does not exist, or else we have confirmed that we can overwrite.
         my $umask = oct $app->config('UploadUmask');
         my $old   = umask($umask);
@@ -208,10 +208,10 @@ sub pre_save_value {
             )
           );
         umask($old);
-    
+
         ## Close up the filehandle.
         close $fh;
-        
+
         ## We are going to use $relative_path as the filename and as the url passed
         ## in to the templates. So, we want to replace all of the '\' characters
         ## with '/' characters so that it won't look like backslashed characters.
@@ -224,12 +224,12 @@ sub pre_save_value {
         $url .= '/' unless $url =~ m!/$!;
         $url .= $relative_url;
         my $asset_url = $asset_base_url . '/' . $relative_url;
-    
+
         require File::Basename;
         my $local_basename = File::Basename::basename($local_file);
         my $ext =
           ( File::Basename::fileparse( $local_file, qr/[A-Za-z0-9]+$/ ) )[2];
-    
+
         require MT::Asset;
         my $asset_pkg = MT::Asset->handler_for_file($local_basename);
         my $is_image  = defined($w)
@@ -265,7 +265,7 @@ sub pre_save_value {
         $asset->save;
         # TODO: munge the params so we can save extra asset fields
         #$app->run_callbacks( 'cms_post_save.asset', $app, $asset, $original );
-    
+
         if ($is_image) {
             $app->run_callbacks(
                 'cms_upload_file.' . $asset->class,
@@ -334,7 +334,7 @@ sub load_objects {
     if ($terms{id}) {
         return MT::Asset->load($terms{id});
     }
-    return MT::Asset->load({ 
+    return MT::Asset->load({
         class => $param->{'asset_type'} || '*',
         $param->{'linked_blog_id'}
             ? (blog_id => $param->{'linked_blog_id'})

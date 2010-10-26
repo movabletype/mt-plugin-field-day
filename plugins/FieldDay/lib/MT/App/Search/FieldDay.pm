@@ -122,7 +122,7 @@ sub execute {
             @results = sort { ($values{$a->id} || 0) <=> ($values{$b->id} || 0) } @results;
         } else {
             @results = sort { ($values{$a->id} || '') cmp ($values{$b->id} || '') } @results;
-        }   
+        }
     }
     @results = @results[$offset .. $max];
     my $iter = sub { shift @results; };

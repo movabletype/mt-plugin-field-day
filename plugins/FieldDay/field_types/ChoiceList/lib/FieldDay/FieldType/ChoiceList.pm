@@ -13,7 +13,7 @@ sub options {
 
 sub hdlr_FieldKey {
     my ($ctx, $args) = @_;
-    
+
 }
 
 # before the field is rendered in the CMS
@@ -27,8 +27,8 @@ sub pre_render {
         $label ||= $key;
         push(@choice_loop, {
             'value' => $key,
-            'selected' => ($param->{'value'} && 
-                (($param->{'value'} eq $key) || 
+            'selected' => ($param->{'value'} &&
+                (($param->{'value'} eq $key) ||
                     $param->{'value'} eq $label)) ? 1 : 0,
             'label' => $label
         });

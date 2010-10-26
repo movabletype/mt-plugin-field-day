@@ -37,7 +37,7 @@ max-width:375px;
 height:150px;
 }
 </style>
-<script type="text/javascript" src="<mt:var name="static_uri">plugins/FieldDay/flexRows.js"></script> 
+<script type="text/javascript" src="<mt:var name="static_uri">plugins/FieldDay/flexRows.js"></script>
 <script type="text/javascript" src="<mt:var name="static_uri">plugins/FieldDay/fdSettings.js"></script>
 <script type="text/javascript">
 var fd_options = [];
@@ -75,9 +75,9 @@ fd_setting_names['<mt:var name="field">'] = '<mt:var name="field">';
                 <p class="alert-warning-inline" id="delete_warning" style="display: none;margin:5px 0 0 0;">
 
                 <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="Warning" width="9" height="9" />
-            
+
                 Warning: Deleting a field may result in the loss of existing data.
-            
+
             </p>
 </mt:else>
 </mt:if>
@@ -114,7 +114,7 @@ fd_setting_names['<mt:var name="field">'] = '<mt:var name="field">';
 <input type="hidden" name="<mt:var name="field">_order" id="<mt:var name="field">_order" value="<mt:var name="sort_order">" />
 <mt:unless name="prototype"><span id="<mt:var name="field">_unlock"><a href="javascript:void(0)" onclick="unlockRow('<mt:var name="field">')"><img src="<mt:var name="static_uri">images/locked.gif" border="0" /></a></span></mt:unless>
 <a href="javascript:void(0);" onclick="deleteRow('<mt:var name="field">')" id="<mt:var name="field">_delete"<mt:unless name="prototype"> style="display:none;"</mt:unless>><img src="<mt:var name="static_uri">plugins/FieldDay/nav-delete.gif" border="0" /></a>
-<a href="javascript:void(0);" onclick="moveRow('up', '<mt:var name="field">')"><img src="<mt:var name="static_uri">plugins/FieldDay/nav-arrow-up.gif" border="0" /></a> 
+<a href="javascript:void(0);" onclick="moveRow('up', '<mt:var name="field">')"><img src="<mt:var name="static_uri">plugins/FieldDay/nav-arrow-up.gif" border="0" /></a>
 <a href="javascript:void(0);" onclick="moveRow('down', '<mt:var name="field">')"><img src="<mt:var name="static_uri">plugins/FieldDay/nav-arrow-down.gif" border="0" /></a>
 <div><a href="javascript:void(0);" onclick="editOptions('<mt:var name="field">')">Options</a></div>
 </td>

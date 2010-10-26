@@ -19,7 +19,7 @@ sub options {
 sub pre_render {
     my $class = shift;
     my ($param) = @_;
-    
+
 }
 
 1;

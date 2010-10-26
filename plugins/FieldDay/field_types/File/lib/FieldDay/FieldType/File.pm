@@ -93,7 +93,7 @@ sub pre_save_value {
             $upload_file =~ s/\.(\w+)$//;
             my $ext = $1;
             if (!$ext) {
-                (undef, $ext) = split(m#/#, 
+                (undef, $ext) = split(m#/#,
                     $q->uploadInfo($q->param($upload_field))->{'Content-Type'});
                 $ext = 'jpg' if ($ext eq 'jpeg');
                 $ext = 'txt' if ($ext eq 'text');
@@ -110,7 +110,7 @@ sub pre_save_value {
             $upload_file .= "_${field_name}.$ext";
         }
     }
-    
+
     return save_upload($q->upload($upload_field),
         $options->{'upload_path'}, $upload_file, $options->{'overwrite'});
 }

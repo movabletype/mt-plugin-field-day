@@ -61,16 +61,16 @@ sub hdlr_FieldGroup {
                     $fd_data->{'values'}->{$args->{'sort_by'}}->[$a]->value
                     <=> $fd_data->{'values'}->{$args->{'sort_by'}}->[$b]->value
                 } @indices;
-            }       
+            }
         } else {
             if ($args->{'sort_order'} eq 'descend') {
                 @indices = sort {
-                    lc($fd_data->{'values'}->{$args->{'sort_by'}}->[$b]->value) 
+                    lc($fd_data->{'values'}->{$args->{'sort_by'}}->[$b]->value)
                     cmp lc($fd_data->{'values'}->{$args->{'sort_by'}}->[$a]->value)
                 } @indices;
             } else {
                 @indices = sort {
-                    lc($fd_data->{'values'}->{$args->{'sort_by'}}->[$a]->value) 
+                    lc($fd_data->{'values'}->{$args->{'sort_by'}}->[$a]->value)
                     cmp lc($fd_data->{'values'}->{$args->{'sort_by'}}->[$b]->value)
                 } @indices;
             }
@@ -307,7 +307,7 @@ sub hdlr_ByValue {
     if ($blog_ids) {
         $terms->{'blog_id'} = [ split(/,/, $blog_ids) ];
         delete $args->{'blog_id'};
-        delete $args->{'include_blogs'};        
+        delete $args->{'include_blogs'};
     }
     my $id_col = ($ot->{'object_datasource'} || $ot->{'object_mt_type'} || $object_type) . '_id';
     my @keys = grep { /^(eq|ne)/ } keys %$args;

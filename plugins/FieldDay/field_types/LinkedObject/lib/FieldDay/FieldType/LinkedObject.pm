@@ -62,7 +62,7 @@ sub pre_render {
             my $blog_label;
             push(@object_loop, {
                 'value' => $value,
-                'selected' => ($param->{'value'} && 
+                'selected' => ($param->{'value'} &&
                     ($param->{'value'} eq $value)) ? 1 : 0,
                 'label' => $label,
                 'blog_label' => $blog_label,
@@ -134,8 +134,8 @@ sub html_head_type {
 sub html_head {
     return <<"HTML";
 <link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/2.5.2/build/autocomplete/assets/skins/sam/autocomplete.css">
-<script type="text/javascript" src="http://yui.yahooapis.com/2.5.2/build/yahoo-dom-event/yahoo-dom-event.js"></script> 
-<script type="text/javascript" src="http://yui.yahooapis.com/2.5.2/build/connection/connection-min.js"></script> 
+<script type="text/javascript" src="http://yui.yahooapis.com/2.5.2/build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.5.2/build/connection/connection-min.js"></script>
 <script type="text/javascript" src="http://yui.yahooapis.com/2.5.2/build/autocomplete/autocomplete-min.js"></script>
 <script type="text/javascript">
 function fdFileFixForm() {
@@ -164,7 +164,7 @@ function linkedObjectDataReturn(field, aResults) {
     var ac = getByID(field + '-ac');
     if (ac.value) {
         if (aResults[2] != '') {
-            st.style.display = 'none';      
+            st.style.display = 'none';
         } else {
             var sti = document.getElementById(field + '-status-icon');
             var stt = document.getElementById(field + '-status-text');
@@ -201,7 +201,7 @@ function linkedObjectSelect(field, data) {
     if (data[3]) {
         if (img) {
             img.src = data[3];
-            link.href = data[3]; 
+            link.href = data[3];
         } else {
             var str = '';
             for (var i = 3; i < data.length; i++) {
@@ -286,8 +286,8 @@ function linkedObjectReturn(c, field, ac) {
     }
 }
 var linkedObjectFormFields = new Array();
-var myServer = "<mt:var name="script_path">plugins/FieldDay/mt-linkedobj-flat.cgi"; 
-var mySchema = ["\\n", "\\t"]; 
+var myServer = "<mt:var name="script_path">plugins/FieldDay/mt-linkedobj-flat.cgi";
+var mySchema = ["\\n", "\\t"];
 YAHOO.widget.AutoComplete.prototype.formatResult = function(aResultItem, sQuery) {
     var re = new RegExp('(' + sQuery + ')', 'ig');
     if (aResultItem[0].length > 50) {
@@ -377,7 +377,7 @@ sub hdlr_LinkedObjects {
     my $stash_key = obj_stash_key($ctx, $pass_args);
     my $instance = $ctx->stash("$stash_key:instance");
     my $iter;
-    my $fd_data;    
+    my $fd_data;
     if (defined $instance || (($args->{'sort_by'} || '') eq 'instance')) {
         $fd_data = FieldDay::Template::PubTags::get_fd_data(MT::Plugin::FieldDay->instance, $ctx, $pass_args, $cond);
     }
@@ -507,7 +507,7 @@ sub core_fields {
 sub autocomplete_values {
     my $class = shift;
     my ($obj, $options) = @_;
-    my $type = 
+    my $type =
     my @values;
     if ($options->{'autocomplete_fields'}) {
         require FieldDay::Setting;

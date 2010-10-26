@@ -57,7 +57,7 @@ sub cfg_fields {
         'template' => $plugin->load_tmpl('list_setting_field.tmpl'),
         'terms' => {
             'object_type' => $ot->{'object_type'}, #$ot->{'object_mt_type'} || $ot->{'object_type'},
-            $ot->{'has_blog_id'} ? 
+            $ot->{'has_blog_id'} ?
                 ('blog_id' => ($app->param('blog_id') || 0)) : (),
             'type' => 'field'
         },
@@ -86,10 +86,10 @@ sub cfg_fields {
         },
         'params' => {
             'content_nav_loop' => content_nav_loop('fields'),
-            'tmpl_loop' => 
-                [ map { ( { 
+            'tmpl_loop' =>
+                [ map { ( {
                     'type' => $_,
-                    'tmpl' => row_options($options_tmpls, { 
+                    'tmpl' => row_options($options_tmpls, {
                         'type' => $_,
                         'field' => '__FIELDNAME__',
                         %{FieldDay::YAML->field_type($_)->{'class'}->options}
@@ -399,7 +399,7 @@ sub populate_setting {
     $setting->order($app->param($row_name . '_order'));
     $setting->data($data);
     if ($setting->id && ($row_name ne $app->param($row_name . '_name')) && $updater) {
-        $updater->($row_name, $app->param($row_name . '_name')); 
+        $updater->($row_name, $app->param($row_name . '_name'));
     }
     $setting->save || return $app->error($setting->errstr);
 }

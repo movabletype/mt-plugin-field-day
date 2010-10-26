@@ -119,7 +119,7 @@ sub load_fields {
     my $terms;
     $terms = $ctx->stash('fd:setting_terms')
         ? { %{$ctx->stash('fd:setting_terms')}, 'type' => 'field' }
-        : app_setting_terms(MT->instance, 'field'); 
+        : app_setting_terms(MT->instance, 'field');
     my @fields = FieldDay::Setting->load_with_default($terms, $sort);
     my $values = {};
         # don't try to load values for a new object (no ID)
@@ -128,7 +128,7 @@ sub load_fields {
         for my $field (@fields) {
             $terms = $ctx->stash('fd:value_terms')
                 ? { %{$ctx->stash('fd:value_terms')}, 'key' => $field->name }
-                : app_value_terms(MT->instance, $field->name); 
+                : app_value_terms(MT->instance, $field->name);
             for my $value (FieldDay::Value->load($terms)) {
                 $values->{$field->name} ||= [];
                 my $i = ($value->instance && ($value->instance > 0)) ? ($value->instance - 1) : 0;
@@ -138,7 +138,7 @@ sub load_fields {
     }
     $terms = $ctx->stash('fd:setting_terms')
         ? { %{$ctx->stash('fd:setting_terms')}, 'type' => 'group' }
-        : app_setting_terms(MT->instance, 'group'); 
+        : app_setting_terms(MT->instance, 'group');
     my $groups = [];
     @$groups = FieldDay::Setting->load_with_default($terms, $sort);
     my $groups_by_id = { map {
@@ -166,7 +166,7 @@ sub load_fields {
     } @$groups };
     my $max_order = 0;
     my $group_orders = { map {
-        $max_order = $_->order if ($_->order > $max_order); 
+        $max_order = $_->order if ($_->order > $max_order);
         $_->id => $_->order
     } @$groups };
         # put ungrouped fields at the beginning

@@ -100,8 +100,8 @@ sub pre_render {
     for (split(//, $param->{'date_order'})) {
         $param->{"tabindex_$_"} = ++$tabindex;
     }
-    $param->{'y_select'} = choice_tmpl('y', 'Year'); 
-    $param->{'m_select'} = choice_tmpl('m', 'Month'); 
+    $param->{'y_select'} = choice_tmpl('y', 'Year');
+    $param->{'m_select'} = choice_tmpl('m', 'Month');
     $param->{'d_select'} = choice_tmpl('d', 'Day');
         # numerify it in case the field type was changed
         # and there's a text value in there
@@ -191,7 +191,7 @@ sub one_option {
             'value' => $i,
             'selected' => (($i && ($i == $selected))
                 || (!$i && !($selected + 0))) ? 1 : 0,
-            'label' => $labels ? $labels->{$i} : 
+            'label' => $labels ? $labels->{$i} :
                 ($i < 10) ? "0$i" : $i
     };
 }

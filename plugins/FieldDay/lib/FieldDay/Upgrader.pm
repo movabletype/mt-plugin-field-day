@@ -4,7 +4,7 @@ use strict;
 use Data::Dumper;
 
 my $plugin_key = 'rightfields';
-my @standard_elems = qw( label type rows width length choices weblog 
+my @standard_elems = qw( label type rows width length choices weblog
     upload_path url_path overwrite date_order date_y_start date_y_end
     date_show_hms date_time date_minutes date_ampm
     filenames category_ids show_buttons text_filters );
@@ -205,7 +205,7 @@ use strict;
 use MT::Object;
 @RightFieldsObject::ISA = qw( MT::Object );
 {
-    local $SIG{__WARN__} = sub {  }; 
+    local $SIG{__WARN__} = sub {  };
     __PACKAGE__->install_properties({});
 }
 
@@ -233,7 +233,7 @@ package RightFieldsPseudo;
 use strict;
 @RightFieldsPseudo::ISA = qw( MT::Object::Pseudo );
 {
-    local $SIG{__WARN__} = sub {  }; 
+    local $SIG{__WARN__} = sub {  };
     __PACKAGE__->install_properties({});
 }
 
@@ -634,15 +634,15 @@ data store instead of a class-specific database table.
 
 MT::Object::Pseudo is a module that is to be used as a base class for
 creating MT::Object-like classes using the C<MT::PluginData>
-data store instead of a class-specific database table. This provides a more 
-flexible means of data storage and eases the issue of creating data tables 
+data store instead of a class-specific database table. This provides a more
+flexible means of data storage and eases the issue of creating data tables
 at installation and maintaining them over time.
 
 This mechanism is for use with small datasets in which
 simple queries qil be performed. This is not meant to be a
 complete replacement for MT::Object-based classes.
 
-The programmers interface works almost entirely as the C<MT::Object> found 
+The programmers interface works almost entirely as the C<MT::Object> found
 in version MT 3.1 except for a few exceptions.
 
 =over
@@ -676,7 +676,7 @@ C<unique> flag.
 
 =head1 TO DO
 
-=over 
+=over
 
 =item Implement C<count_by_group> method.
 
@@ -684,7 +684,7 @@ C<unique> flag.
 
 =item Better documentation.
 
-=item  
+=item
 
 =head1 LICENSE
 

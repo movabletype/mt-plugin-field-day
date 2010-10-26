@@ -43,7 +43,7 @@ function star_over(field, rating, on, off) {
     }
     for (var i = rating + 1; i <= field_stars[field]; i++) {
         var star = document.getElementById(field + '_' + i);
-        star.src = off; 
+        star.src = off;
     }
 }
 function star_out(field, rating, on, off) {
