@@ -1,6 +1,7 @@
-
 package FieldDay::FieldType::LinkedObject::LinkedAsset;
+
 use strict;
+
 use Data::Dumper;
 
 use base qw( FieldDay::FieldType::LinkedObject );
@@ -59,8 +60,8 @@ sub core_fields {
     };
 }
 
-sub pre_edit_options {
 # before FieldDay displays the config screen
+sub pre_edit_options {
     my $class = shift;
     $class->SUPER::pre_edit_options(@_);
     my ($param) = @_;
@@ -98,8 +99,8 @@ HTML
 HTML
 }
 
-sub pre_save_value {
 # before the CMS saves a value from the editing screen
+sub pre_save_value {
     my $class = shift;
     my ($app, $i_name, $obj, $options) = @_;
     if ($app->param($i_name . '-file')) {

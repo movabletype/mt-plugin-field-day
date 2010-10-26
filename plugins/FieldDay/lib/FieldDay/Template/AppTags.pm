@@ -1,6 +1,7 @@
-
 package FieldDay::Template::AppTags;
+
 use strict;
+
 use Data::Dumper;
 use FieldDay::YAML qw( field_type );
 use FieldDay::Util qw( app_setting_terms load_fields require_type mtlog generic_options );

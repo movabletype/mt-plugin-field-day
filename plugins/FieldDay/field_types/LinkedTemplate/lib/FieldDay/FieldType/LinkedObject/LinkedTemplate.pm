@@ -1,5 +1,5 @@
-
 package FieldDay::FieldType::LinkedObject::LinkedTemplate;
+
 use strict;
 
 use base qw( FieldDay::FieldType::LinkedObject );

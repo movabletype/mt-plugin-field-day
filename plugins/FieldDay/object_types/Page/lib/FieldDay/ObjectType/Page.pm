@@ -1,6 +1,7 @@
 package FieldDay::ObjectType::Page;
 
 use strict;
+
 use Data::Dumper;
 
 use base qw( FieldDay::ObjectType::Entry );
@@ -13,8 +14,8 @@ sub sort_order {
     return 'ascend';
 }
 
-sub block_loop {
 # called when a tag needs to loop through objects of this type
+sub block_loop {
     my $class = shift;
     my ($iter, $ctx, $args, $cond) = @_;
     my $builder = $ctx->stash('builder');

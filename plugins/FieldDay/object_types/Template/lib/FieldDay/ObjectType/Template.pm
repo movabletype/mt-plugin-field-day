@@ -1,6 +1,7 @@
 package FieldDay::ObjectType::Template;
 
 use strict;
+
 use Data::Dumper;
 
 use base qw( FieldDay::ObjectType );
@@ -19,8 +20,8 @@ sub stashed_id {
     return $ctx->stash('template') ? $ctx->stash('template')->id : 0;
 }
 
-sub load_terms {
 # specify terms to use when a tag loads objects
+sub load_terms {
     my $class = shift;
     my ($ctx, $args) = @_;
     return {
@@ -28,8 +29,8 @@ sub load_terms {
     };
 }
 
-sub block_loop {
 # called when a tag needs to loop through objects of this type
+sub block_loop {
     my $class = shift;
     my ($iter, $ctx, $args, $cond) = @_;
     my $builder = $ctx->stash('builder');

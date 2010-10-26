@@ -1,6 +1,7 @@
 package FieldDay::ObjectType::Entry;
 
 use strict;
+
 use Data::Dumper;
 
 use base qw( FieldDay::ObjectType );

@@ -22,7 +22,8 @@ sub options {
     return {
         'limit_fields' => undef,
         %{$class->SUPER::options()},
-        'allow_create' => 0, # override default
+        # override default
+        'allow_create' => 0,
     };
 }
 

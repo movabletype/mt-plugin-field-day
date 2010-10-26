@@ -1,6 +1,7 @@
 package FieldDay::ObjectType::Blog;
 
 use strict;
+
 use Data::Dumper;
 
 use base qw( FieldDay::ObjectType );

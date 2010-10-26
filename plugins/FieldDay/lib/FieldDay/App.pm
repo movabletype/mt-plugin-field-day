@@ -1,6 +1,7 @@
-
 package FieldDay::App;
+
 use strict;
+
 use Data::Dumper;
 use FieldDay::YAML qw( types object_type field_type );
 use FieldDay::Util qw( app_setting_terms require_type mtlog use_type generic_options

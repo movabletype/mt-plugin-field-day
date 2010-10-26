@@ -1,5 +1,5 @@
-
 package FieldDay::FieldType::LinkedObject::LinkedPage;
+
 use strict;
 
 use base qw( FieldDay::FieldType::LinkedObject::LinkedEntry );

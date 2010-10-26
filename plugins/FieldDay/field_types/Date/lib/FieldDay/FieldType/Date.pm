@@ -1,6 +1,7 @@
-
 package FieldDay::FieldType::Date;
+
 use strict;
+
 use Data::Dumper;
 
 use base qw( FieldDay::FieldType );
@@ -58,7 +59,7 @@ sub hdlr_FormatDate {
     my ($ctx, $args, $cond) = @_;
     defined(my $text = $ctx->stash('builder')->build($ctx,
         $ctx->stash('tokens'), $cond)) || return $ctx->error($ctx->errstr);
-        # strip whitespace
+    # strip whitespace
     $text =~ s/^\s+//;
     $text =~ s/\s+$//;
     return '' unless $text;
@@ -74,8 +75,8 @@ sub html_head {
 HTML
 }
 
-sub pre_edit_options {
 # before FieldDay displays the config screen
+sub pre_edit_options {
     my $class = shift;
     my ($param) = @_;
     for my $key (qw( date_order time minutes input_type ampm_default )) {
@@ -83,14 +84,14 @@ sub pre_edit_options {
     }
 }
 
-sub pre_save_options {
 # before FieldDay saves a field's settings
+sub pre_save_options {
     my $class = shift;
     my ($app, $field, $options) = @_;
 }
 
-sub pre_render {
 # before the field is rendered in the CMS
+sub pre_render {
     my $class = shift;
     my ($param) = @_;
     my $tabindex = $param->{'tabindex'} ? ($param->{'tabindex'} - 1) : '';
@@ -103,8 +104,8 @@ sub pre_render {
     $param->{'y_select'} = choice_tmpl('y', 'Year');
     $param->{'m_select'} = choice_tmpl('m', 'Month');
     $param->{'d_select'} = choice_tmpl('d', 'Day');
-        # numerify it in case the field type was changed
-        # and there's a text value in there
+    # numerify it in case the field type was changed
+    # and there's a text value in there
     $param->{'value'} = $param->{'value'} ? (eval("$param->{'value'} + 0") || '') : '';
     @{$param}{qw( y m d h min s )} = unpack('A4A2A2A2A2A2', $param->{'value'});
     if (!$param->{'y'} && $param->{'default_year'}) {
@@ -142,8 +143,8 @@ sub pre_render {
     $param->{'tabindex'} = $tabindex;
 }
 
-sub pre_save_value {
 # before the CMS saves a value from the editing screen
+sub pre_save_value {
     my $class = shift;
     my ($app, $field_name) = @_;
     return params_to_ts($app, $field_name);

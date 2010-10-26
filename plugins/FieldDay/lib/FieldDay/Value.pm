@@ -1,4 +1,3 @@
-
 package FieldDay::Value;
 
 use strict;

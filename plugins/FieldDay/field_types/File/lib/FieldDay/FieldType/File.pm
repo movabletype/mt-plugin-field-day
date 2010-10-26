@@ -1,5 +1,5 @@
-
 package FieldDay::FieldType::File;
+
 use strict;
 
 use base qw( FieldDay::FieldType );
@@ -45,8 +45,8 @@ sub hdlr_FileURLPath {
     return $options->{'url_path'};
 }
 
-sub pre_render {
 # before the field is rendered in the CMS
+sub pre_render {
     my $class = shift;
     my ($param) = @_;
     my $app = MT->instance;
@@ -62,19 +62,19 @@ sub pre_render {
     }
 }
 
-sub pre_edit_options {
 # before FieldDay displays the config screen
+sub pre_edit_options {
     my $class = shift;
     my ($param) = @_;
     $param->{$param->{'filenames'} . '_selected'} = 1;
 }
 
-sub pre_save_value {
 # before the CMS saves a value from the editing screen
+sub pre_save_value {
     my $class = shift;
     my ($app, $field_name, $obj, $options) = @_;
-        # if they entered a value in the actual field, use that;
-        # if not, use name of uploaded file
+    # if they entered a value in the actual field, use that;
+    # if not, use name of uploaded file
     my $upload_field = $field_name . '_upload';
     my $upload_file;
     my $q = $app->{'query'};
@@ -85,7 +85,7 @@ sub pre_save_value {
         $upload_file = $q->param($field_name);
     } else {
         $upload_file = $q->param($upload_field);
-            # IE/Win sends full path as filename
+        # IE/Win sends full path as filename
         if ($upload_file =~ m#[/\\]#) {
             $upload_file =~ s#.*[/\\]([^/\\]+)$#$1#;
         }

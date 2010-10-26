@@ -23,7 +23,8 @@ sub options {
     return {
         'active' => 1,
         %{$class->SUPER::options()},
-        'allow_create' => 0, # override default
+        # override default
+        'allow_create' => 0,
     };
 }
 
@@ -35,8 +36,8 @@ sub object_type {
     return 'user';
 }
 
-sub render_tmpl_type {
 # the field type that contains the render template, used for subclasses
+sub render_tmpl_type {
     return 'LinkedObject';
 }
 

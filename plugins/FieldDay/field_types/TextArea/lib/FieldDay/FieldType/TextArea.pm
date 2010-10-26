@@ -1,6 +1,7 @@
-
 package FieldDay::FieldType::TextArea;
+
 use strict;
+
 use Data::Dumper;
 
 use base qw( FieldDay::FieldType );
@@ -17,8 +18,8 @@ sub options {
     };
 }
 
-sub pre_render {
 # before the field is rendered in the CMS
+sub pre_render {
     my $class = shift;
     my ($param) = @_;
     if ($param->{'width'}) {

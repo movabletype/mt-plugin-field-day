@@ -1,7 +1,7 @@
-
 package MT::App::Search::FieldDay;
 
 use strict;
+
 use base qw( MT::App::Search );
 use MT::ObjectDriver::SQL qw( :constants );
 use FieldDay::Value;
@@ -33,8 +33,8 @@ sub core_parameters {
     $params;
 }
 
-sub generate_cache_keys {
 # need to defer this until after we munge the params
+sub generate_cache_keys {
 }
 
 sub query_parse {
@@ -181,7 +181,8 @@ sub def_terms {
     my %def_terms = exists( $params->{terms} )
           ? %{ $params->{terms} }
           : ();
-    delete $def_terms{'plugin'}; #FIXME: why is this in here?
+    #FIXME: why is this in here?
+    delete $def_terms{'plugin'};
 
     if ( exists $app->{searchparam}{IncludeBlogs} ) {
         $def_terms{blog_id} = [ keys %{ $app->{searchparam}{IncludeBlogs} } ];

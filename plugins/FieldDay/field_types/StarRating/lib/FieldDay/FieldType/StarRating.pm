@@ -1,5 +1,5 @@
-
 package FieldDay::FieldType::StarRating;
+
 use strict;
 
 use base qw( FieldDay::FieldType );
@@ -83,8 +83,8 @@ sub pre_edit_options {
     $param->{'object_type_loop'} = \@ot_loop;
 }
 
-sub pre_render {
 # before the field is rendered in the CMS
+sub pre_render {
     my $class = shift;
     my ($param) = @_;
     my @star_loop = ();
@@ -183,4 +183,5 @@ sub post_save_value {
     $avg_val->value($avg);
     $avg_val->save || die $avg_val->errstr;
 }
+
 1;

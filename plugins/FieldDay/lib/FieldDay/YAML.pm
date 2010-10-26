@@ -1,6 +1,7 @@
-
 package FieldDay::YAML;
+
 use strict;
+
 use Data::Dumper;
 
 use Exporter;

@@ -1,6 +1,7 @@
-
 package FieldDay::Template::PubTags;
+
 use strict;
+
 use Data::Dumper;
 use FieldDay::YAML qw( field_type object_type );
 use FieldDay::Util qw( load_fields require_type mtlog obj_stash_key );
@@ -151,7 +152,7 @@ sub hdlr_IfFieldGroup {
     my $fd_data = get_fd_data($plugin, $ctx, $args, $cond);
     my %instances = $args->{'instances'} ? (map { $_ => 1 } split(/,/, $args->{'instances'})) : ();
     my @group_ids = get_group_ids($fd_data, $ctx, $args);
-        # return true if any instance of any field in this group has a value
+    # return true if any instance of any field in this group has a value
     for my $group_id (@group_ids) {
         for (my $i = 0; $i < $fd_data->{'group_need_ns'}->{$group_id}; $i++) {
             next if (%instances && !$instances{$i+1});
@@ -171,7 +172,7 @@ sub hdlr_IfField {
     my $fd_data = get_fd_data($plugin, $ctx, $args, $cond);
     my $stash_key = obj_stash_key($ctx, $args);
     my %instances;
-        # if there's a stashed instance, we only want to check that one
+    # if there's a stashed instance, we only want to check that one
     if ($args->{'instance'}) {
         $instances{$args->{'instance'} - 1} = 1;
     } elsif (defined $ctx->stash("$stash_key:instance")) {
@@ -187,7 +188,7 @@ sub hdlr_IfField {
             #return $ctx->error("Field $field not defined");
         }
         my $group_id = $fd_data->{'fields_by_name'}->{$field}->data->{'group'} || 0;
-            # return true if any instance of this field has a value
+        # return true if any instance of this field has a value
         my $values = $fd_data->{'values'}->{$field};
         next unless ($values && @$values);
         for my $i (%instances ? (keys %instances) : (0 .. $fd_data->{'group_need_ns'}->{$group_id})) {

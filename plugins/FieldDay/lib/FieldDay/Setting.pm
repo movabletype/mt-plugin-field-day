@@ -1,9 +1,9 @@
-
 package FieldDay::Setting;
-use FieldDay::Util qw( mtlog );
-use Data::Dumper;
 
 use strict;
+
+use FieldDay::Util qw( mtlog );
+use Data::Dumper;
 
 use MT::Object;
 @FieldDay::Setting::ISA = qw(MT::Object);
@@ -40,11 +40,11 @@ sub data {
     }
 }
 
-sub load_with_default {
 # load settings; if none found and a default blog is set, load those
+sub load_with_default {
     my $class = shift;
     my ($terms, $args) = @_;
-        # not concerned with defaults unless there's a blog_id
+    # not concerned with defaults unless there's a blog_id
     my $orig_blog_id = $terms->{'blog_id'};
     return $class->load($terms, $args) unless $orig_blog_id;
     my @settings;
@@ -52,11 +52,11 @@ sub load_with_default {
         return @settings;
     }
     my $orig_type = $terms->{'type'};
-        # no settings, but it might be overridden
+    # no settings, but it might be overridden
     $terms->{'type'} = 'override';
     my $setting;
     return () if ($class->load($terms));
-        # not overridden, now check for default
+    # not overridden, now check for default
     $terms->{'type'} = 'default';
     delete($terms->{'blog_id'});
     $setting = $class->load($terms);

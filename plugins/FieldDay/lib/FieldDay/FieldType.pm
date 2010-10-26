@@ -1,6 +1,7 @@
-
 package FieldDay::FieldType;
+
 use strict;
+
 use FieldDay::YAML qw( types object_type );
 use FieldDay::Util qw( require_type mtlog );
 use Data::Dumper;
@@ -15,63 +16,63 @@ sub options {
     return {};
 }
 
-sub html_head {
 # code to go into html_head of template
+sub html_head {
     return '';
 }
 
-sub pre_edit_options {
 # before FieldDay displays the config screen
+sub pre_edit_options {
 }
 
-sub pre_save_options {
 # before FieldDay saves a field's settings
+sub pre_save_options {
 }
 
-sub pre_edit_default {
 # before FieldDay displays the Default Values config screen
+sub pre_edit_default {
 }
 
-sub pre_save_default {
 # before FieldDay saves the default value
+sub pre_save_default {
 }
 
-sub pre_render {
 # before the field is rendered in the CMS
+sub pre_render {
     my $class = shift;
     my ($param) = @_;
 }
 
-sub pre_publish {
 # before the field value is output on a template
+sub pre_publish {
     my $class = shift;
     my ($ctx, $args, $value, $field) = @_;
     return $value;
 }
 
-sub pre_save_value {
 # before the CMS saves a value from the editing screen
+sub pre_save_value {
     my $class = shift;
     my ($app, $field_name) = @_;
     return $app->param($field_name);
 }
 
-sub post_save_value {
 # after the CMS saves a value
+sub post_save_value {
     my $class = shift;
     my ($app, $value_obj, $obj, $field) = @_;
 }
 
-sub pre_display_value {
 # before a template tag displays the field value
+sub pre_display_value {
 }
 
-sub options_tmpl_type {
 # the field type that contains the options template, used for subclasses
+sub options_tmpl_type {
 }
 
-sub render_tmpl_type {
 # the field type that contains the render template, used for subclasses
+sub render_tmpl_type {
 }
 
 sub html_head_type {
@@ -99,8 +100,8 @@ sub type_tmpls {
     return \%options;
 }
 
-sub tags {
 # any type-specific publishing tags
+sub tags {
 }
 
 sub field_options {

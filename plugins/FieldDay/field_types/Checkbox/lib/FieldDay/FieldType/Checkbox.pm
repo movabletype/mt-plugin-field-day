@@ -1,5 +1,5 @@
-
 package FieldDay::FieldType::Checkbox;
+
 use strict;
 
 use base qw( FieldDay::FieldType );
@@ -13,8 +13,8 @@ sub options {
     };
 }
 
-sub pre_render {
 # before the field is rendered in the CMS
+sub pre_render {
     my $class = shift;
     my ($param) = @_;
 

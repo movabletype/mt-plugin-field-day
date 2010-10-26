@@ -1,6 +1,7 @@
-
 package FieldDay::Util;
+
 use strict;
+
 use Data::Dumper;
 
 use Exporter;
@@ -169,7 +170,7 @@ sub load_fields {
         $max_order = $_->order if ($_->order > $max_order);
         $_->id => $_->order
     } @$groups };
-        # put ungrouped fields at the beginning
+    # put ungrouped fields at the beginning
     $group_orders->{0} = 0;
     my $fields_by_name = { map {
         $_->name => $_

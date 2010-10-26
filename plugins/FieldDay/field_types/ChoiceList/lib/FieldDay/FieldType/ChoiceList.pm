@@ -1,6 +1,7 @@
 package FieldDay::FieldType::ChoiceList;
 
 use strict;
+
 use Data::Dumper;
 
 use base qw( FieldDay::FieldType );

@@ -1,6 +1,7 @@
-
 package FieldDay::Upgrader;
+
 use strict;
+
 use Data::Dumper;
 
 my $plugin_key = 'rightfields';
@@ -9,7 +10,7 @@ my @standard_elems = qw( label type rows width length choices weblog
     date_show_hms date_time date_minutes date_ampm
     filenames category_ids show_buttons text_filters );
 
-    # types that we can't just ucfirst
+# types that we can't just ucfirst
 my %type_map = (
     'entry' => 'LinkedEntry',
     'radio' => 'RadioButtons',
@@ -59,7 +60,7 @@ sub do_upgrade {
     my $upg = shift;
     require MT::Blog;
     require FieldDay::Setting;
-        # first get default settings
+    # first get default settings
     my $cfg_key = config_key(-1, 'extra');
     my $default_cfg = load_plugindata($cfg_key);
     my $saved_defaults = 0;
@@ -70,7 +71,7 @@ sub do_upgrade {
         my $cfg = load_plugindata($cfg_key);
         my $is_default = 0;
         if (!$cfg && $default_cfg && !$saved_defaults) {
-                # assign defaults to this blog
+            # assign defaults to this blog
             $cfg = $default_cfg;
             $is_default = 1;
             my $setting = FieldDay::Setting->set_by_key({
@@ -99,7 +100,7 @@ sub do_upgrade {
                 my $options = {};
                 for my $option (keys %{$option_map{$rf_type}}) {
                     if (($rf_type eq 'textarea') && ($option eq 'rows')) {
-                            # convert from rows to pixels
+                        # convert from rows to pixels
                         $col->{$option} *= 18;
                     }
                     $options->{$option_map{$rf_type}{$option}} = $col->{$option};
@@ -216,8 +217,8 @@ sub set_properties {
     __PACKAGE__->install_properties($properties);
 }
 
-    # need to override this to get rid of the "unknown column" check
-    # introduced in MT 3.3
+# need to override this to get rid of the "unknown column" check
+# introduced in MT 3.3
 use vars qw( $AUTOLOAD );
 sub AUTOLOAD {
     my $obj = $_[0];
@@ -249,8 +250,8 @@ sub key {
     return $obj->entry_id;
 }
 
-sub blog_id {
 # to prevent callbacks from dying in MT::App::cb_mark_blog()
+sub blog_id {
     return 0;
 }
 
@@ -423,7 +424,8 @@ sub load_iter {
       }
 }
 
-sub count {    # needs work. utilize other loads
+# needs work. utilize other loads
+sub count {
     my ($class, $t, $args) = @_;
 
     #return ($class->load_by_id($t)?1:0) if (!ref($t) || $t->{id});
@@ -581,7 +583,8 @@ sub filter {
     my ($caller, $o, $class, $t, $args) = @_;
     $t    ||= {};
     $args ||= {};
-    my @objs = @$o;    # clone it.
+    # clone it.
+    my @objs = @$o;
     foreach my $term (keys %$t) {
         if (ref($t->{$term}) eq 'ARRAY') {
             if ($args->{range} && $args->{range}{$term}) {

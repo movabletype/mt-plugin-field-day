@@ -1,6 +1,7 @@
-
 package FieldDay::ObjectType;
+
 use strict;
+
 use FieldDay::Util qw( app_setting_terms app_value_terms require_type mtlog use_type );
 use Data::Dumper;
 
@@ -63,14 +64,14 @@ sub callbacks {
 sub cms_post_save {
     my $class = shift;
     my ($cb, $app, $obj) = @_;
-        # if this beacon is not present, FieldDay was not loaded when the
-        # editing template was loaded; we don't want to blow away any
-        # existing data
+    # if this beacon is not present, FieldDay was not loaded when the
+    # editing template was loaded; we don't want to blow away any
+    # existing data
     return 1 unless ($app->param('fieldday'));
     require FieldDay::Setting;
-        # the process of saving data needs to be driven by the field settings
-        # so we don't end up saving any fields that aren't actually defined
-        # (i.e. if settings were changed between form display and save)
+    # the process of saving data needs to be driven by the field settings
+    # so we don't end up saving any fields that aren't actually defined
+    # (i.e. if settings were changed between form display and save)
     my @fields = FieldDay::Setting->load_with_default(app_setting_terms(MT->instance, 'field'));
     return 1 unless @fields; # ´ optionally (plugin setting) delete any existing values
     my @param = $app->param;
@@ -78,7 +79,7 @@ sub cms_post_save {
     my %group_instances = map {
         my $data = $_->data; $_->id => $data->{'instances'}
     } FieldDay::Setting->load_with_default(app_setting_terms($app, 'group'));
-        # set this in case it's a newly saved object
+    # set this in case it's a newly saved object
     $app->param('id', $obj->id);
     my $use_type = $app->param('setting_object_type') || use_type($app->param('_type'));
     my %existing;
@@ -115,10 +116,10 @@ sub cms_post_save {
                 $class->post_save_value($app, $val, $obj, $field);
             }
         } else {
-                # no group, don't need to worry about instances or delete existing
+            # no group, don't need to worry about instances or delete existing
             my $value = $class->pre_save_value($app, $name, $obj, $data->{'options'});
             my $val;
-                # shouldn't be more than one value with this key, but just in case
+            # shouldn't be more than one value with this key, but just in case
             my @vals = FieldDay::Value->load(app_value_terms($app, $name));
             if (scalar @vals > 1) {
                 for my $i (1 .. $#vals) {
@@ -157,20 +158,20 @@ sub post_remove {
     }
 }
 
-sub stashed_id {
 # called when publishing to get the ID of a given object type out of the stash
+sub stashed_id {
     my ($ctx, $args) = @_;
 }
 
-sub load_terms {
 # specify terms to use when a tag loads objects
+sub load_terms {
     my $class = shift;
     my ($ctx, $args) = @_;
     return {};
 }
 
-sub block_loop {
 # called when a tag needs to loop through objects of this type
+sub block_loop {
     my $class = shift;
     my ($iter, $ctx, $args, $cond) = @_;
     return '';

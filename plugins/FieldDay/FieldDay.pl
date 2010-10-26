@@ -1,6 +1,7 @@
 package MT::Plugin::FieldDay;
 
 use strict;
+
 use Data::Dumper;
 
 use vars qw( $VERSION $SCHEMA_VERSION );
@@ -142,7 +143,7 @@ sub init_object_types {
                 }
             }
         }
-            # page actions
+        # page actions
         $page_actions->{$ot->{'object_type'}} = {
             'configure_fields' => {
                 'label' => 'Configure Fields',
@@ -152,7 +153,7 @@ sub init_object_types {
                     : ('system_permission' => 'administer')
             }
         };
-            # menus
+        # menus
         $menus->{"prefs:fd_$ot->{'object_type'}"} = {
             'label' => ucfirst($key) . ' Fields',
             'mode' => "fd_cfg_fields",
@@ -166,7 +167,7 @@ sub init_object_types {
                     'view' => 'system')
         };
         $order += 100;
-            # tags
+        # tags
         my $uckey = ucfirst($key);
         for my $tag (qw( FieldValue FieldLabel FieldGroupLabel FieldI FieldGroupI FieldCount FieldGroupCount )) {
             $pub_tags->{'function'}->{"$uckey$tag"} = sub { pub_tag_dispatch("hdlr_$tag", $key, @_) };
@@ -226,7 +227,8 @@ sub pub_tag_dispatch {
 
 sub mode_dispatch {
     my $mode = shift;
-    $_[0]->{'component'} = 'FieldDay'; # necessary why?
+    # necessary why?;
+    $_[0]->{'component'} = 'FieldDay'
     require FieldDay::App;
     return FieldDay::App->$mode($plugin, @_);
 }

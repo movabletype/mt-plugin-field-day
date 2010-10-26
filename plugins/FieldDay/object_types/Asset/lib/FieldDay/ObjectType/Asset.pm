@@ -1,6 +1,7 @@
 package FieldDay::ObjectType::Asset;
 
 use strict;
+
 use Data::Dumper;
 
 use base qw( FieldDay::ObjectType );
@@ -31,8 +32,8 @@ sub insert_before_html_head {
     return q{<mt:include name="include/header.tmpl">};
 }
 
-sub load_terms {
 # specify terms to use when a tag loads objects
+sub load_terms {
     my $class = shift;
     my ($ctx, $args) = @_;
     return {
@@ -41,8 +42,8 @@ sub load_terms {
     };
 }
 
+# called when a tag needs to loop through objects of this type
 sub block_loop {
-    # called when a tag needs to loop through objects of this type
     my $class = shift;
     my ($iter, $ctx, $args, $cond) = @_;
     my $builder = $ctx->stash('builder');

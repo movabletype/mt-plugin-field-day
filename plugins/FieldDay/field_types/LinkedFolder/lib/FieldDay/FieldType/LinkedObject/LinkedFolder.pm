@@ -1,5 +1,5 @@
-
 package FieldDay::FieldType::LinkedObject::LinkedFolder;
+
 use strict;
 
 use base qw( FieldDay::FieldType::LinkedObject::LinkedCategory );
@@ -21,8 +21,8 @@ sub label {
     return 'Linked Folder';
 }
 
-sub options_tmpl_type {
 # the field type that contains the options template, used for subclasses
+sub options_tmpl_type {
     return 'LinkedCategory';
 }
 

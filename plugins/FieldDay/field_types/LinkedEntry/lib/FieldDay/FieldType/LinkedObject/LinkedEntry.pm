@@ -1,6 +1,7 @@
 package FieldDay::FieldType::LinkedObject::LinkedEntry;
 
 use strict;
+
 use Data::Dumper;
 
 use base qw( FieldDay::FieldType::LinkedObject );

@@ -1,6 +1,7 @@
-
 package FieldDay::FieldType::LinkedObject;
+
 use strict;
+
 use Data::Dumper;
 use FieldDay::YAML qw( field_type object_type );
 use FieldDay::Util qw( app_setting_terms load_fields require_type mtlog obj_stash_key );
@@ -19,8 +20,8 @@ sub options {
     };
 }
 
-sub pre_edit_options {
 # before FieldDay displays the config screen
+sub pre_edit_options {
     my $class = shift;
     my ($param) = @_;
     if ($class->has_blog_id) {
