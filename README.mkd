@@ -28,7 +28,8 @@ of custom fields?
 
 ## Documentation
 
-TODO: Links to full documentation.
+* Field Day Basics: <http://github.com/movabletype/mt-plugin-field-day/wiki/Basics>
+* Field Day Developer Notes: <http://github.com/movabletype/mt-plugin-field-day/wiki/Developer-Notes>
 
 
 ## Installation
