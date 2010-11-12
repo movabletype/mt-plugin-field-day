@@ -79,12 +79,6 @@ sub init_registry {
                 'linking' => sub { MT->app->core_parameters() },
             },
         },
-        'upgrade_functions' => {
-            'rightfields_to_fieldday' => {
-                'version_limit' => 0.2,
-                'code' => \&do_upgrade,
-            },
-        },
         'tags' => {
             'function' => {
                 'fd_cmsfields' => sub { app_tag_dispatch('hdlr_cmsfields', @_) },
@@ -106,11 +100,6 @@ sub init_request {
     my $app = shift;
     require FieldDay::FieldType;
     $FieldDay::FieldType::type_tmpls = {};
-}
-
-sub do_upgrade {
-    require FieldDay::Upgrader;
-    FieldDay::Upgrader::do_upgrade(@_);
 }
 
 sub init_object_types {
