@@ -229,7 +229,7 @@ sub pub_tag_dispatch {
 sub mode_dispatch {
     my $mode = shift;
     # necessary why?;
-    $_[0]->{'component'} = 'FieldDay'
+    $_[0]->{'component'} = 'FieldDay';
     require FieldDay::App;
     return FieldDay::App->$mode($plugin, @_);
 }
