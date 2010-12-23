@@ -390,6 +390,9 @@ sub _build_path {
     my $class = ref $obj;
     $class =~ s/^MT:://;
     $ctx->stash(lc($class), $obj);
+    if ($obj->can('created_on')) {
+        $ctx->{current_timestamp} = $obj->created_on;
+    }
     $tmpl->context($ctx);
     return $tmpl->output;
 }
