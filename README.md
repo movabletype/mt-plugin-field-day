@@ -1,8 +1,8 @@
 # Field Day, a plugin for Movable Type
 
 * Author: Six Apart
-* Copyright: 2008-2010 Six Apart Ltd.
-* License: GPL
+* Copyright: 2008-2013 Six Apart Ltd.
+* License: MIT
 * Site: <http://www.movabletype.org/>
 
 
